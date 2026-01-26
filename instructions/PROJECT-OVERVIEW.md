@@ -18,10 +18,10 @@ A mobile application that allows male and female users to generate hyper-realist
 ## Folder Structure Strategy (Monorepo)
 The project is a **Turborepo** monorepo to manage dependencies and build pipelines efficiently:
 * **Root Level:** Contains `turbo.json`, root `package.json`, and `.env` secrets.
-* **`apps/mobile`:** The React Native (Expo) application.
+* **`apps/barbcut`:** The React Native (Expo) application.
 * **`packages/firebase`:** (Renamed from just 'firebase' to fit standard monorepo structure, or kept as root `firebase` folder if preferred, but `packages/` is standard for Turbo). *For this specific request, we will keep the user's preference of a specific folder if distinct, but typically Turbo expects workspaces.*
     * **Adjustment:** We will treat the root `firebase` folder as a workspace or standalone backend folder as requested.
-* **`apps/mobile`:** Contains all React Native code.
+* **`apps/barbcut`:** Contains all React Native code.
 * **`firebase`:** Contains Cloud Functions, Firestore rules, and storage configurations.
 
 ## Key Features

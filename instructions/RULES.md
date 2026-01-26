@@ -3,14 +3,14 @@
 ## 1. Package Management Enforcement
 * **RULE:** You must use `npm` for all installation commands.
 * **FORBIDDEN:** Do not generate commands using `yarn`, `pnpm`, or `bun`.
-* **Monorepo:** Use npm workspaces. To install a package for the mobile app specifically, use: `npm install <package> -w apps/mobile`.
+* **Monorepo:** Use npm workspaces. To install a package for the mobile app specifically, use: `npm install <package> -w apps/barbcut`.
 
 ## 2. Monorepo & Turborepo Usage
 * **Management:** Use Turborepo for running scripts.
     * Example: `npx turbo run dev` to start all apps.
     * Example: `npx turbo run build` to build.
 * **Folder Structure Strictness:**
-    * All mobile application code **MUST** reside strictly inside `apps/mobile`.
+    * All mobile application code **MUST** reside strictly inside `apps/barbcut`.
     * All Firebase backend code (Functions, Rules) **MUST** reside strictly inside `firebase`.
     * Do not create files at the root level unless they are global config files (e.g., `.gitignore`, `turbo.json`).
 
@@ -42,5 +42,5 @@
 ## 7. Vibe Coding Behavior
 * When asked to implement a feature, first check the folder structure context.
 * If modifying the backend, output the code for `firebase/functions/index.ts`.
-* If modifying the frontend, output the code for `apps/mobile/src/...`.
+* If modifying the frontend, output the code for `apps/barbcut/src/...`.
 * Keep components small and modular.

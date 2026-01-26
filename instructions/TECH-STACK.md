@@ -6,7 +6,7 @@
 * **Workspaces:** npm workspaces enabled in root `package.json`.
 
 ## Core Frameworks
-* **Mobile:** React Native (0.76+) with Expo.
+* **Mobile:** React Native (0.76+) with Expo. Workspace: `apps/barbcut`.
 * **Language:** TypeScript (Strict mode).
 
 ## Backend & Cloud (Firebase)
