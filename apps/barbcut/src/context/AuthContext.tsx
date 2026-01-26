@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
-import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User } from 'firebase/auth';
-import { auth } from '../services/firebaseConfig';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+
+type User = FirebaseAuthTypes.User;
 
 type AuthContextValue = {
   user: User | null;
@@ -18,7 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = auth().onAuthStateChanged((u) => {
       setUser(u);
       setLoading(false);
     });
@@ -28,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
+      await auth().signInWithEmailAndPassword(email, password);
     } catch (e: any) {
       Alert.alert('Sign In Error', e?.message || 'Invalid email or password');
     } finally {
@@ -39,7 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signup = async (email: string, password: string) => {
     try {
       setLoading(true);
-      await createUserWithEmailAndPassword(auth, email, password);
+      await auth().createUserWithEmailAndPassword(email, password);
     } catch (e: any) {
       Alert.alert('Sign Up Error', e?.message || 'Could not create account');
     } finally {
@@ -49,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      await auth().signOut();
     } catch (e: any) {
       Alert.alert('Logout Error', e?.message || 'Failed to logout');
     }

@@ -14,5 +14,9 @@
   },
   "devDependencies": {
     "turbo": "^2.0.0"
+  },
+  "dependencies": {
+    "@react-native-firebase/app": "^23.8.4",
+    "@react-native-firebase/firestore": "^23.8.4"
   }
 }
