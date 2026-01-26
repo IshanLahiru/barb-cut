@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1076863044360",
+    "project_id": "barb-cut",
+    "storage_bucket": "barb-cut.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076863044360:android:33d3352d186fb3c3c4babd",
+        "android_client_info": {
+          "package_name": "io.github.ishanlahiru.barbcut"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsb3XiCtFqy3UqNRYH7Q8XdLHUjGjJT_U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
