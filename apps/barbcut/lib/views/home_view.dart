@@ -91,10 +91,7 @@ class _HomeViewState extends State<HomeView> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.blue[50]!,
-            Colors.purple[50]!,
-          ],
+          colors: [Colors.blue[50]!, Colors.purple[50]!],
         ),
       ),
       child: SafeArea(
@@ -119,10 +116,7 @@ class _HomeViewState extends State<HomeView> {
                       Text(
                         _haircuts[_selectedHaircutIndex]['description'],
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 32),
                       FlutterCarousel(
@@ -141,7 +135,7 @@ class _HomeViewState extends State<HomeView> {
                             haircut['color'].withOpacity(0.6),
                             haircut['color'].withOpacity(0.8),
                           ];
-                          
+
                           return Container(
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             decoration: BoxDecoration(
@@ -224,7 +218,8 @@ class _HomeViewState extends State<HomeView> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                  'Booking ${_haircuts[_selectedHaircutIndex]['name']}...'),
+                                'Booking ${_haircuts[_selectedHaircutIndex]['name']}...',
+                              ),
                             ),
                           );
                         },
@@ -254,10 +249,7 @@ class _HomeViewState extends State<HomeView> {
           const SizedBox(width: 8),
           Text(
             label,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+            style: TextStyle(fontWeight: FontWeight.bold, color: color),
           ),
         ],
       ),
@@ -270,11 +262,7 @@ class _HomeViewState extends State<HomeView> {
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 2),
         ],
       ),
       child: Column(
@@ -297,10 +285,7 @@ class _HomeViewState extends State<HomeView> {
                 SizedBox(width: 8),
                 Text(
                   'Select Haircut',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -313,7 +298,7 @@ class _HomeViewState extends State<HomeView> {
               itemBuilder: (context, index) {
                 final haircut = _haircuts[index];
                 final isSelected = _selectedHaircutIndex == index;
-                
+
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Card(
@@ -336,13 +321,17 @@ class _HomeViewState extends State<HomeView> {
                         ),
                         child: Icon(
                           haircut['image'],
-                          color: isSelected ? haircut['color'] : Colors.grey[600],
+                          color: isSelected
+                              ? haircut['color']
+                              : Colors.grey[600],
                         ),
                       ),
                       title: Text(
                         haircut['name'],
                         style: TextStyle(
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                       subtitle: Text(haircut['duration']),
@@ -350,7 +339,9 @@ class _HomeViewState extends State<HomeView> {
                         haircut['price'],
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: isSelected ? haircut['color'] : Colors.grey[700],
+                          color: isSelected
+                              ? haircut['color']
+                              : Colors.grey[700],
                           fontSize: 16,
                         ),
                       ),
