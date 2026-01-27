@@ -1,7 +1,8 @@
+
 # Project Overview: AI Hairstyle & Beard Try-On App
 
 ## Core Value Proposition
-A mobile application that allows male and female users to generate hyper-realistic images of themselves featuring different hairstyles and beard styles. The core technology uses AI to preserve the user's facial identity while modifying hair and facial hair based on user selection.
+A cross-platform mobile application built with **Flutter** that enables users to generate hyper-realistic images of themselves with different hairstyles and beard styles. The app uses AI to preserve the user's facial identity while modifying hair and facial hair based on user selection. Backend services are powered by **Firebase** (Cloud Functions, Firestore, Storage).
 
 ## User Flow
 1.  **Onboarding & Capture:**
@@ -10,22 +11,20 @@ A mobile application that allows male and female users to generate hyper-realist
 2.  **Transformation Studio:**
     * User selects a target style (e.g., "Buzz Cut + Stubble", "Long Wavy Hair", "Goatee").
     * User hits "Generate".
-    * App sends the 4 reference photos + style prompts to the AI backend.
+    * App sends the 4 reference photos + style prompts to the AI backend (Firebase Cloud Functions).
 3.  **Result & Interaction:**
     * User views the generated image.
     * Options to save, share, or regenerate with tweaked settings.
 
 ## Folder Structure Strategy (Monorepo)
-The project is a **Turborepo** monorepo to manage dependencies and build pipelines efficiently:
-* **Root Level:** Contains `turbo.json`, root `package.json`, and `.env` secrets.
-* **`apps/barbcut`:** The React Native (Expo) application.
-* **`packages/firebase`:** (Renamed from just 'firebase' to fit standard monorepo structure, or kept as root `firebase` folder if preferred, but `packages/` is standard for Turbo). *For this specific request, we will keep the user's preference of a specific folder if distinct, but typically Turbo expects workspaces.*
-    * **Adjustment:** We will treat the root `firebase` folder as a workspace or standalone backend folder as requested.
-* **`apps/barbcut`:** Contains all React Native code.
-* **`firebase`:** Contains Cloud Functions, Firestore rules, and storage configurations.
+This project uses a **Turborepo** monorepo for efficient dependency and build management:
+
+* **Root Level:** Contains `turbo.json`, root `package.json`, and environment/config files.
+* **`apps/barbcut`:** The **Flutter** mobile application (iOS, Android, Web, Desktop supported).
+* **`firebase`:** Backend folder containing Cloud Functions, Firestore rules, and storage configurations. (Kept as `firebase/` at root for clarity.)
 
 ## Key Features
 * **Multi-Angle Identity:** Uses 4 input photos for high-fidelity face preservation (not just a simple face swap).
 * **Dual Gender Support:** Specific prompts and models tuned for both male and female styles.
-* **Beard & Hair Integration:** The AI must generate hair and beard simultaneously to ensure they blend naturally on the face.
-* **Privacy First:** User photos are stored securely and only used for their specific generation sessions.
+* **Beard & Hair Integration:** The AI generates hair and beard together for natural blending.
+* **Privacy First:** User photos are stored securely in Firebase Storage and only used for their specific generation sessions.
