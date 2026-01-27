@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -40,49 +41,49 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDKCAKcROU0g8qaS6mI2m_7bwbyGl_m5Yc',
-    appId: '1:1076863044360:web:08de7a33f350bf78c4babd',
-    messagingSenderId: '1076863044360',
-    projectId: 'barb-cut',
-    authDomain: 'barb-cut.firebaseapp.com',
-    storageBucket: 'barb-cut.firebasestorage.app',
-    measurementId: 'G-9M5HRVH5VK',
+  static FirebaseOptions get web => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY']!,
+    appId: dotenv.env['FIREBASE_APP_ID']!,
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
+    projectId: dotenv.env['FIREBASE_PROJECT_ID']!,
+    authDomain: dotenv.env['FIREBASE_AUTH_DOMAIN']!,
+    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET']!,
+    measurementId: dotenv.env['FIREBASE_MEASUREMENT_ID']!,
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCsb3XiCtFqy3UqNRYH7Q8XdLHUjGjJT_U',
-    appId: '1:1076863044360:android:33d3352d186fb3c3c4babd',
-    messagingSenderId: '1076863044360',
-    projectId: 'barb-cut',
-    storageBucket: 'barb-cut.firebasestorage.app',
+  static FirebaseOptions get android => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_ANDROID_API_KEY']!,
+    appId: dotenv.env['FIREBASE_ANDROID_APP_ID']!,
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
+    projectId: dotenv.env['FIREBASE_PROJECT_ID']!,
+    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET']!,
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBKOkspZj7YkVPG3kMk2P-4O-m3IR7gzRE',
-    appId: '1:1076863044360:ios:583b7514779ce854c4babd',
-    messagingSenderId: '1076863044360',
-    projectId: 'barb-cut',
-    storageBucket: 'barb-cut.firebasestorage.app',
-    iosBundleId: 'io.github.ishanlahiru.barbcut',
+  static FirebaseOptions get ios => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_IOS_API_KEY']!,
+    appId: dotenv.env['FIREBASE_IOS_APP_ID']!,
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
+    projectId: dotenv.env['FIREBASE_PROJECT_ID']!,
+    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET']!,
+    iosBundleId: dotenv.env['FIREBASE_IOS_BUNDLE_ID']!,
   );
 
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBKOkspZj7YkVPG3kMk2P-4O-m3IR7gzRE',
-    appId: '1:1076863044360:ios:583b7514779ce854c4babd',
-    messagingSenderId: '1076863044360',
-    projectId: 'barb-cut',
-    storageBucket: 'barb-cut.firebasestorage.app',
-    iosBundleId: 'io.github.ishanlahiru.barbcut',
+  static FirebaseOptions get macos => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_IOS_API_KEY']!,
+    appId: dotenv.env['FIREBASE_IOS_APP_ID']!,
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
+    projectId: dotenv.env['FIREBASE_PROJECT_ID']!,
+    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET']!,
+    iosBundleId: dotenv.env['FIREBASE_IOS_BUNDLE_ID']!,
   );
 
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDKCAKcROU0g8qaS6mI2m_7bwbyGl_m5Yc',
-    appId: '1:1076863044360:web:855c09907c7e37acc4babd',
-    messagingSenderId: '1076863044360',
-    projectId: 'barb-cut',
-    authDomain: 'barb-cut.firebaseapp.com',
-    storageBucket: 'barb-cut.firebasestorage.app',
-    measurementId: 'G-8LYS6GBKGZ',
+  static FirebaseOptions get windows => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY']!,
+    appId: dotenv.env['FIREBASE_APP_ID']!,
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
+    projectId: dotenv.env['FIREBASE_PROJECT_ID']!,
+    authDomain: dotenv.env['FIREBASE_AUTH_DOMAIN']!,
+    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET']!,
+    measurementId: dotenv.env['FIREBASE_MEASUREMENT_ID']!,
   );
 }
