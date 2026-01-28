@@ -53,16 +53,16 @@ class _LoginViewState extends State<LoginView> {
               Text(
                 'Welcome back',
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      color: AiColors.textPrimary,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  color: AiColors.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: AiSpacing.sm),
               Text(
                 'Sign in to continue',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AiColors.textTertiary,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: AiColors.textTertiary),
               ),
               const SizedBox(height: AiSpacing.xxl),
               Container(
@@ -70,10 +70,7 @@ class _LoginViewState extends State<LoginView> {
                 decoration: BoxDecoration(
                   color: AiColors.backgroundSecondary,
                   borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                  border: Border.all(
-                    color: AiColors.borderLight,
-                    width: 1.5,
-                  ),
+                  border: Border.all(color: AiColors.borderLight, width: 1.5),
                 ),
                 child: Column(
                   children: [
@@ -82,14 +79,12 @@ class _LoginViewState extends State<LoginView> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AiColors.textPrimary,
-                          ),
+                        color: AiColors.textPrimary,
+                      ),
                       decoration: InputDecoration(
                         hintText: 'Email address',
-                        hintStyle:
-                            Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: AiColors.textTertiary,
-                                ),
+                        hintStyle: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(color: AiColors.textTertiary),
                         prefixIcon: const Icon(
                           Icons.mail_outline,
                           color: AiColors.neonCyan,
@@ -102,24 +97,27 @@ class _LoginViewState extends State<LoginView> {
                           vertical: AiSpacing.md,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(AiSpacing.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            AiSpacing.radiusMedium,
+                          ),
                           borderSide: const BorderSide(
                             color: AiColors.borderLight,
                             width: 1,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(AiSpacing.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            AiSpacing.radiusMedium,
+                          ),
                           borderSide: const BorderSide(
                             color: AiColors.borderLight,
                             width: 1,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(AiSpacing.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            AiSpacing.radiusMedium,
+                          ),
                           borderSide: const BorderSide(
                             color: AiColors.neonCyan,
                             width: 2,
@@ -134,14 +132,12 @@ class _LoginViewState extends State<LoginView> {
                       controller: _passwordController,
                       obscureText: !_showPassword,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AiColors.textPrimary,
-                          ),
+                        color: AiColors.textPrimary,
+                      ),
                       decoration: InputDecoration(
                         hintText: 'Password',
-                        hintStyle:
-                            Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: AiColors.textTertiary,
-                                ),
+                        hintStyle: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(color: AiColors.textTertiary),
                         prefixIcon: const Icon(
                           Icons.lock_outline,
                           color: AiColors.neonCyan,
@@ -168,24 +164,27 @@ class _LoginViewState extends State<LoginView> {
                           vertical: AiSpacing.md,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(AiSpacing.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            AiSpacing.radiusMedium,
+                          ),
                           borderSide: const BorderSide(
                             color: AiColors.borderLight,
                             width: 1,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(AiSpacing.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            AiSpacing.radiusMedium,
+                          ),
                           borderSide: const BorderSide(
                             color: AiColors.borderLight,
                             width: 1,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(AiSpacing.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            AiSpacing.radiusMedium,
+                          ),
                           borderSide: const BorderSide(
                             color: AiColors.neonCyan,
                             width: 2,
@@ -201,7 +200,8 @@ class _LoginViewState extends State<LoginView> {
                         decoration: BoxDecoration(
                           color: AiColors.error.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(
-                              AiSpacing.radiusMedium),
+                            AiSpacing.radiusMedium,
+                          ),
                           border: Border.all(
                             color: AiColors.error.withValues(alpha: 0.3),
                             width: 1,
@@ -209,12 +209,8 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         child: Text(
                           _localError!,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(
-                                color: AiColors.error,
-                              ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AiColors.error),
                         ),
                       ),
                       const SizedBox(height: AiSpacing.md),
@@ -255,14 +251,12 @@ class _LoginViewState extends State<LoginView> {
                     TextSpan(
                       text: "Don't have an account? ",
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AiColors.textSecondary,
-                          ),
+                        color: AiColors.textSecondary,
+                      ),
                       children: [
                         TextSpan(
                           text: 'Sign up',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
+                          style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
                                 color: AiColors.neonCyan,
                                 fontWeight: FontWeight.w700,

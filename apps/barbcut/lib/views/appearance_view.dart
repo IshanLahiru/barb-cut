@@ -16,9 +16,9 @@ class AppearanceView extends StatelessWidget {
         elevation: 0,
         title: Text(
           'Appearance',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: AiColors.textPrimary,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: AiColors.textPrimary),
         ),
         centerTitle: false,
       ),
@@ -45,15 +45,15 @@ class AppearanceView extends StatelessWidget {
             child: SwitchListTile(
               title: Text(
                 'Dark mode',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AiColors.textPrimary,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(color: AiColors.textPrimary),
               ),
               subtitle: Text(
                 'Use dark appearance across the app',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AiColors.textSecondary,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AiColors.textSecondary),
               ),
               value: context.watch<ThemeController>().isDarkMode,
               activeThumbColor: AiColors.neonCyan,

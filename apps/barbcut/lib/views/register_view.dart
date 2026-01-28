@@ -59,17 +59,21 @@ class _RegisterViewState extends State<RegisterView> {
               SizedBox(height: AiSpacing.md),
               Text(
                 'Create account',
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                color: AiColors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                ) ?? const TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
+                style:
+                    Theme.of(context).textTheme.displaySmall?.copyWith(
+                      color: AiColors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ) ??
+                    const TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
               ),
               SizedBox(height: AiSpacing.sm),
               Text(
                 'Join Barbcut in seconds',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AiColors.textSecondary,
-                ) ?? const TextStyle(color: Colors.white70),
+                style:
+                    Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: AiColors.textSecondary,
+                    ) ??
+                    const TextStyle(color: Colors.white70),
               ),
               SizedBox(height: AiSpacing.lg),
               Container(
@@ -95,7 +99,9 @@ class _RegisterViewState extends State<RegisterView> {
                     Container(
                       decoration: BoxDecoration(
                         color: AiColors.backgroundDark.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
+                        borderRadius: BorderRadius.circular(
+                          AiSpacing.radiusMedium,
+                        ),
                         border: Border.all(
                           color: AiColors.borderLight,
                           width: 1.0,
@@ -114,7 +120,10 @@ class _RegisterViewState extends State<RegisterView> {
                         decoration: InputDecoration(
                           hintText: 'Email address',
                           hintStyle: TextStyle(color: AiColors.textSecondary),
-                          prefixIcon: Icon(Icons.mail_outline, color: AiColors.neonCyan),
+                          prefixIcon: Icon(
+                            Icons.mail_outline,
+                            color: AiColors.neonCyan,
+                          ),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                           isDense: true,
@@ -126,7 +135,9 @@ class _RegisterViewState extends State<RegisterView> {
                     Container(
                       decoration: BoxDecoration(
                         color: AiColors.backgroundDark.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
+                        borderRadius: BorderRadius.circular(
+                          AiSpacing.radiusMedium,
+                        ),
                         border: Border.all(
                           color: AiColors.borderLight,
                           width: 1.0,
@@ -145,11 +156,17 @@ class _RegisterViewState extends State<RegisterView> {
                         decoration: InputDecoration(
                           hintText: 'Password',
                           hintStyle: TextStyle(color: AiColors.textSecondary),
-                          prefixIcon: Icon(Icons.lock_outline, color: AiColors.sunsetCoral),
+                          prefixIcon: Icon(
+                            Icons.lock_outline,
+                            color: AiColors.sunsetCoral,
+                          ),
                           suffixIcon: GestureDetector(
-                            onTap: () => setState(() => _showPassword = !_showPassword),
+                            onTap: () =>
+                                setState(() => _showPassword = !_showPassword),
                             child: Icon(
-                              _showPassword ? Icons.visibility : Icons.visibility_off,
+                              _showPassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                               color: AiColors.neonCyan,
                               size: 20,
                             ),
@@ -165,7 +182,9 @@ class _RegisterViewState extends State<RegisterView> {
                     Container(
                       decoration: BoxDecoration(
                         color: AiColors.backgroundDark.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
+                        borderRadius: BorderRadius.circular(
+                          AiSpacing.radiusMedium,
+                        ),
                         border: Border.all(
                           color: AiColors.borderLight,
                           width: 1.0,
@@ -184,11 +203,17 @@ class _RegisterViewState extends State<RegisterView> {
                         decoration: InputDecoration(
                           hintText: 'Confirm password',
                           hintStyle: TextStyle(color: AiColors.textSecondary),
-                          prefixIcon: Icon(Icons.lock_reset, color: AiColors.neonPurple),
+                          prefixIcon: Icon(
+                            Icons.lock_reset,
+                            color: AiColors.neonPurple,
+                          ),
                           suffixIcon: GestureDetector(
-                            onTap: () => setState(() => _showConfirm = !_showConfirm),
+                            onTap: () =>
+                                setState(() => _showConfirm = !_showConfirm),
                             child: Icon(
-                              _showConfirm ? Icons.visibility : Icons.visibility_off,
+                              _showConfirm
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                               color: AiColors.neonCyan,
                               size: 20,
                             ),
@@ -206,7 +231,9 @@ class _RegisterViewState extends State<RegisterView> {
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: AiColors.error.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            AiSpacing.radiusMedium,
+                          ),
                           border: Border.all(
                             color: AiColors.error.withValues(alpha: 0.4),
                             width: 1.0,
@@ -215,10 +242,7 @@ class _RegisterViewState extends State<RegisterView> {
                         padding: EdgeInsets.all(AiSpacing.md),
                         child: Text(
                           _localError!,
-                          style: TextStyle(
-                            color: AiColors.error,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: AiColors.error, fontSize: 14),
                         ),
                       ),
                       SizedBox(height: AiSpacing.md),

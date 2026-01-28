@@ -18,9 +18,9 @@ class ProfileView extends StatelessWidget {
         title: Text(
           'Profile',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AiColors.textPrimary,
-                fontWeight: FontWeight.w700,
-              ),
+            color: AiColors.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         centerTitle: false,
         surfaceTintColor: Colors.transparent,
@@ -81,19 +81,18 @@ class ProfileView extends StatelessWidget {
                     children: [
                       Text(
                         'Guest User',
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  color: AiColors.textPrimary,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: AiColors.textPrimary,
+                              fontWeight: FontWeight.w700,
+                            ),
                       ),
                       const SizedBox(height: AiSpacing.xs),
                       Text(
                         'guest@barbcut.app',
-                        style:
-                            Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: AiColors.textTertiary,
-                                ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AiColors.textTertiary,
+                        ),
                       ),
                     ],
                   ),
@@ -110,24 +109,30 @@ class ProfileView extends StatelessWidget {
             child: Text(
               'ACCOUNT',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: AiColors.textTertiary,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1,
-                  ),
+                color: AiColors.textTertiary,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1,
+              ),
             ),
           ),
-          _buildTile(context,
-              icon: Icons.edit,
-              title: 'Edit Profile',
-              accentColor: AiColors.neonCyan),
-          _buildTile(context,
-              icon: Icons.payment,
-              title: 'Payment Methods',
-              accentColor: AiColors.sunsetCoral),
-          _buildTile(context,
-              icon: Icons.history,
-              title: 'Appointments',
-              accentColor: AiColors.neonPurple),
+          _buildTile(
+            context,
+            icon: Icons.edit,
+            title: 'Edit Profile',
+            accentColor: AiColors.neonCyan,
+          ),
+          _buildTile(
+            context,
+            icon: Icons.payment,
+            title: 'Payment Methods',
+            accentColor: AiColors.sunsetCoral,
+          ),
+          _buildTile(
+            context,
+            icon: Icons.history,
+            title: 'Appointments',
+            accentColor: AiColors.neonPurple,
+          ),
           const SizedBox(height: AiSpacing.xxl),
           Padding(
             padding: const EdgeInsets.only(
@@ -137,34 +142,41 @@ class ProfileView extends StatelessWidget {
             child: Text(
               'SETTINGS',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: AiColors.textTertiary,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1,
-                  ),
+                color: AiColors.textTertiary,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1,
+              ),
             ),
           ),
-          _buildTile(context,
-              icon: Icons.notifications,
-              title: 'Notifications',
-              accentColor: AiColors.neonCyan),
-          _buildTile(context,
-              icon: Icons.lock,
-              title: 'Privacy & Security',
-              accentColor: AiColors.sunsetCoral),
+          _buildTile(
+            context,
+            icon: Icons.notifications,
+            title: 'Notifications',
+            accentColor: AiColors.neonCyan,
+          ),
+          _buildTile(
+            context,
+            icon: Icons.lock,
+            title: 'Privacy & Security',
+            accentColor: AiColors.sunsetCoral,
+          ),
           _buildTile(
             context,
             icon: Icons.palette,
             title: 'Appearance',
             accentColor: AiColors.neonPurple,
             onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const AppearanceView()));
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const AppearanceView()));
             },
           ),
-          _buildTile(context,
-              icon: Icons.help_outline,
-              title: 'Help & Support',
-              accentColor: AiColors.neonCyan),
+          _buildTile(
+            context,
+            icon: Icons.help_outline,
+            title: 'Help & Support',
+            accentColor: AiColors.neonCyan,
+          ),
           const SizedBox(height: AiSpacing.lg),
           _buildTile(
             context,
@@ -228,9 +240,9 @@ class ProfileView extends StatelessWidget {
         title: Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: isDestructive ? AiColors.error : AiColors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
+            color: isDestructive ? AiColors.error : AiColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         trailing: Icon(
           Icons.chevron_right,

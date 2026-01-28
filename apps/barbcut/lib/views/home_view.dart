@@ -309,7 +309,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           Positioned(
             left: AiSpacing.md,
             right: AiSpacing.md,
-            bottom: AiSpacing.md,
+            bottom: AiSpacing.sm,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
