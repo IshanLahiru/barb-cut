@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'dart:math';
 import '../theme/ai_colors.dart';
 import '../theme/ai_spacing.dart';
 
@@ -16,6 +18,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   int _selectedHaircutIndex = 0;
   int _selectedBeardIndex = 0;
   late TabController _tabController;
+  final Random _random = Random();
+  late List<double> _haircutHeights;
+  late List<double> _beardHeights;
 
   final List<Map<String, dynamic>> _haircuts = [
     {
@@ -63,6 +68,186 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
       'accentColor': AiColors.sunsetCoral,
     },
+    {
+      'name': 'Slicked Back',
+      'price': '\$28',
+      'duration': '32 min',
+      'description': 'Sleek and polished for a sophisticated look',
+      'image':
+          'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Textured Top',
+      'price': '\$32',
+      'duration': '38 min',
+      'description': 'Messy texture with clean sides',
+      'image':
+          'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
+    {
+      'name': 'Quiff',
+      'price': '\$30',
+      'duration': '35 min',
+      'description': 'Voluminous front with tapered sides',
+      'image':
+          'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop',
+      'accentColor': AiColors.sunsetCoral,
+    },
+    {
+      'name': 'Mohawk',
+      'price': '\$35',
+      'duration': '40 min',
+      'description': 'Bold statement with tall center strip',
+      'image':
+          'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Spiky',
+      'price': '\$24',
+      'duration': '28 min',
+      'description': 'Sharp and edgy spikes throughout',
+      'image':
+          'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
+    {
+      'name': 'French Crop',
+      'price': '\$26',
+      'duration': '31 min',
+      'description': 'Short with textured fringe on top',
+      'image':
+          'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop',
+      'accentColor': AiColors.sunsetCoral,
+    },
+    {
+      'name': 'Taper Fade',
+      'price': '\$27',
+      'duration': '33 min',
+      'description': 'Gradual fade from short to long',
+      'image':
+          'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Drop Fade',
+      'price': '\$29',
+      'duration': '34 min',
+      'description': 'Fade that drops behind the ears',
+      'image':
+          'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
+    {
+      'name': 'Bald Fade',
+      'price': '\$25',
+      'duration': '28 min',
+      'description': 'Fades down to skin with length on top',
+      'image':
+          'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
+      'accentColor': AiColors.sunsetCoral,
+    },
+    {
+      'name': 'Mid Fade',
+      'price': '\$26',
+      'duration': '30 min',
+      'description': 'Fade starts at mid-head height',
+      'image':
+          'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'High Fade',
+      'price': '\$28',
+      'duration': '32 min',
+      'description': 'Fade starts higher for more contrast',
+      'image':
+          'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
+    {
+      'name': 'Skin Fade',
+      'price': '\$30',
+      'duration': '35 min',
+      'description': 'Clean fade all the way to skin',
+      'image':
+          'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
+      'accentColor': AiColors.sunsetCoral,
+    },
+    {
+      'name': 'Temple Fade',
+      'price': '\$25',
+      'duration': '28 min',
+      'description': 'Fade concentrated around temples',
+      'image':
+          'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Side Part',
+      'price': '\$24',
+      'duration': '27 min',
+      'description': 'Classic side part with defined line',
+      'image':
+          'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
+    {
+      'name': 'Curly Top',
+      'price': '\$32',
+      'duration': '40 min',
+      'description': 'Embraces natural curls with clean sides',
+      'image':
+          'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop',
+      'accentColor': AiColors.sunsetCoral,
+    },
+    {
+      'name': 'Afro',
+      'price': '\$28',
+      'duration': '35 min',
+      'description': 'Full and voluminous natural afro',
+      'image':
+          'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Box Braids',
+      'price': '\$40',
+      'duration': '90 min',
+      'description': 'Intricate protective braided style',
+      'image':
+          'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
+    {
+      'name': 'Cornrows',
+      'price': '\$35',
+      'duration': '60 min',
+      'description': 'Neat rows of braids close to scalp',
+      'image':
+          'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop',
+      'accentColor': AiColors.sunsetCoral,
+    },
+    {
+      'name': 'Dreadlocks',
+      'price': '\$50',
+      'duration': '120 min',
+      'description': 'Signature locked and twisted style',
+      'image':
+          'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Man Bun',
+      'price': '\$22',
+      'duration': '25 min',
+      'description': 'Long hair styled into a top knot',
+      'image':
+          'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
   ];
 
   final List<Map<String, dynamic>> _beardStyles = [
@@ -93,12 +278,202 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
       'accentColor': AiColors.sunsetCoral,
     },
+    {
+      'name': 'Van Dyke',
+      'price': '\$25',
+      'duration': '30 min',
+      'description': 'Curled mustache with soul patch',
+      'image':
+          'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Ducktail',
+      'price': '\$22',
+      'duration': '27 min',
+      'description': 'Pointed beard shaped like a duck tail',
+      'image':
+          'https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
+    {
+      'name': 'Verdi',
+      'price': '\$20',
+      'duration': '25 min',
+      'description': 'Pointed full beard with clean lines',
+      'image':
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.sunsetCoral,
+    },
+    {
+      'name': 'Balbo',
+      'price': '\$18',
+      'duration': '22 min',
+      'description': 'Disconnected mustache with goatee',
+      'image':
+          'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Anchor',
+      'price': '\$19',
+      'duration': '23 min',
+      'description': 'Goatee with soul patch extension',
+      'image':
+          'https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
+    {
+      'name': 'Chevron',
+      'price': '\$16',
+      'duration': '20 min',
+      'description': 'Full mustache covering upper lip',
+      'image':
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.sunsetCoral,
+    },
+    {
+      'name': 'Handlebar',
+      'price': '\$17',
+      'duration': '21 min',
+      'description': 'Distinctive curled upturned mustache',
+      'image':
+          'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Pencil Stache',
+      'price': '\$12',
+      'duration': '15 min',
+      'description': 'Thin, refined mustache line',
+      'image':
+          'https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
+    {
+      'name': 'Hipster',
+      'price': '\$20',
+      'duration': '25 min',
+      'description': 'Full beard with styled mustache',
+      'image':
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.sunsetCoral,
+    },
+    {
+      'name': 'Friendly Mutton Chops',
+      'price': '\$23',
+      'duration': '28 min',
+      'description': 'Full cheek whiskers with clean chin',
+      'image':
+          'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Circle Beard',
+      'price': '\$21',
+      'duration': '26 min',
+      'description': 'Mustache connected to chin beard',
+      'image':
+          'https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
+    {
+      'name': 'French Fork',
+      'price': '\$24',
+      'duration': '29 min',
+      'description': 'Long beard split into two points',
+      'image':
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.sunsetCoral,
+    },
+    {
+      'name': 'Garibaldi',
+      'price': '\$26',
+      'duration': '32 min',
+      'description': 'Large, rounded, fully grown beard',
+      'image':
+          'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Beardstache',
+      'price': '\$18',
+      'duration': '22 min',
+      'description': 'Full mustache with clean shaved chin',
+      'image':
+          'https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
+    {
+      'name': 'Extended Goatee',
+      'price': '\$19',
+      'duration': '24 min',
+      'description': 'Long goatee with extended length',
+      'image':
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.sunsetCoral,
+    },
+    {
+      'name': 'Short Beard',
+      'price': '\$14',
+      'duration': '18 min',
+      'description': 'Light, maintained short facial hair',
+      'image':
+          'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Designer Stubble',
+      'price': '\$11',
+      'duration': '12 min',
+      'description': 'Carefully maintained three-day growth',
+      'image':
+          'https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
+    {
+      'name': 'Ducktail Goatee',
+      'price': '\$23',
+      'duration': '28 min',
+      'description': 'Pointed goatee shaped like duck tail',
+      'image':
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.sunsetCoral,
+    },
+    {
+      'name': 'Styled Beard',
+      'price': '\$25',
+      'duration': '30 min',
+      'description': 'Full beard with beard oil and styling',
+      'image':
+          'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonPurple,
+    },
+    {
+      'name': 'Trimmed & Shaped',
+      'price': '\$17',
+      'duration': '21 min',
+      'description': 'Neatly trimmed beard with sharp lines',
+      'image':
+          'https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop',
+      'accentColor': AiColors.neonCyan,
+    },
   ];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    // Generate random heights once for all haircuts
+    _haircutHeights = List.generate(
+      _haircuts.length,
+      (_) => 200.0 + _random.nextDouble() * 80,
+    );
+    // Generate random heights once for all beard styles
+    _beardHeights = List.generate(
+      _beardStyles.length,
+      (_) => 200.0 + _random.nextDouble() * 80,
+    );
   }
 
   @override
@@ -192,7 +567,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                             });
                           },
                         ),
-                        items: _haircuts.asMap().entries.map((entry) {
+                        items: _haircuts.take(4).toList().asMap().entries.map((
+                          entry,
+                        ) {
                           final int itemIndex = entry.key;
                           final Map<String, dynamic> haircut = entry.value;
                           final Color accentColor =
@@ -211,12 +588,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         }).toList(),
                       ),
                     ),
-                    const SizedBox(height: AiSpacing.xs),
+                    const SizedBox(height: AiSpacing.none),
                     // Carousel indicators
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
-                        _haircuts.length,
+                        4,
                         (index) => Container(
                           width: 6,
                           height: 6,
@@ -261,10 +638,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             accentColor.withValues(alpha: 0.2),
             accentColor.withValues(alpha: 0.05),
           ],
-        ),
-        border: Border.all(
-          color: accentColor.withValues(alpha: 0.3),
-          width: 1.5,
         ),
       ),
       child: Stack(
@@ -377,35 +750,37 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     else if (width >= 820)
       crossAxisCount = 3;
 
-    return GridView.builder(
+    return Padding(
       padding: const EdgeInsets.fromLTRB(
         AiSpacing.md,
         AiSpacing.sm,
         AiSpacing.md,
         AiSpacing.md,
       ),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: AiSpacing.md,
+      child: MasonryGridView.builder(
+        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+        ),
+        itemCount: _haircuts.length,
         mainAxisSpacing: AiSpacing.md,
-        childAspectRatio: width < 360 ? 0.72 : 0.78,
+        crossAxisSpacing: AiSpacing.md,
+        itemBuilder: (context, index) {
+          final haircut = _haircuts[index];
+          final isSelected = _selectedHaircutIndex == index;
+          return _buildStyleCard(
+            item: haircut,
+            itemIndex: index,
+            isSelected: isSelected,
+            height: _haircutHeights[index],
+            onTap: () {
+              setState(() {
+                _selectedHaircutIndex = index;
+              });
+              _panelController.close();
+            },
+          );
+        },
       ),
-      itemCount: _haircuts.length,
-      itemBuilder: (context, index) {
-        final haircut = _haircuts[index];
-        final isSelected = _selectedHaircutIndex == index;
-        return _buildStyleCard(
-          item: haircut,
-          itemIndex: index,
-          isSelected: isSelected,
-          onTap: () {
-            setState(() {
-              _selectedHaircutIndex = index;
-            });
-            _panelController.close();
-          },
-        );
-      },
     );
   }
 
@@ -417,35 +792,37 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     else if (width >= 820)
       crossAxisCount = 3;
 
-    return GridView.builder(
+    return Padding(
       padding: const EdgeInsets.fromLTRB(
         AiSpacing.md,
         AiSpacing.sm,
         AiSpacing.md,
         AiSpacing.md,
       ),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: AiSpacing.md,
+      child: MasonryGridView.builder(
+        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+        ),
+        itemCount: _beardStyles.length,
         mainAxisSpacing: AiSpacing.md,
-        childAspectRatio: width < 360 ? 0.72 : 0.78,
+        crossAxisSpacing: AiSpacing.md,
+        itemBuilder: (context, index) {
+          final beard = _beardStyles[index];
+          final isSelected = _selectedBeardIndex == index;
+          return _buildStyleCard(
+            item: beard,
+            itemIndex: index,
+            isSelected: isSelected,
+            height: _beardHeights[index],
+            onTap: () {
+              setState(() {
+                _selectedBeardIndex = index;
+              });
+              _panelController.close();
+            },
+          );
+        },
       ),
-      itemCount: _beardStyles.length,
-      itemBuilder: (context, index) {
-        final beard = _beardStyles[index];
-        final isSelected = _selectedBeardIndex == index;
-        return _buildStyleCard(
-          item: beard,
-          itemIndex: index,
-          isSelected: isSelected,
-          onTap: () {
-            setState(() {
-              _selectedBeardIndex = index;
-            });
-            _panelController.close();
-          },
-        );
-      },
     );
   }
 
@@ -454,6 +831,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required int itemIndex,
     required bool isSelected,
     required VoidCallback onTap,
+    required double height,
   }) {
     final Color accentColor =
         (item['accentColor'] as Color?) ?? AiColors.neonCyan;
@@ -464,19 +842,18 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
-          border: Border.all(
-            color: isSelected ? accentColor : AiColors.borderLight,
-            width: isSelected ? 2 : 1.5,
-          ),
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-          child: _buildCarouselCard(
-            haircut: item,
-            accentColor: accentColor,
-            itemIndex: itemIndex,
-            iconSize: 120,
+        child: SizedBox(
+          height: height,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+            child: _buildCarouselCard(
+              haircut: item,
+              accentColor: accentColor,
+              itemIndex: itemIndex,
+              iconSize: 120,
+            ),
           ),
         ),
       ),
