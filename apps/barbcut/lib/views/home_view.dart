@@ -122,12 +122,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         elevation: 0,
         title: Text(
           'Barbcut',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             color: AiColors.textPrimary,
             fontWeight: FontWeight.w800,
           ),
         ),
-        centerTitle: false,
+        centerTitle: true,
         surfaceTintColor: Colors.transparent,
       ),
       body: SlidingUpPanel(
