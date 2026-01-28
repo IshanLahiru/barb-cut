@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
-import '../theme/app_spacing.dart';
+import '../theme/ai_colors.dart';
+import '../theme/ai_spacing.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -24,40 +23,40 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       'price': '\$25',
       'duration': '30 min',
       'description': 'A timeless fade that never goes out of style',
-      'image': Icons.content_cut,
-      'color': Colors.blue,
+      'icon': Icons.content_cut,
+      'accentColor': AiColors.neonCyan,
     },
     {
       'name': 'Buzz Cut',
       'price': '\$15',
       'duration': '15 min',
       'description': 'Clean and simple, perfect for low maintenance',
-      'image': Icons.face_retouching_natural,
-      'color': Colors.green,
+      'icon': Icons.face_retouching_natural,
+      'accentColor': AiColors.sunsetCoral,
     },
     {
       'name': 'Pompadour',
       'price': '\$35',
       'duration': '45 min',
       'description': 'Bold and stylish with volume on top',
-      'image': Icons.style,
-      'color': Colors.purple,
+      'icon': Icons.style,
+      'accentColor': AiColors.neonPurple,
     },
     {
       'name': 'Undercut',
       'price': '\$30',
       'duration': '35 min',
       'description': 'Modern and edgy with short sides',
-      'image': Icons.face,
-      'color': Colors.orange,
+      'icon': Icons.face,
+      'accentColor': AiColors.neonCyan,
     },
     {
       'name': 'Crew Cut',
       'price': '\$20',
       'duration': '20 min',
       'description': 'Professional and neat for any occasion',
-      'image': Icons.person,
-      'color': Colors.teal,
+      'icon': Icons.person,
+      'accentColor': AiColors.sunsetCoral,
     },
   ];
 
@@ -67,24 +66,24 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       'price': '\$20',
       'duration': '25 min',
       'description': 'A classic full beard, well-groomed.',
-      'image': Icons.face_retouching_natural,
-      'color': Colors.brown,
+      'icon': Icons.face_retouching_natural,
+      'accentColor': AiColors.neonPurple,
     },
     {
       'name': 'Goatee',
       'price': '\$15',
       'duration': '20 min',
       'description': 'A stylish goatee, precisely trimmed.',
-      'image': Icons.face,
-      'color': Colors.blueGrey,
+      'icon': Icons.face,
+      'accentColor': AiColors.neonCyan,
     },
     {
       'name': 'Stubble',
       'price': '\$10',
       'duration': '10 min',
       'description': 'A short, rugged stubble.',
-      'image': Icons.face,
-      'color': Colors.grey,
+      'icon': Icons.face,
+      'accentColor': AiColors.sunsetCoral,
     },
   ];
 
@@ -109,14 +108,19 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final maxPanelHeight = availableHeight * 0.9;
 
     return Scaffold(
+      backgroundColor: AiColors.backgroundDeep,
       appBar: AppBar(
+        backgroundColor: AiColors.backgroundDark,
+        elevation: 0,
         title: Text(
           'Barbcut',
-          style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w800),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AiColors.textPrimary,
+                fontWeight: FontWeight.w800,
+              ),
         ),
         centerTitle: false,
-        toolbarHeight: 22,
-        elevation: 0,
+        surfaceTintColor: Colors.transparent,
       ),
       body: SlidingUpPanel(
         controller: _panelController,
@@ -131,46 +135,34 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
-  double _responsiveScale(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    return (width / 390).clamp(0.85, 1.2);
-  }
-
-  int _gridCrossAxisCount(double width) {
-    if (width >= 1100) return 4;
-    if (width >= 820) return 3;
-    return 2;
-  }
-
   Widget _buildMainContent() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final scale = _responsiveScale(context);
-        final scheme = Theme.of(context).colorScheme;
         final double carouselHeight =
-            (constraints.maxHeight * 0.52).clamp(260, 520) * scale;
+            (constraints.maxHeight * 0.52).clamp(260, 520);
         final double iconSize = (carouselHeight * 0.55).clamp(140, 260);
-        final double titleSize = (16 * scale).clamp(12, 18);
-        final double descriptionSize = (12 * scale).clamp(10, 14);
-        final double chipSize = (12 * scale).clamp(10, 13);
 
         return GestureDetector(
           onVerticalDragUpdate: (details) {
-            // If dragging up (negative delta), open the panel
             if (details.delta.dy < -5) {
               _panelController.open();
             }
           },
           child: Container(
-            decoration: BoxDecoration(color: scheme.background),
+            decoration: BoxDecoration(color: AiColors.backgroundDeep),
             child: SafeArea(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                padding: const EdgeInsets.fromLTRB(
+                  AiSpacing.lg,
+                  AiSpacing.md,
+                  AiSpacing.lg,
+                  AiSpacing.lg,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AiSpacing.md),
                     SizedBox(
                       height: carouselHeight,
                       child: FlutterCarousel(
@@ -182,7 +174,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           enlargeCenterPage: true,
                           enableInfiniteScroll: true,
                           autoPlay: false,
-
                           onPageChanged: (index, reason) {
                             setState(() {
                               _selectedHaircutIndex = index;
@@ -192,31 +183,22 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         items: _haircuts.asMap().entries.map((entry) {
                           final int itemIndex = entry.key;
                           final Map<String, dynamic> haircut = entry.value;
-                          final Color baseColor = haircut['color'] as Color;
-                          final List<Color> colors = [
-                            baseColor.withOpacity(0.7),
-                            baseColor.withOpacity(0.5),
-                            baseColor.withOpacity(0.6),
-                            baseColor.withOpacity(0.8),
-                          ];
+                          final Color accentColor =
+                              haircut['accentColor'] as Color;
 
                           return Align(
                             alignment: Alignment.center,
                             child: _buildCarouselCard(
                               haircut: haircut,
-                              colors: colors,
+                              accentColor: accentColor,
                               itemIndex: itemIndex,
                               iconSize: iconSize,
-                              titleSize: titleSize,
-                              descriptionSize: descriptionSize,
-                              chipSize: chipSize,
-                              overlayOpacity: 0.25,
                             ),
                           );
                         }).toList(),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AiSpacing.md),
                   ],
                 ),
               ),
@@ -229,34 +211,33 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   Widget _buildCarouselCard({
     required Map<String, dynamic> haircut,
-    required List<Color> colors,
+    required Color accentColor,
     required int itemIndex,
     required double iconSize,
-    required double titleSize,
-    required double descriptionSize,
-    required double chipSize,
-    required double overlayOpacity,
   }) {
     return Container(
       margin: EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.sm,
+        horizontal: AiSpacing.sm,
+        vertical: AiSpacing.sm,
       ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors[itemIndex % colors.length],
-            colors[itemIndex % colors.length].withOpacity(0.3),
+            accentColor.withValues(alpha: 0.2),
+            accentColor.withValues(alpha: 0.05),
           ],
+        ),
+        border: Border.all(
+          color: accentColor.withValues(alpha: 0.3),
+          width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: colors[itemIndex % colors.length].withOpacity(0.2),
-            blurRadius: 16,
-            spreadRadius: 0,
+            color: accentColor.withValues(alpha: 0.25),
+            blurRadius: 20,
             offset: const Offset(0, 8),
           ),
         ],
@@ -265,126 +246,127 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         children: [
           Center(
             child: Icon(
-              haircut['image'],
+              haircut['icon'],
               size: iconSize,
-              color: Colors.white.withOpacity(0.95),
+              color: accentColor.withValues(alpha: 0.6),
             ),
           ),
           Positioned(
-            left: 14,
-            right: 14,
-            bottom: 14,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: AppSpacing.paddingMD,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.85),
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+            left: AiSpacing.md,
+            right: AiSpacing.md,
+            bottom: AiSpacing.md,
+            child: Container(
+              padding: const EdgeInsets.all(AiSpacing.md),
+              decoration: BoxDecoration(
+                color: AiColors.backgroundDeep,
+                borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+                border: Border.all(
+                  color: accentColor.withValues(alpha: 0.4),
+                  width: 1.5,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    haircut['name'],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: accentColor,
+                          fontWeight: FontWeight.w700,
+                        ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: AiSpacing.xs),
+                  Text(
+                    haircut['description'],
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AiColors.textSecondary,
+                        ),
+                  ),
+                  const SizedBox(height: AiSpacing.md),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        haircut['name'],
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.titleMedium.copyWith(
-                          fontSize: titleSize,
-                          color: AppColors.surface,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AiSpacing.sm,
+                          vertical: AiSpacing.xs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: accentColor.withValues(alpha: 0.15),
+                          borderRadius:
+                              BorderRadius.circular(AiSpacing.radiusSmall),
+                          border: Border.all(
+                            color: accentColor.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          haircut['price'],
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: accentColor,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        haircut['description'],
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          fontSize: descriptionSize,
-                          color: AppColors.surface.withOpacity(0.9),
+                      const SizedBox(width: AiSpacing.sm),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AiSpacing.sm,
+                          vertical: AiSpacing.xs,
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.accent.withOpacity(0.9),
-                                borderRadius: BorderRadius.circular(
-                                  AppSpacing.radiusSM,
-                                ),
-                              ),
-                              child: Text(
-                                haircut['price'],
-                                style: AppTextStyles.labelSmall.copyWith(
-                                  fontSize: chipSize,
-                                  color: AppColors.surface,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
+                        decoration: BoxDecoration(
+                          color: accentColor.withValues(alpha: 0.15),
+                          borderRadius:
+                              BorderRadius.circular(AiSpacing.radiusSmall),
+                          border: Border.all(
+                            color: accentColor.withValues(alpha: 0.3),
+                            width: 1,
                           ),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.accent.withOpacity(0.9),
-                                borderRadius: BorderRadius.circular(
-                                  AppSpacing.radiusSM,
-                                ),
-                              ),
-                              child: Text(
-                                haircut['duration'],
-                                style: AppTextStyles.labelSmall.copyWith(
-                                  fontSize: chipSize,
-                                  color: AppColors.surface,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
+                        child: Text(
+                          haircut['duration'],
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: accentColor,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           Positioned(
-            top: 12,
-            right: 12,
+            top: AiSpacing.md,
+            right: AiSpacing.md,
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.sm,
-              ),
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+                color: accentColor,
+                borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.shadow,
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                    color: accentColor.withValues(alpha: 0.4),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              child: Text(
-                '${itemIndex + 1}',
-                style: AppTextStyles.labelMedium.copyWith(
-                  color: haircut['color'],
+              child: Center(
+                child: Text(
+                  '${itemIndex + 1}',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: AiColors.backgroundDeep,
+                        fontWeight: FontWeight.w700,
+                      ),
                 ),
               ),
             ),
@@ -395,31 +377,24 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildPanel() {
-    final scheme = Theme.of(context).colorScheme;
     return Container(
-      color: scheme.surface,
+      color: AiColors.backgroundDark,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // const Padding(
-          //   padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
-          //   child: Text(
-          //     "Choose a Style",
-          //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          //   ),
-          // ),
           TabBar(
             controller: _tabController,
             tabs: const [
               Tab(text: 'Hair'),
               Tab(text: 'Beard'),
             ],
-            labelColor: scheme.primary,
-            unselectedLabelColor: scheme.onSurface.withOpacity(0.6),
-            labelStyle: AppTextStyles.titleMedium,
-            unselectedLabelStyle: AppTextStyles.titleMedium,
+            labelColor: AiColors.neonCyan,
+            unselectedLabelColor: AiColors.textTertiary,
+            labelStyle: Theme.of(context).textTheme.titleMedium,
+            unselectedLabelStyle: Theme.of(context).textTheme.titleMedium,
             indicatorSize: TabBarIndicatorSize.label,
-            indicatorColor: scheme.secondary,
+            indicatorColor: AiColors.neonCyan,
+            dividerColor: AiColors.borderLight,
           ),
           Expanded(
             child: TabBarView(
@@ -433,15 +408,22 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildHaircutGrid() {
-    final scale = _responsiveScale(context);
     final width = MediaQuery.of(context).size.width;
+    int crossAxisCount = 2;
+    if (width >= 1100) crossAxisCount = 4;
+    else if (width >= 820) crossAxisCount = 3;
 
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+      padding: const EdgeInsets.fromLTRB(
+        AiSpacing.md,
+        AiSpacing.sm,
+        AiSpacing.md,
+        AiSpacing.md,
+      ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: _gridCrossAxisCount(width),
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
+        crossAxisCount: crossAxisCount,
+        crossAxisSpacing: AiSpacing.md,
+        mainAxisSpacing: AiSpacing.md,
         childAspectRatio: width < 360 ? 0.72 : 0.78,
       ),
       itemCount: _haircuts.length,
@@ -452,7 +434,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           item: haircut,
           itemIndex: index,
           isSelected: isSelected,
-          scale: scale,
           onTap: () {
             setState(() {
               _selectedHaircutIndex = index;
@@ -465,15 +446,22 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildBeardGrid() {
-    final scale = _responsiveScale(context);
     final width = MediaQuery.of(context).size.width;
+    int crossAxisCount = 2;
+    if (width >= 1100) crossAxisCount = 4;
+    else if (width >= 820) crossAxisCount = 3;
 
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+      padding: const EdgeInsets.fromLTRB(
+        AiSpacing.md,
+        AiSpacing.sm,
+        AiSpacing.md,
+        AiSpacing.md,
+      ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: _gridCrossAxisCount(width),
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
+        crossAxisCount: crossAxisCount,
+        crossAxisSpacing: AiSpacing.md,
+        mainAxisSpacing: AiSpacing.md,
         childAspectRatio: width < 360 ? 0.72 : 0.78,
       ),
       itemCount: _beardStyles.length,
@@ -484,13 +472,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           item: beard,
           itemIndex: index,
           isSelected: isSelected,
-          scale: scale,
           onTap: () {
             setState(() {
               _selectedBeardIndex = index;
-              // Note: We are closing the panel, but the main carousel
-              // currently only shows haircuts. A further enhancement
-              // would be to show the selected beard style as well.
             });
             _panelController.close();
           },
@@ -503,48 +487,38 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required Map<String, dynamic> item,
     required int itemIndex,
     required bool isSelected,
-    required double scale,
     required VoidCallback onTap,
   }) {
-    final Color baseColor = item['color'] as Color;
-    final List<Color> colors = [
-      baseColor.withOpacity(0.7),
-      baseColor.withOpacity(0.5),
-      baseColor.withOpacity(0.6),
-      baseColor.withOpacity(0.8),
-    ];
+    final Color accentColor = item['accentColor'] as Color;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
+      borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
           border: Border.all(
-            color: isSelected ? baseColor : Colors.transparent,
-            width: 2.5,
+            color: isSelected ? accentColor : AiColors.borderLight,
+            width: isSelected ? 2 : 1.5,
           ),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: baseColor.withOpacity(0.3),
-                    blurRadius: 12,
+                    color: accentColor.withValues(alpha: 0.3),
+                    blurRadius: 16,
                     offset: const Offset(0, 4),
                   ),
                 ]
               : null,
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
           child: _buildCarouselCard(
             haircut: item,
-            colors: colors,
+            accentColor: accentColor,
             itemIndex: itemIndex,
-            iconSize: (120 * scale).clamp(90, 150),
-            titleSize: (12 * scale).clamp(10, 13),
-            descriptionSize: (10 * scale).clamp(9, 11),
-            chipSize: (10 * scale).clamp(9, 11),
-            overlayOpacity: 0.25,
+            iconSize: 120,
           ),
         ),
       ),

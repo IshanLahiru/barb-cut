@@ -3,6 +3,7 @@ import 'package:barbcut/views/explore_view.dart';
 import 'package:barbcut/views/home_view.dart';
 import 'package:barbcut/views/profile_view.dart';
 import 'package:barbcut/views/products_view.dart';
+import '../theme/ai_colors.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -29,16 +30,14 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: scheme.surface,
+          color: AiColors.backgroundSecondary,
           boxShadow: [
             BoxShadow(
-              color: scheme.shadow,
+              color: AiColors.neonCyan.withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, -2),
             ),
@@ -58,9 +57,9 @@ class _MainScreenState extends State<MainScreen> {
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: scheme.primary,
-          unselectedItemColor: scheme.onSurface.withOpacity(0.6),
-          backgroundColor: scheme.surface,
+          selectedItemColor: AiColors.neonCyan,
+          unselectedItemColor: AiColors.textSecondary.withValues(alpha: 0.6),
+          backgroundColor: AiColors.backgroundSecondary,
           onTap: _onItemTapped,
           showSelectedLabels: false,
           showUnselectedLabels: false,

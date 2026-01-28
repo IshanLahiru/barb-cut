@@ -90,9 +90,9 @@ class _ProductsViewState extends State<ProductsView> {
         title: Text(
           'Shop',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AiColors.textPrimary,
-                fontWeight: FontWeight.w700,
-              ),
+            color: AiColors.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         centerTitle: false,
         surfaceTintColor: Colors.transparent,
@@ -109,10 +109,7 @@ class _ProductsViewState extends State<ProductsView> {
               decoration: BoxDecoration(
                 color: AiColors.backgroundDark,
                 border: Border(
-                  bottom: BorderSide(
-                    color: AiColors.borderGlass,
-                    width: 1,
-                  ),
+                  bottom: BorderSide(color: AiColors.borderGlass, width: 1),
                 ),
               ),
               child: Column(
@@ -121,9 +118,9 @@ class _ProductsViewState extends State<ProductsView> {
                   Text(
                     'Find Premium Products',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AiColors.textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      color: AiColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const SizedBox(height: AiSpacing.sm),
                   // Search field with neon cyan focus
@@ -135,13 +132,12 @@ class _ProductsViewState extends State<ProductsView> {
                       });
                     },
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AiColors.textPrimary,
-                        ),
+                      color: AiColors.textPrimary,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Hair gel, clippers, shampoo...',
-                      hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AiColors.textTertiary,
-                          ),
+                      hintStyle: Theme.of(context).textTheme.bodyMedium
+                          ?.copyWith(color: AiColors.textTertiary),
                       prefixIcon: Icon(
                         Icons.search,
                         color: AiColors.textTertiary,
@@ -169,24 +165,27 @@ class _ProductsViewState extends State<ProductsView> {
                         vertical: AiSpacing.md,
                       ),
                       border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(AiSpacing.radiusLarge),
+                        borderRadius: BorderRadius.circular(
+                          AiSpacing.radiusLarge,
+                        ),
                         borderSide: const BorderSide(
                           color: AiColors.borderLight,
                           width: 1.5,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(AiSpacing.radiusLarge),
+                        borderRadius: BorderRadius.circular(
+                          AiSpacing.radiusLarge,
+                        ),
                         borderSide: const BorderSide(
                           color: AiColors.borderLight,
                           width: 1.5,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(AiSpacing.radiusLarge),
+                        borderRadius: BorderRadius.circular(
+                          AiSpacing.radiusLarge,
+                        ),
                         borderSide: const BorderSide(
                           color: AiColors.neonCyan,
                           width: 2,
@@ -195,7 +194,7 @@ class _ProductsViewState extends State<ProductsView> {
                     ),
                     cursorColor: AiColors.neonCyan,
                   ),
-                ]
+                ],
               ),
             ),
             // Products Grid
@@ -213,22 +212,14 @@ class _ProductsViewState extends State<ProductsView> {
                           const SizedBox(height: AiSpacing.md),
                           Text(
                             'No products found',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  color: AiColors.textPrimary,
-                                ),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(color: AiColors.textPrimary),
                           ),
                           const SizedBox(height: AiSpacing.sm),
                           Text(
                             'Try a different search term',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(
-                                  color: AiColors.textTertiary,
-                                ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AiColors.textTertiary),
                           ),
                         ],
                       ),
@@ -243,17 +234,16 @@ class _ProductsViewState extends State<ProductsView> {
                         final product = filteredProducts[index];
                         final isSelected = _selectedProductIndex == index;
                         return Padding(
-                          padding: const EdgeInsets.only(
-                            bottom: AiSpacing.md,
-                          ),
+                          padding: const EdgeInsets.only(bottom: AiSpacing.md),
                           child: _buildAiProductCard(
                             context,
                             product,
                             isSelected,
                             () {
                               setState(() {
-                                _selectedProductIndex =
-                                    isSelected ? null : index;
+                                _selectedProductIndex = isSelected
+                                    ? null
+                                    : index;
                               });
                             },
                           ),
@@ -310,8 +300,9 @@ class _ProductsViewState extends State<ProductsView> {
                     padding: const EdgeInsets.all(AiSpacing.md),
                     decoration: BoxDecoration(
                       color: accentColor.withValues(alpha: 0.1),
-                      borderRadius:
-                          BorderRadius.circular(AiSpacing.radiusLarge),
+                      borderRadius: BorderRadius.circular(
+                        AiSpacing.radiusLarge,
+                      ),
                       border: Border.all(
                         color: accentColor.withValues(alpha: 0.3),
                         width: 1,
@@ -333,21 +324,19 @@ class _ProductsViewState extends State<ProductsView> {
                           product['name'],
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: AiColors.textPrimary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: AiColors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
                         ),
                         const SizedBox(height: AiSpacing.xs),
                         Text(
                           product['description'],
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: AiColors.textTertiary,
-                                  ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AiColors.textTertiary),
                         ),
                       ],
                     ),
@@ -361,7 +350,9 @@ class _ProductsViewState extends State<ProductsView> {
                     ),
                     decoration: BoxDecoration(
                       color: accentColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
+                      borderRadius: BorderRadius.circular(
+                        AiSpacing.radiusSmall,
+                      ),
                       border: Border.all(
                         color: accentColor.withValues(alpha: 0.3),
                         width: 1,
@@ -370,9 +361,9 @@ class _ProductsViewState extends State<ProductsView> {
                     child: Text(
                       product['price'],
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: accentColor,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        color: accentColor,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ],
@@ -390,11 +381,10 @@ class _ProductsViewState extends State<ProductsView> {
                     ),
                     decoration: BoxDecoration(
                       color: AiColors.backgroundDeep,
-                      borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
-                      border: Border.all(
-                        color: AiColors.borderLight,
-                        width: 1,
+                      borderRadius: BorderRadius.circular(
+                        AiSpacing.radiusSmall,
                       ),
+                      border: Border.all(color: AiColors.borderLight, width: 1),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -407,11 +397,11 @@ class _ProductsViewState extends State<ProductsView> {
                         const SizedBox(width: AiSpacing.xs),
                         Text(
                           product['rating'].toString(),
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: AiColors.textSecondary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: AiColors.textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
                         ),
                       ],
                     ),
@@ -442,11 +432,13 @@ class _ProductsViewState extends State<ProductsView> {
                                     content: Text(
                                       '${product['name']} added to cart!',
                                       style: const TextStyle(
-                                          color: AiColors.textPrimary),
+                                        color: AiColors.textPrimary,
+                                      ),
                                     ),
                                     backgroundColor: AiColors.success,
-                                    duration:
-                                        const Duration(milliseconds: 1500),
+                                    duration: const Duration(
+                                      milliseconds: 1500,
+                                    ),
                                   ),
                                 );
                                 setState(() {

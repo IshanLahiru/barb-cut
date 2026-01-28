@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
-import '../theme/app_spacing.dart';
+import '../theme/ai_colors.dart';
+import '../theme/ai_spacing.dart';
 
 class ExploreView extends StatefulWidget {
   const ExploreView({super.key});
@@ -14,78 +13,78 @@ class _ExploreViewState extends State<ExploreView> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
   static final List<Map<String, dynamic>> _styles = [
     {
       'name': 'Classic Fade',
       'price': '\$25',
       'duration': '30 min',
       'description': 'A timeless fade that never goes out of style',
-      'image': Icons.content_cut,
-      'color': Colors.blue,
+      'icon': Icons.content_cut,
+      'accentColor': AiColors.neonCyan,
     },
     {
       'name': 'Buzz Cut',
       'price': '\$15',
       'duration': '15 min',
       'description': 'Clean and simple, perfect for low maintenance',
-      'image': Icons.face_retouching_natural,
-      'color': Colors.green,
+      'icon': Icons.face_retouching_natural,
+      'accentColor': AiColors.sunsetCoral,
     },
     {
       'name': 'Pompadour',
       'price': '\$35',
       'duration': '45 min',
       'description': 'Bold and stylish with volume on top',
-      'image': Icons.style,
-      'color': Colors.purple,
+      'icon': Icons.style,
+      'accentColor': AiColors.neonPurple,
     },
     {
       'name': 'Undercut',
       'price': '\$30',
       'duration': '35 min',
       'description': 'Modern and edgy with short sides',
-      'image': Icons.face,
-      'color': Colors.orange,
+      'icon': Icons.face,
+      'accentColor': AiColors.neonCyan,
     },
     {
       'name': 'Crew Cut',
       'price': '\$20',
       'duration': '20 min',
       'description': 'Professional and neat for any occasion',
-      'image': Icons.person,
-      'color': Colors.teal,
+      'icon': Icons.person,
+      'accentColor': AiColors.sunsetCoral,
     },
     {
       'name': 'Full Beard',
       'price': '\$20',
       'duration': '25 min',
       'description': 'A classic full beard, well-groomed.',
-      'image': Icons.face_retouching_natural,
-      'color': Colors.brown,
+      'icon': Icons.face_retouching_natural,
+      'accentColor': AiColors.neonPurple,
     },
     {
       'name': 'Goatee',
       'price': '\$15',
       'duration': '20 min',
       'description': 'A stylish goatee, precisely trimmed.',
-      'image': Icons.face,
-      'color': Colors.blueGrey,
+      'icon': Icons.face,
+      'accentColor': AiColors.neonCyan,
     },
     {
       'name': 'Stubble',
       'price': '\$10',
       'duration': '10 min',
       'description': 'A short, rugged stubble.',
-      'image': Icons.face,
-      'color': Colors.grey,
+      'icon': Icons.face,
+      'accentColor': AiColors.sunsetCoral,
     },
   ];
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,83 +96,123 @@ class _ExploreViewState extends State<ExploreView> {
       return name.contains(query) || description.contains(query);
     }).toList();
 
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
     return Scaffold(
+      backgroundColor: AiColors.backgroundDeep,
       appBar: AppBar(
-        title: Text('Explore', style: textTheme.titleMedium),
-        toolbarHeight: 22,
+        backgroundColor: AiColors.backgroundDark,
         elevation: 0,
+        title: Text(
+          'Explore',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AiColors.textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+        centerTitle: false,
+        surfaceTintColor: Colors.transparent,
       ),
-      body: Container(
-        decoration: BoxDecoration(color: scheme.background),
+      body: SafeArea(
         child: Column(
           children: [
-            // Search Bar
+            // Header with gradient
             Container(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                AppSpacing.md,
-                AppSpacing.md,
-                AppSpacing.sm,
+              padding: const EdgeInsets.symmetric(
+                horizontal: AiSpacing.lg,
+                vertical: AiSpacing.md,
               ),
-              child: TextField(
-                controller: _searchController,
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search styles...',
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: scheme.onSurface.withOpacity(0.6),
-                    size: 20,
-                  ),
-                  suffixIcon: _searchQuery.isNotEmpty
-                      ? IconButton(
-                          icon: Icon(
-                            Icons.clear,
-                            color: scheme.onSurface.withOpacity(0.6),
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _searchController.clear();
-                              _searchQuery = '';
-                            });
-                          },
-                        )
-                      : null,
-                  filled: true,
-                  fillColor: scheme.surface,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: AppSpacing.md,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.zero,
-                    borderSide: BorderSide(color: scheme.outline, width: 1.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.zero,
-                    borderSide: BorderSide(color: scheme.outline, width: 1.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.zero,
-                    borderSide: BorderSide(color: scheme.primary, width: 1.5),
-                  ),
-                  hintStyle: AppTextStyles.bodyMedium.copyWith(
-                    color: scheme.onSurface.withOpacity(0.6),
+              decoration: BoxDecoration(
+                color: AiColors.backgroundDark,
+                border: Border(
+                  bottom: BorderSide(
+                    color: AiColors.borderGlass,
+                    width: 1,
                   ),
                 ),
-                style: AppTextStyles.bodyMedium,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Discover Styles',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: AiColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                  const SizedBox(height: AiSpacing.sm),
+                  // Search field with neon cyan focus
+                  TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                    },
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AiColors.textPrimary,
+                        ),
+                    decoration: InputDecoration(
+                      hintText: 'Fade, buzz cut, pompadour...',
+                      hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AiColors.textTertiary,
+                          ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: AiColors.textTertiary,
+                        size: 20,
+                      ),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(
+                                Icons.clear,
+                                color: AiColors.textTertiary,
+                                size: 20,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                  _searchQuery = '';
+                                });
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: AiColors.backgroundSecondary,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AiSpacing.md,
+                        vertical: AiSpacing.md,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(AiSpacing.radiusLarge),
+                        borderSide: const BorderSide(
+                          color: AiColors.borderLight,
+                          width: 1.5,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(AiSpacing.radiusLarge),
+                        borderSide: const BorderSide(
+                          color: AiColors.borderLight,
+                          width: 1.5,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(AiSpacing.radiusLarge),
+                        borderSide: const BorderSide(
+                          color: AiColors.neonCyan,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    cursorColor: AiColors.neonCyan,
+                  ),
+                ],
               ),
             ),
-            // Grid
+            // Styles Grid
             Expanded(
               child: filteredStyles.isEmpty
                   ? Center(
@@ -183,48 +222,47 @@ class _ExploreViewState extends State<ExploreView> {
                           Icon(
                             Icons.search_off,
                             size: 64,
-                            color: scheme.onSurface.withOpacity(0.6),
+                            color: AiColors.textTertiary,
                           ),
-                          const SizedBox(height: AppSpacing.md),
-                          Text('No styles found', style: textTheme.titleMedium),
-                          const SizedBox(height: AppSpacing.sm),
+                          const SizedBox(height: AiSpacing.md),
+                          Text(
+                            'No styles found',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: AiColors.textPrimary,
+                                ),
+                          ),
+                          const SizedBox(height: AiSpacing.sm),
                           Text(
                             'Try a different search term',
-                            style: textTheme.bodySmall,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(
+                                  color: AiColors.textTertiary,
+                                ),
                           ),
                         ],
                       ),
                     )
                   : GridView.builder(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.md,
-                        AppSpacing.sm,
-                        AppSpacing.md,
-                        AppSpacing.md,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AiSpacing.lg,
+                        vertical: AiSpacing.md,
                       ),
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
+                            crossAxisSpacing: AiSpacing.md,
+                            mainAxisSpacing: AiSpacing.md,
                             childAspectRatio: 0.78,
                           ),
                       itemCount: filteredStyles.length,
                       itemBuilder: (context, index) {
-                        final item = filteredStyles[index];
-                        final Color baseColor = item['color'] as Color;
-                        final List<Color> colors = [
-                          baseColor.withOpacity(0.7),
-                          baseColor.withOpacity(0.5),
-                          baseColor.withOpacity(0.6),
-                          baseColor.withOpacity(0.8),
-                        ];
-
-                        return _buildExploreCard(
-                          item: item,
-                          colors: colors,
-                          itemIndex: index,
-                        );
+                        final style = filteredStyles[index];
+                        return _buildStyleCard(context, style, index);
                       },
                     ),
             ),
@@ -234,31 +272,32 @@ class _ExploreViewState extends State<ExploreView> {
     );
   }
 
-  Widget _buildExploreCard({
-    required Map<String, dynamic> item,
-    required List<Color> colors,
-    required int itemIndex,
-  }) {
+  Widget _buildStyleCard(BuildContext context, Map<String, dynamic> style, int index) {
+    final accentColor = style['accentColor'] as Color;
+
     return Container(
       margin: EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.sm,
+        horizontal: AiSpacing.sm,
+        vertical: AiSpacing.sm,
       ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors[itemIndex % colors.length],
-            colors[itemIndex % colors.length].withOpacity(0.3),
+            accentColor.withValues(alpha: 0.2),
+            accentColor.withValues(alpha: 0.05),
           ],
+        ),
+        border: Border.all(
+          color: accentColor.withValues(alpha: 0.3),
+          width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: colors[itemIndex % colors.length].withOpacity(0.2),
-            blurRadius: 12,
-            spreadRadius: 0,
+            color: accentColor.withValues(alpha: 0.2),
+            blurRadius: 16,
             offset: const Offset(0, 6),
           ),
         ],
@@ -267,48 +306,53 @@ class _ExploreViewState extends State<ExploreView> {
         children: [
           Center(
             child: Icon(
-              item['image'],
+              style['icon'],
               size: 110,
-              color: Colors.white.withOpacity(0.95),
+              color: accentColor.withValues(alpha: 0.5),
             ),
           ),
           Positioned(
-            left: 12,
-            right: 12,
-            bottom: 12,
+            left: AiSpacing.md,
+            right: AiSpacing.md,
+            bottom: AiSpacing.md,
             child: Container(
-              padding: EdgeInsets.all(AppSpacing.sm + 2),
+              padding: const EdgeInsets.all(AiSpacing.sm),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.85),
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+                color: AiColors.backgroundDeep,
+                borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
+                border: Border.all(
+                  color: accentColor.withValues(alpha: 0.3),
+                  width: 1,
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item['name'],
+                    style['name'],
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.titleSmall.copyWith(
-                      color: AppColors.surface,
-                    ),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: accentColor,
+                          fontWeight: FontWeight.w700,
+                        ),
                   ),
-                  const SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: AiSpacing.xs),
                   Text(
-                    item['description'],
+                    style['description'],
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      fontSize: 10,
-                      color: AppColors.surface.withOpacity(0.9),
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontSize: 10,
+                          color: AiColors.textSecondary,
+                        ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AiSpacing.sm),
                   Row(
                     children: [
-                      _chip(item['price']),
-                      const SizedBox(width: 6),
-                      _chip(item['duration']),
+                      _chip(style['price'], accentColor),
+                      const SizedBox(width: AiSpacing.xs),
+                      _chip(style['duration'], accentColor),
                     ],
                   ),
                 ],
@@ -316,27 +360,30 @@ class _ExploreViewState extends State<ExploreView> {
             ),
           ),
           Positioned(
-            top: 10,
-            right: 10,
+            top: AiSpacing.md,
+            right: AiSpacing.md,
             child: Container(
               padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm + 2,
-                vertical: AppSpacing.sm,
+                horizontal: AiSpacing.sm,
+                vertical: AiSpacing.xs,
               ),
               decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusSM + 2),
+                color: accentColor,
+                borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.shadow,
+                    color: accentColor.withValues(alpha: 0.4),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child: Text(
-                '${itemIndex + 1}',
-                style: AppTextStyles.labelMedium.copyWith(color: item['color']),
+                '${index + 1}',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: AiColors.backgroundDeep,
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
             ),
           ),
@@ -345,22 +392,27 @@ class _ExploreViewState extends State<ExploreView> {
     );
   }
 
-  Widget _chip(String text) {
+  Widget _chip(String text, Color accentColor) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
+        horizontal: AiSpacing.sm,
+        vertical: AiSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: AppColors.accent.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(AppSpacing.radiusSM),
+        color: accentColor.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
+        border: Border.all(
+          color: accentColor.withValues(alpha: 0.3),
+          width: 0.5,
+        ),
       ),
       child: Text(
         text,
-        style: AppTextStyles.labelSmall.copyWith(
-          fontSize: 10,
-          color: AppColors.surface,
-        ),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontSize: 10,
+              color: accentColor,
+              fontWeight: FontWeight.w600,
+            ),
       ),
     );
   }

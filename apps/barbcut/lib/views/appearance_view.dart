@@ -1,39 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/theme_controller.dart';
-import '../theme/app_spacing.dart';
+import '../theme/ai_colors.dart';
+import '../theme/ai_spacing.dart';
 
 class AppearanceView extends StatelessWidget {
   const AppearanceView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-
     return Scaffold(
+      backgroundColor: AiColors.backgroundDeep,
       appBar: AppBar(
-        title: Text('Appearance', style: textTheme.titleMedium),
-        toolbarHeight: 22,
+        backgroundColor: AiColors.backgroundDark,
         elevation: 0,
+        title: Text(
+          'Appearance',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: AiColors.textPrimary,
+          ),
+        ),
+        centerTitle: false,
       ),
       body: ListView(
-        padding: AppSpacing.paddingLG,
+        padding: EdgeInsets.all(AiSpacing.lg),
         children: [
-          Text('Theme', style: textTheme.labelSmall),
-          const SizedBox(height: AppSpacing.sm),
+          Text(
+            'Theme',
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: AiColors.textSecondary,
+              letterSpacing: 0.5,
+            ),
+          ),
+          SizedBox(height: AiSpacing.md),
           Container(
             decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              border: Border.all(color: theme.colorScheme.outline, width: 1.0),
+              color: AiColors.backgroundSecondary,
+              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+              border: Border.all(
+                color: AiColors.neonCyan.withValues(alpha: 0.2),
+                width: 1.5,
+              ),
             ),
             child: SwitchListTile(
-              title: Text('Dark mode', style: textTheme.titleMedium),
+              title: Text(
+                'Dark mode',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AiColors.textPrimary,
+                ),
+              ),
               subtitle: Text(
                 'Use dark appearance across the app',
-                style: textTheme.bodySmall,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AiColors.textSecondary,
+                ),
               ),
               value: context.watch<ThemeController>().isDarkMode,
+              activeThumbColor: AiColors.neonCyan,
               onChanged: (value) =>
                   context.read<ThemeController>().toggleDarkMode(value),
             ),
