@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:tdesign_flutter/tdesign_flutter.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
-import '../controllers/auth_controller.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -12,9 +9,11 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   final PanelController _panelController = PanelController();
   int _selectedHaircutIndex = 0;
+  int _selectedBeardIndex = 0;
+  late TabController _tabController;
 
   final List<Map<String, dynamic>> _haircuts = [
     {
@@ -59,33 +58,73 @@ class _HomeViewState extends State<HomeView> {
     },
   ];
 
+  final List<Map<String, dynamic>> _beardStyles = [
+    {
+      'name': 'Full Beard',
+      'price': '\$20',
+      'duration': '25 min',
+      'description': 'A classic full beard, well-groomed.',
+      'image': Icons.face_retouching_natural,
+      'color': Colors.brown,
+    },
+    {
+      'name': 'Goatee',
+      'price': '\$15',
+      'duration': '20 min',
+      'description': 'A stylish goatee, precisely trimmed.',
+      'image': Icons.face,
+      'color': Colors.blueGrey,
+    },
+    {
+      'name': 'Stubble',
+      'price': '\$10',
+      'duration': '10 min',
+      'description': 'A short, rugged stubble.',
+      'image': Icons.face,
+      'color': Colors.grey,
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final availableHeight =
+        media.size.height - media.padding.top - kBottomNavigationBarHeight - 22;
+    final minPanelHeight = availableHeight * 0.28;
+    final maxPanelHeight = availableHeight * 0.9;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Barbcut'),
+        title: const Text('Barbcut', style: TextStyle(fontSize: 14)),
+        toolbarHeight: 22,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => context.read<AuthController>().logout(),
-          ),
-        ],
       ),
       body: SlidingUpPanel(
         controller: _panelController,
-        minHeight: 80,
-        maxHeight: MediaQuery.of(context).size.height * 0.6,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        parallaxEnabled: true,
-        parallaxOffset: 0.5,
-        panel: _buildPanel(),
+        minHeight: minPanelHeight,
+        maxHeight: maxPanelHeight,
+        borderRadius: BorderRadius.zero,
+        panelBuilder: (scrollController) => _buildPanel(),
         body: _buildMainContent(),
       ),
     );
   }
 
   Widget _buildMainContent() {
+    final double carouselHeight = MediaQuery.of(context).size.height * 0.52;
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -95,161 +134,201 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
       child: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _haircuts[_selectedHaircutIndex]['name'],
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _haircuts[_selectedHaircutIndex]['description'],
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                      ),
-                      const SizedBox(height: 32),
-                      FlutterCarousel(
-                        options: CarouselOptions(
-                          height: 280,
-                          viewportFraction: 0.45,
-                          enlargeCenterPage: true,
-                          enableInfiniteScroll: true,
-                          autoPlay: false,
-                        ),
-                        items: List.generate(4, (itemIndex) {
-                          final haircut = _haircuts[_selectedHaircutIndex];
-                          final colors = [
-                            haircut['color'].withOpacity(0.7),
-                            haircut['color'].withOpacity(0.5),
-                            haircut['color'].withOpacity(0.6),
-                            haircut['color'].withOpacity(0.8),
-                          ];
-
-                          return Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  colors[itemIndex],
-                                  colors[itemIndex].withOpacity(0.3),
-                                ],
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: colors[itemIndex].withOpacity(0.3),
-                                  blurRadius: 15,
-                                  spreadRadius: 2,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child: Stack(
-                              children: [
-                                Center(
-                                  child: Icon(
-                                    haircut['image'],
-                                    size: 100,
-                                    color: Colors.white.withOpacity(0.9),
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 16,
-                                  right: 16,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Text(
-                                      '${itemIndex + 1}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: haircut['color'],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                      ),
-                      const SizedBox(height: 32),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildInfoChip(
-                            Icons.attach_money,
-                            _haircuts[_selectedHaircutIndex]['price'],
-                            Colors.green,
-                          ),
-                          const SizedBox(width: 16),
-                          _buildInfoChip(
-                            Icons.access_time,
-                            _haircuts[_selectedHaircutIndex]['duration'],
-                            Colors.orange,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      TDButton(
-                        theme: TDButtonTheme.primary,
-                        size: TDButtonSize.large,
-                        width: 200,
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Booking ${_haircuts[_selectedHaircutIndex]['name']}...',
-                              ),
-                            ),
-                          );
-                        },
-                        text: 'Book Now',
-                      ),
-                    ],
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 8),
+              SizedBox(
+                height: carouselHeight,
+                child: FlutterCarousel(
+                  options: CarouselOptions(
+                    height: carouselHeight,
+                    viewportFraction: 0.88,
+                    enlargeCenterPage: true,
+                    enableInfiniteScroll: true,
+                    autoPlay: false,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        _selectedHaircutIndex = index;
+                      });
+                    },
                   ),
+                  items: _haircuts.asMap().entries.map((entry) {
+                    final int itemIndex = entry.key;
+                    final Map<String, dynamic> haircut = entry.value;
+                    final Color baseColor = haircut['color'] as Color;
+                    final List<Color> colors = [
+                      baseColor.withOpacity(0.7),
+                      baseColor.withOpacity(0.5),
+                      baseColor.withOpacity(0.6),
+                      baseColor.withOpacity(0.8),
+                    ];
+
+                    return Align(
+                      alignment: Alignment.center,
+                      child: _buildCarouselCard(
+                        haircut: haircut,
+                        colors: colors,
+                        itemIndex: itemIndex,
+                        iconSize: 210,
+                        titleSize: 16,
+                        descriptionSize: 12,
+                        chipSize: 12,
+                        overlayOpacity: 0.25,
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildInfoChip(IconData icon, String label, Color color) {
+  Widget _buildCarouselCard({
+    required Map<String, dynamic> haircut,
+    required List<Color> colors,
+    required int itemIndex,
+    required double iconSize,
+    required double titleSize,
+    required double descriptionSize,
+    required double chipSize,
+    required double overlayOpacity,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            colors[itemIndex % colors.length],
+            colors[itemIndex % colors.length].withOpacity(0.3),
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: colors[itemIndex % colors.length].withOpacity(0.35),
+            blurRadius: 18,
+            spreadRadius: 2,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
-      child: Row(
+      child: Stack(
         children: [
-          Icon(icon, size: 20, color: color),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: TextStyle(fontWeight: FontWeight.bold, color: color),
+          Center(
+            child: Icon(
+              haircut['image'],
+              size: iconSize,
+              color: Colors.white.withOpacity(0.95),
+            ),
+          ),
+          Positioned(
+            left: 14,
+            right: 14,
+            bottom: 14,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  color: Colors.black.withOpacity(0.35),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        haircut['name'],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: titleSize,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        haircut['description'],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: descriptionSize,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              haircut['price'],
+                              style: TextStyle(
+                                fontSize: chipSize,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              haircut['duration'],
+                              style: TextStyle(
+                                fontSize: chipSize,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 12,
+            right: 12,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '${itemIndex + 1}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: haircut['color'],
+                  fontSize: 12,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -257,107 +336,128 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildPanel() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 2),
-        ],
-      ),
-      child: Column(
-        children: [
-          const SizedBox(height: 12),
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // const Padding(
+        //   padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
+        //   child: Text(
+        //     "Choose a Style",
+        //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        //   ),
+        // ),
+        TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Hair'),
+            Tab(text: 'Beard'),
+          ],
+          labelColor: Theme.of(context).primaryColor,
+          unselectedLabelColor: Colors.grey,
+          indicatorSize: TabBarIndicatorSize.label,
+        ),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [_buildHaircutGrid(), _buildBeardGrid()],
           ),
-          const SizedBox(height: 12),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                Icon(Icons.content_cut, color: Colors.blue),
-                SizedBox(width: 8),
-                Text(
-                  'Select Haircut',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _haircuts.length,
-              itemBuilder: (context, index) {
-                final haircut = _haircuts[index];
-                final isSelected = _selectedHaircutIndex == index;
+        ),
+      ],
+    );
+  }
 
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Card(
-                    elevation: isSelected ? 4 : 1,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                        color: isSelected ? Colors.blue : Colors.grey[300]!,
-                        width: isSelected ? 2 : 1,
-                      ),
-                    ),
-                    child: ListTile(
-                      leading: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? haircut['color'].withOpacity(0.2)
-                              : Colors.grey[100],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          haircut['image'],
-                          color: isSelected
-                              ? haircut['color']
-                              : Colors.grey[600],
-                        ),
-                      ),
-                      title: Text(
-                        haircut['name'],
-                        style: TextStyle(
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
-                      ),
-                      subtitle: Text(haircut['duration']),
-                      trailing: Text(
-                        haircut['price'],
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: isSelected
-                              ? haircut['color']
-                              : Colors.grey[700],
-                          fontSize: 16,
-                        ),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          _selectedHaircutIndex = index;
-                        });
-                        _panelController.close();
-                      },
-                    ),
-                  ),
-                );
-              },
-            ),
+  Widget _buildHaircutGrid() {
+    return GridView.builder(
+      padding: const EdgeInsets.all(16.0),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 15,
+        mainAxisSpacing: 15,
+        childAspectRatio: 3 / 4,
+      ),
+      itemCount: _haircuts.length,
+      itemBuilder: (context, index) {
+        final haircut = _haircuts[index];
+        final isSelected = _selectedHaircutIndex == index;
+        return _buildStyleCard(
+          item: haircut,
+          itemIndex: index,
+          isSelected: isSelected,
+          onTap: () {
+            setState(() {
+              _selectedHaircutIndex = index;
+            });
+            _panelController.close();
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildBeardGrid() {
+    return GridView.builder(
+      padding: const EdgeInsets.all(16.0),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 15,
+        mainAxisSpacing: 15,
+        childAspectRatio: 3 / 4,
+      ),
+      itemCount: _beardStyles.length,
+      itemBuilder: (context, index) {
+        final beard = _beardStyles[index];
+        final isSelected = _selectedBeardIndex == index;
+        return _buildStyleCard(
+          item: beard,
+          itemIndex: index,
+          isSelected: isSelected,
+          onTap: () {
+            setState(() {
+              _selectedBeardIndex = index;
+              // Note: We are closing the panel, but the main carousel
+              // currently only shows haircuts. A further enhancement
+              // would be to show the selected beard style as well.
+            });
+            _panelController.close();
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildStyleCard({
+    required Map<String, dynamic> item,
+    required int itemIndex,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final Color baseColor = item['color'] as Color;
+    final List<Color> colors = [
+      baseColor.withOpacity(0.7),
+      baseColor.withOpacity(0.5),
+      baseColor.withOpacity(0.6),
+      baseColor.withOpacity(0.8),
+    ];
+
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isSelected ? baseColor : Colors.transparent,
+            width: 2,
           ),
-        ],
+        ),
+        child: _buildCarouselCard(
+          haircut: item,
+          colors: colors,
+          itemIndex: itemIndex,
+          iconSize: 120,
+          titleSize: 12,
+          descriptionSize: 10,
+          chipSize: 10,
+          overlayOpacity: 0.25,
+        ),
       ),
     );
   }
