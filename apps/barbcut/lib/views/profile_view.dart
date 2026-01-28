@@ -50,7 +50,11 @@ class ProfileView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Icon(Icons.person, size: 40, color: Colors.white),
+                  child: const Icon(
+                    Icons.person,
+                    size: 40,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -160,11 +164,7 @@ class ProfileView extends StatelessWidget {
             letterSpacing: -0.2,
           ),
         ),
-        trailing: Icon(
-          Icons.chevron_right,
-          size: 22,
-          color: Colors.grey[400],
-        ),
+        trailing: Icon(Icons.chevron_right, size: 22, color: Colors.grey[400]),
         onTap: onTap,
       ),
     );
