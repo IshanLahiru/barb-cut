@@ -332,28 +332,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               ],
             ),
           ),
-          Positioned(
-            bottom: AiSpacing.sm,
-            right: AiSpacing.sm,
-            child: Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: accentColor,
-                borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-              ),
-              child: Center(
-                child: Text(
-                  '${itemIndex + 1}',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: AiColors.backgroundDeep,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
