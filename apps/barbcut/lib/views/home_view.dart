@@ -395,38 +395,40 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildPanel() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // const Padding(
-        //   padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
-        //   child: Text(
-        //     "Choose a Style",
-        //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        //   ),
-        // ),
-        TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Hair'),
-            Tab(text: 'Beard'),
-          ],
-          labelColor: Theme.of(context).colorScheme.primary,
-          unselectedLabelColor: Theme.of(
-            context,
-          ).colorScheme.onSurface.withOpacity(0.6),
-          labelStyle: AppTextStyles.titleMedium,
-          unselectedLabelStyle: AppTextStyles.titleMedium,
-          indicatorSize: TabBarIndicatorSize.label,
-          indicatorColor: Theme.of(context).colorScheme.secondary,
-        ),
-        Expanded(
-          child: TabBarView(
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      color: scheme.surface,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // const Padding(
+          //   padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
+          //   child: Text(
+          //     "Choose a Style",
+          //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          //   ),
+          // ),
+          TabBar(
             controller: _tabController,
-            children: [_buildHaircutGrid(), _buildBeardGrid()],
+            tabs: const [
+              Tab(text: 'Hair'),
+              Tab(text: 'Beard'),
+            ],
+            labelColor: scheme.primary,
+            unselectedLabelColor: scheme.onSurface.withOpacity(0.6),
+            labelStyle: AppTextStyles.titleMedium,
+            unselectedLabelStyle: AppTextStyles.titleMedium,
+            indicatorSize: TabBarIndicatorSize.label,
+            indicatorColor: scheme.secondary,
           ),
-        ),
-      ],
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [_buildHaircutGrid(), _buildBeardGrid()],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -435,11 +437,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final width = MediaQuery.of(context).size.width;
 
     return GridView.builder(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: _gridCrossAxisCount(width),
-        crossAxisSpacing: 8 * scale,
-        mainAxisSpacing: 8 * scale,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
         childAspectRatio: width < 360 ? 0.72 : 0.78,
       ),
       itemCount: _haircuts.length,
@@ -467,11 +469,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final width = MediaQuery.of(context).size.width;
 
     return GridView.builder(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: _gridCrossAxisCount(width),
-        crossAxisSpacing: 8 * scale,
-        mainAxisSpacing: 8 * scale,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
         childAspectRatio: width < 360 ? 0.72 : 0.78,
       ),
       itemCount: _beardStyles.length,
