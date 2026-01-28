@@ -115,9 +115,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         title: Text(
           'Barbcut',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AiColors.textPrimary,
-                fontWeight: FontWeight.w800,
-              ),
+            color: AiColors.textPrimary,
+            fontWeight: FontWeight.w800,
+          ),
         ),
         centerTitle: false,
         surfaceTintColor: Colors.transparent,
@@ -138,8 +138,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget _buildMainContent() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double carouselHeight =
-            (constraints.maxHeight * 0.52).clamp(260, 520);
+        final double carouselHeight = (constraints.maxHeight * 0.52).clamp(
+          260,
+          520,
+        );
         final double iconSize = (carouselHeight * 0.55).clamp(140, 260);
 
         return GestureDetector(
@@ -273,9 +275,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: accentColor,
-                          fontWeight: FontWeight.w700,
-                        ),
+                      color: accentColor,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: AiSpacing.xs),
                   Text(
@@ -283,58 +285,67 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AiColors.textSecondary,
-                        ),
+                      color: AiColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: AiSpacing.md),
                   Row(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AiSpacing.sm,
-                          vertical: AiSpacing.xs,
-                        ),
-                        decoration: BoxDecoration(
-                          color: accentColor.withValues(alpha: 0.15),
-                          borderRadius:
-                              BorderRadius.circular(AiSpacing.radiusSmall),
-                          border: Border.all(
-                            color: accentColor.withValues(alpha: 0.3),
-                            width: 1,
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AiSpacing.sm,
+                            vertical: AiSpacing.xs,
                           ),
-                        ),
-                        child: Text(
-                          haircut['price'],
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: accentColor,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                          decoration: BoxDecoration(
+                            color: accentColor.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(
+                              AiSpacing.radiusSmall,
+                            ),
+                            border: Border.all(
+                              color: accentColor.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            haircut['price'],
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(
+                                  color: accentColor,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                       const SizedBox(width: AiSpacing.sm),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AiSpacing.sm,
-                          vertical: AiSpacing.xs,
-                        ),
-                        decoration: BoxDecoration(
-                          color: accentColor.withValues(alpha: 0.15),
-                          borderRadius:
-                              BorderRadius.circular(AiSpacing.radiusSmall),
-                          border: Border.all(
-                            color: accentColor.withValues(alpha: 0.3),
-                            width: 1,
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AiSpacing.sm,
+                            vertical: AiSpacing.xs,
                           ),
-                        ),
-                        child: Text(
-                          haircut['duration'],
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: accentColor,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                          decoration: BoxDecoration(
+                            color: accentColor.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(
+                              AiSpacing.radiusSmall,
+                            ),
+                            border: Border.all(
+                              color: accentColor.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            haircut['duration'],
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(
+                                  color: accentColor,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     ],
@@ -364,9 +375,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 child: Text(
                   '${itemIndex + 1}',
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: AiColors.backgroundDeep,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: AiColors.backgroundDeep,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -410,8 +421,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget _buildHaircutGrid() {
     final width = MediaQuery.of(context).size.width;
     int crossAxisCount = 2;
-    if (width >= 1100) crossAxisCount = 4;
-    else if (width >= 820) crossAxisCount = 3;
+    if (width >= 1100)
+      crossAxisCount = 4;
+    else if (width >= 820)
+      crossAxisCount = 3;
 
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(
@@ -448,8 +461,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget _buildBeardGrid() {
     final width = MediaQuery.of(context).size.width;
     int crossAxisCount = 2;
-    if (width >= 1100) crossAxisCount = 4;
-    else if (width >= 820) crossAxisCount = 3;
+    if (width >= 1100)
+      crossAxisCount = 4;
+    else if (width >= 820)
+      crossAxisCount = 3;
 
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(
