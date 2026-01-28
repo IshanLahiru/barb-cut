@@ -211,7 +211,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         }).toList(),
                       ),
                     ),
-                    const SizedBox(height: AiSpacing.sm),
+                    const SizedBox(height: AiSpacing.xs),
                     // Carousel indicators
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
