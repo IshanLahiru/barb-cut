@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme/app_spacing.dart';
+import '../theme/ai_colors.dart';
+import '../theme/ai_spacing.dart';
+import '../widgets/ai_buttons.dart';
 
 class ProductsView extends StatefulWidget {
   const ProductsView({super.key});
@@ -11,55 +13,56 @@ class ProductsView extends StatefulWidget {
 class _ProductsViewState extends State<ProductsView> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  int? _selectedProductIndex;
 
   final List<Map<String, dynamic>> _products = [
     {
-      'name': 'Hair Gel',
+      'name': 'Hair Gel Premium',
       'price': '\$15.99',
       'rating': 4.5,
-      'description': 'Premium styling gel for hold',
-      'image': Icons.palette,
-      'color': Colors.blue,
+      'description': 'Premium styling gel for powerful hold',
+      'icon': Icons.palette,
+      'accentColor': AiColors.neonCyan,
     },
     {
-      'name': 'Beard Oil',
+      'name': 'Beard Oil Deluxe',
       'price': '\$12.99',
       'rating': 4.7,
       'description': 'Natural beard conditioning oil',
-      'image': Icons.face_retouching_natural,
-      'color': Colors.brown,
+      'icon': Icons.face_retouching_natural,
+      'accentColor': AiColors.sunsetCoral,
     },
     {
-      'name': 'Clippers',
+      'name': 'Pro Clippers',
       'price': '\$89.99',
       'rating': 4.9,
       'description': 'Professional hair clippers',
-      'image': Icons.content_cut,
-      'color': Colors.grey,
+      'icon': Icons.content_cut,
+      'accentColor': AiColors.neonPurple,
     },
     {
-      'name': 'Shampoo',
+      'name': 'Premium Shampoo',
       'price': '\$9.99',
       'rating': 4.4,
       'description': 'Gentle hair shampoo',
-      'image': Icons.water_drop,
-      'color': Colors.cyan,
+      'icon': Icons.water_drop,
+      'accentColor': AiColors.neonCyan,
     },
     {
-      'name': 'Razor',
+      'name': 'Straight Razor',
       'price': '\$24.99',
       'rating': 4.8,
       'description': 'Precision straight razor',
-      'image': Icons.content_cut,
-      'color': Colors.blueGrey,
+      'icon': Icons.content_cut,
+      'accentColor': AiColors.sunsetCoral,
     },
     {
-      'name': 'Wax',
+      'name': 'Styling Wax',
       'price': '\$11.99',
       'rating': 4.6,
-      'description': 'Hair styling wax',
-      'image': Icons.brush,
-      'color': Colors.orange,
+      'description': 'Professional hair styling wax',
+      'icon': Icons.brush,
+      'accentColor': AiColors.neonPurple,
     },
   ];
 
@@ -71,10 +74,6 @@ class _ProductsViewState extends State<ProductsView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
     final filteredProducts = _products
         .where(
           (p) => p['name'].toString().toLowerCase().contains(
@@ -84,78 +83,122 @@ class _ProductsViewState extends State<ProductsView> {
         .toList();
 
     return Scaffold(
+      backgroundColor: AiColors.backgroundDeep,
       appBar: AppBar(
-        title: Text('Products', style: textTheme.titleMedium),
-        toolbarHeight: 22,
+        backgroundColor: AiColors.backgroundDark,
         elevation: 0,
+        title: Text(
+          'Shop',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AiColors.textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+        centerTitle: false,
+        surfaceTintColor: Colors.transparent,
       ),
-      body: Container(
-        color: scheme.background,
+      body: SafeArea(
         child: Column(
           children: [
-            // Search Bar
+            // Header with gradient
             Container(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                AppSpacing.md,
-                AppSpacing.md,
-                AppSpacing.sm,
+              padding: const EdgeInsets.symmetric(
+                horizontal: AiSpacing.lg,
+                vertical: AiSpacing.md,
               ),
-              child: TextField(
-                controller: _searchController,
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search products...',
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: scheme.onSurface.withOpacity(0.6),
-                    size: 20,
-                  ),
-                  suffixIcon: _searchQuery.isNotEmpty
-                      ? IconButton(
-                          icon: Icon(
-                            Icons.clear,
-                            color: scheme.onSurface.withOpacity(0.6),
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _searchController.clear();
-                              _searchQuery = '';
-                            });
-                          },
-                        )
-                      : null,
-                  filled: true,
-                  fillColor: scheme.surface,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: AppSpacing.md,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.zero,
-                    borderSide: BorderSide(color: scheme.outline, width: 1.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.zero,
-                    borderSide: BorderSide(color: scheme.outline, width: 1.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.zero,
-                    borderSide: BorderSide(color: scheme.primary, width: 1.5),
-                  ),
-                  hintStyle: textTheme.bodyMedium?.copyWith(
-                    color: scheme.onSurface.withOpacity(0.6),
+              decoration: BoxDecoration(
+                color: AiColors.backgroundDark,
+                border: Border(
+                  bottom: BorderSide(
+                    color: AiColors.borderGlass,
+                    width: 1,
                   ),
                 ),
-                style: textTheme.bodyMedium,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Find Premium Products',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: AiColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                  const SizedBox(height: AiSpacing.sm),
+                  // Search field with neon cyan focus
+                  TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                    },
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AiColors.textPrimary,
+                        ),
+                    decoration: InputDecoration(
+                      hintText: 'Hair gel, clippers, shampoo...',
+                      hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AiColors.textTertiary,
+                          ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: AiColors.textTertiary,
+                        size: 20,
+                      ),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(
+                                Icons.clear,
+                                color: AiColors.textTertiary,
+                                size: 20,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                  _searchQuery = '';
+                                });
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: AiColors.backgroundSecondary,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AiSpacing.md,
+                        vertical: AiSpacing.md,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(AiSpacing.radiusLarge),
+                        borderSide: const BorderSide(
+                          color: AiColors.borderLight,
+                          width: 1.5,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(AiSpacing.radiusLarge),
+                        borderSide: const BorderSide(
+                          color: AiColors.borderLight,
+                          width: 1.5,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(AiSpacing.radiusLarge),
+                        borderSide: const BorderSide(
+                          color: AiColors.neonCyan,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    cursorColor: AiColors.neonCyan,
+                  ),
+                ]
               ),
             ),
-            // Grid
+            // Products Grid
             Expanded(
               child: filteredProducts.isEmpty
                   ? Center(
@@ -165,39 +208,56 @@ class _ProductsViewState extends State<ProductsView> {
                           Icon(
                             Icons.shopping_bag_outlined,
                             size: 64,
-                            color: scheme.onSurface.withOpacity(0.6),
+                            color: AiColors.textTertiary,
                           ),
-                          const SizedBox(height: AppSpacing.md),
+                          const SizedBox(height: AiSpacing.md),
                           Text(
                             'No products found',
-                            style: textTheme.titleMedium,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: AiColors.textPrimary,
+                                ),
                           ),
-                          const SizedBox(height: AppSpacing.sm),
+                          const SizedBox(height: AiSpacing.sm),
                           Text(
                             'Try a different search term',
-                            style: textTheme.bodySmall,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(
+                                  color: AiColors.textTertiary,
+                                ),
                           ),
                         ],
                       ),
                     )
-                  : GridView.builder(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.md,
-                        AppSpacing.sm,
-                        AppSpacing.md,
-                        AppSpacing.md,
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AiSpacing.lg,
+                        vertical: AiSpacing.md,
                       ),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            childAspectRatio: 0.75,
-                          ),
                       itemCount: filteredProducts.length,
                       itemBuilder: (context, index) {
                         final product = filteredProducts[index];
-                        return _buildProductCard(context, product);
+                        final isSelected = _selectedProductIndex == index;
+                        return Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: AiSpacing.md,
+                          ),
+                          child: _buildAiProductCard(
+                            context,
+                            product,
+                            isSelected,
+                            () {
+                              setState(() {
+                                _selectedProductIndex =
+                                    isSelected ? null : index;
+                              });
+                            },
+                          ),
+                        );
                       },
                     ),
             ),
@@ -207,90 +267,202 @@ class _ProductsViewState extends State<ProductsView> {
     );
   }
 
-  Widget _buildProductCard(BuildContext context, Map<String, dynamic> product) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-    final Color baseColor = product['color'] as Color;
+  Widget _buildAiProductCard(
+    BuildContext context,
+    Map<String, dynamic> product,
+    bool isSelected,
+    VoidCallback onTap,
+  ) {
+    final accentColor = product['accentColor'] as Color;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        border: Border.all(color: scheme.outline, width: 1.0),
-        boxShadow: [
-          BoxShadow(
-            color: scheme.shadow,
-            blurRadius: 4,
-            offset: const Offset(0, 1),
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+        decoration: BoxDecoration(
+          color: isSelected ? AiColors.surface : AiColors.backgroundSecondary,
+          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+          border: Border.all(
+            color: isSelected ? accentColor : AiColors.borderLight,
+            width: isSelected ? 2 : 1.5,
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image/Icon area
-          Expanded(
-            flex: 3,
-            child: Container(
-              color: baseColor.withOpacity(0.15),
-              child: Center(
-                child: Icon(product['image'], size: 48, color: baseColor),
+          boxShadow: [
+            if (isSelected)
+              BoxShadow(
+                color: accentColor.withValues(alpha: 0.3),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
               ),
-            ),
-          ),
-          // Details area
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              child: Column(
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AiSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Top row: Icon + Title + Price
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    product['name'],
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.titleSmall,
+                  // Icon container
+                  Container(
+                    padding: const EdgeInsets.all(AiSpacing.md),
+                    decoration: BoxDecoration(
+                      color: accentColor.withValues(alpha: 0.1),
+                      borderRadius:
+                          BorderRadius.circular(AiSpacing.radiusLarge),
+                      border: Border.all(
+                        color: accentColor.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      product['icon'] as IconData,
+                      color: accentColor,
+                      size: 32,
+                    ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    product['description'],
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.bodySmall,
-                  ),
-                  const Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        product['price'],
-                        style: textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                  const SizedBox(width: AiSpacing.md),
+                  // Title + Description
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product['name'],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: AiColors.textPrimary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
+                        const SizedBox(height: AiSpacing.xs),
+                        Text(
+                          product['description'],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AiColors.textTertiary,
+                                  ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: AiSpacing.md),
+                  // Price badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AiSpacing.sm,
+                      vertical: AiSpacing.xs,
+                    ),
+                    decoration: BoxDecoration(
+                      color: accentColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
+                      border: Border.all(
+                        color: accentColor.withValues(alpha: 0.3),
+                        width: 1,
                       ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.star_rounded,
-                            size: 14,
-                            color: Colors.amber,
+                    ),
+                    child: Text(
+                      product['price'],
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: accentColor,
+                            fontWeight: FontWeight.w700,
                           ),
-                          const SizedBox(width: 2),
-                          Text(
-                            product['rating'].toString(),
-                            style: textTheme.labelSmall,
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: AiSpacing.md),
+              // Rating + Actions (visible when selected)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Rating
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AiSpacing.sm,
+                      vertical: AiSpacing.xs,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AiColors.backgroundDeep,
+                      borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
+                      border: Border.all(
+                        color: AiColors.borderLight,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.star_rounded,
+                          size: 16,
+                          color: AiColors.neonCyan,
+                        ),
+                        const SizedBox(width: AiSpacing.xs),
+                        Text(
+                          product['rating'].toString(),
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: AiColors.textSecondary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Action buttons (show when selected)
+                  if (isSelected)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 40,
+                            child: AiSecondaryButton(
+                              label: 'View',
+                              onPressed: () {},
+                              accentColor: AiColors.neonCyan,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: AiSpacing.sm),
+                        Expanded(
+                          child: SizedBox(
+                            height: 40,
+                            child: AiPrimaryButton(
+                              label: 'Add',
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      '${product['name']} added to cart!',
+                                      style: const TextStyle(
+                                          color: AiColors.textPrimary),
+                                    ),
+                                    backgroundColor: AiColors.success,
+                                    duration:
+                                        const Duration(milliseconds: 1500),
+                                  ),
+                                );
+                                setState(() {
+                                  _selectedProductIndex = null;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

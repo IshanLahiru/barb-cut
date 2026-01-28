@@ -6,10 +6,8 @@ import '../theme/ai_colors.dart';
 class AiLoadingState extends StatefulWidget {
   final String message;
 
-  const AiLoadingState({
-    Key? key,
-    this.message = 'Dreaming up your image...',
-  }) : super(key: key);
+  const AiLoadingState({Key? key, this.message = 'Dreaming up your image...'})
+    : super(key: key);
 
   @override
   State<AiLoadingState> createState() => _AiLoadingStateState();
@@ -141,10 +139,7 @@ class _ShimmerGridCell extends StatelessWidget {
   final double delayFactor;
   final AnimationController animation;
 
-  const _ShimmerGridCell({
-    required this.delayFactor,
-    required this.animation,
-  });
+  const _ShimmerGridCell({required this.delayFactor, required this.animation});
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +151,8 @@ class _ShimmerGridCell extends StatelessWidget {
           final shimmerValue =
               (animation.value + delayFactor) % 1.0; // Staggered effect
           final opacity = (shimmerValue < 0.5)
-              ? shimmerValue * 2 // 0 to 1
+              ? shimmerValue *
+                    2 // 0 to 1
               : (1 - shimmerValue) * 2; // 1 to 0
 
           return Container(
@@ -205,10 +201,7 @@ class _DotProgress extends StatelessWidget {
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
-                      colors: [
-                        AiColors.neonCyan,
-                        AiColors.sunsetCoral,
-                      ],
+                      colors: [AiColors.neonCyan, AiColors.sunsetCoral],
                     ),
                   ),
                 ),
@@ -227,10 +220,7 @@ double sin(double x) => (x - (x.toStringAsFixed(0).length) * 3.14159 / 2).sin();
 class AiSuccessState extends StatefulWidget {
   final VoidCallback onContinue;
 
-  const AiSuccessState({
-    Key? key,
-    required this.onContinue,
-  }) : super(key: key);
+  const AiSuccessState({Key? key, required this.onContinue}) : super(key: key);
 
   @override
   State<AiSuccessState> createState() => _AiSuccessStateState();

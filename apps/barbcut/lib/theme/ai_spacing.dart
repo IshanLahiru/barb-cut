@@ -29,17 +29,26 @@ class AiSpacing {
   static const EdgeInsets p4 = EdgeInsets.all(xl);
 
   // === Horizontal Padding ===
-  static const EdgeInsets ph1 =
-      EdgeInsets.symmetric(horizontal: sm); // 8pt sides
-  static const EdgeInsets ph2 =
-      EdgeInsets.symmetric(horizontal: md); // 16pt sides
-  static const EdgeInsets ph3 =
-      EdgeInsets.symmetric(horizontal: lg); // 24pt sides
+  static const EdgeInsets ph1 = EdgeInsets.symmetric(
+    horizontal: sm,
+  ); // 8pt sides
+  static const EdgeInsets ph2 = EdgeInsets.symmetric(
+    horizontal: md,
+  ); // 16pt sides
+  static const EdgeInsets ph3 = EdgeInsets.symmetric(
+    horizontal: lg,
+  ); // 24pt sides
 
   // === Vertical Padding ===
-  static const EdgeInsets pv1 = EdgeInsets.symmetric(vertical: sm); // 8pt top/bottom
-  static const EdgeInsets pv2 = EdgeInsets.symmetric(vertical: md); // 16pt top/bottom
-  static const EdgeInsets pv3 = EdgeInsets.symmetric(vertical: lg); // 24pt top/bottom
+  static const EdgeInsets pv1 = EdgeInsets.symmetric(
+    vertical: sm,
+  ); // 8pt top/bottom
+  static const EdgeInsets pv2 = EdgeInsets.symmetric(
+    vertical: md,
+  ); // 16pt top/bottom
+  static const EdgeInsets pv3 = EdgeInsets.symmetric(
+    vertical: lg,
+  ); // 24pt top/bottom
 
   // === Content Padding (Horizontal + Vertical) ===
   static const EdgeInsets content1 = EdgeInsets.all(sm); // 8pt all
@@ -54,14 +63,18 @@ class AiSpacing {
   static const double radiusCircle = 999.0; // Circular elements
 
   // === Borders ===
-  static const BorderRadius borderSmall =
-      BorderRadius.all(Radius.circular(radiusSmall));
-  static const BorderRadius borderMedium =
-      BorderRadius.all(Radius.circular(radiusMedium));
-  static const BorderRadius borderLarge =
-      BorderRadius.all(Radius.circular(radiusLarge));
-  static const BorderRadius borderXL =
-      BorderRadius.all(Radius.circular(radiusXL));
+  static const BorderRadius borderSmall = BorderRadius.all(
+    Radius.circular(radiusSmall),
+  );
+  static const BorderRadius borderMedium = BorderRadius.all(
+    Radius.circular(radiusMedium),
+  );
+  static const BorderRadius borderLarge = BorderRadius.all(
+    Radius.circular(radiusLarge),
+  );
+  static const BorderRadius borderXL = BorderRadius.all(
+    Radius.circular(radiusXL),
+  );
 
   // === Elevations / Shadow ===
   static const double elevationNone = 0.0;

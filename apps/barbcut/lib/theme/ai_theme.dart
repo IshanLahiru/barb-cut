@@ -11,7 +11,7 @@ class AiTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      
+
       // === Color Scheme (Cyberpunk Deep Charcoal + Neon) ===
       colorScheme: const ColorScheme.dark(
         primary: AiColors.neonCyan,
@@ -48,10 +48,7 @@ class AiTheme {
           fontWeight: FontWeight.w700,
           letterSpacing: 0.5,
         ),
-        iconTheme: const IconThemeData(
-          color: AiColors.textPrimary,
-          size: 24.0,
-        ),
+        iconTheme: const IconThemeData(color: AiColors.textPrimary, size: 24.0),
       ),
 
       // === Card Theme ===
@@ -303,9 +300,7 @@ class AiTheme {
           }
           return AiColors.surface;
         }),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
 
       radioTheme: RadioThemeData(

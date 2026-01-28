@@ -8,7 +8,9 @@ class AiColors {
   AiColors._();
 
   // === Deep Charcoal Backgrounds (Cyberpunk) ===
-  static const Color backgroundDeep = Color(0xFF0A0E27); // Almost black with blue tint
+  static const Color backgroundDeep = Color(
+    0xFF0A0E27,
+  ); // Almost black with blue tint
   static const Color backgroundDark = Color(0xFF0F1419); // Primary dark bg
   static const Color backgroundSecondary = Color(0xFF1A1F3A); // Secondary layer
   static const Color surface = Color(0xFF151B2F); // Cards & elevated surfaces
@@ -16,7 +18,9 @@ class AiColors {
 
   // === Neon Cyan (Primary Accent) ===
   static const Color neonCyan = Color(0xFF00D9FF); // Vibrant cyan
-  static const Color neonCyanDim = Color(0xFF00B8D4); // Dimmer cyan for inactive
+  static const Color neonCyanDim = Color(
+    0xFF00B8D4,
+  ); // Dimmer cyan for inactive
   static const Color cyanGlow = Color(0x4D00D9FF); // 30% opacity glow
 
   // === Sunset Coral (Secondary Accent) ===
@@ -30,7 +34,9 @@ class AiColors {
   static const Color purpleGlow = Color(0x4DB933FF); // 30% opacity glow
 
   // === Neutral Whites (Text) ===
-  static const Color textPrimary = Color(0xFFE8ECFF); // Slightly blue-tinted white
+  static const Color textPrimary = Color(
+    0xFFE8ECFF,
+  ); // Slightly blue-tinted white
   static const Color textSecondary = Color(0xFFB0B8CC); // Muted blue-gray
   static const Color textTertiary = Color(0xFF7C8599); // Darker gray
   static const Color textDisabled = Color(0xFF4A5568); // Disabled gray

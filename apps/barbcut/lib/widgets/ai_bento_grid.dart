@@ -7,11 +7,8 @@ class AiBentoGrid extends StatelessWidget {
   final List<AiBentoItem> items;
   final int crossAxisCount;
 
-  const AiBentoGrid({
-    Key? key,
-    required this.items,
-    this.crossAxisCount = 2,
-  }) : super(key: key);
+  const AiBentoGrid({Key? key, required this.items, this.crossAxisCount = 2})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -201,11 +201,7 @@ class _AiSecondaryButtonState extends State<AiSecondaryButton> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (widget.icon != null) ...[
-                    Icon(
-                      widget.icon,
-                      color: widget.accentColor,
-                      size: 18,
-                    ),
+                    Icon(widget.icon, color: widget.accentColor, size: 18),
                     const SizedBox(width: 8),
                   ],
                   Text(
@@ -301,9 +297,7 @@ class _AiTextFieldState extends State<AiTextField> {
           decoration: BoxDecoration(
             color: AiColors.surface,
             border: Border.all(
-              color: _isFocused
-                  ? widget.accentColor
-                  : AiColors.borderLight,
+              color: _isFocused ? widget.accentColor : AiColors.borderLight,
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(16),

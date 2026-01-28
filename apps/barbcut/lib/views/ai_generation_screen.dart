@@ -148,10 +148,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
         Wrap(
           spacing: AiSpacing.sm,
           runSpacing: AiSpacing.sm,
-          children: suggestedPrompts
-              .asMap()
-              .entries
-              .map((entry) {
+          children: suggestedPrompts.asMap().entries.map((entry) {
             final colors = [
               AiColors.neonCyan,
               AiColors.sunsetCoral,
@@ -290,9 +287,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
   }
 
   Widget _buildLoadingState() {
-    return const AiLoadingState(
-      message: 'Creating your masterpiece...',
-    );
+    return const AiLoadingState(message: 'Creating your masterpiece...');
   }
 
   Widget _buildSuccessState() {
