@@ -1,3 +1,4 @@
+import 'package:barbcut/views/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,12 +7,10 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'controllers/auth_controller.dart';
 import 'services/auth_service.dart';
-import 'views/login_view.dart';
-import 'views/register_view.dart';
-import 'views/home_view.dart';
+import 'auth_screen.dart';
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -49,15 +48,9 @@ class _MyAppState extends State<MyApp> {
               );
             }
             if (snapshot.hasData) {
-              return const HomeView();
+              return const MainScreen();
             }
-            return showLogin
-                ? LoginView(
-                    onSwitchToRegister: () => setState(() => showLogin = false),
-                  )
-                : RegisterView(
-                    onSwitchToLogin: () => setState(() => showLogin = true),
-                  );
+            return const AuthScreen();
           },
         ),
       ),
