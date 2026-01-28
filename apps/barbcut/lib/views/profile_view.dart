@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../theme/app_spacing.dart';
+import 'appearance_view.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile', style: AppTextStyles.titleMedium),
+        title: Text('Profile', style: textTheme.titleMedium),
         toolbarHeight: 22,
         elevation: 0,
-        backgroundColor: AppColors.background,
       ),
       body: ListView(
         padding: AppSpacing.paddingLG,
@@ -23,12 +25,11 @@ class ProfileView extends StatelessWidget {
           Container(
             padding: AppSpacing.paddingLG,
             decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
-              border: Border.all(color: AppColors.borderLight, width: 1.0),
+              color: scheme.surface,
+              border: Border.all(color: scheme.outline, width: 1.0),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.shadow,
+                  color: scheme.shadow,
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -40,35 +41,25 @@ class ProfileView extends StatelessWidget {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+                    color: scheme.primary,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.2),
+                        color: scheme.primary.withOpacity(0.2),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.person,
-                    size: 40,
-                    color: Colors.white,
-                  ),
+                  child: Icon(Icons.person, size: 40, color: scheme.onPrimary),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Guest User', style: AppTextStyles.headlineSmall),
+                      Text('Guest User', style: textTheme.headlineSmall),
                       const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        'guest@barbcut.app',
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
+                      Text('guest@barbcut.app', style: textTheme.bodyMedium),
                     ],
                   ),
                 ),
@@ -81,35 +72,43 @@ class ProfileView extends StatelessWidget {
               left: AppSpacing.xs,
               bottom: AppSpacing.md,
             ),
-            child: Text(
-              'Account',
-              style: AppTextStyles.overline.copyWith(
-                color: AppColors.textPrimary,
-              ),
-            ),
+            child: Text('Account', style: textTheme.labelSmall),
           ),
-          _buildTile(icon: Icons.edit, title: 'Edit Profile'),
-          _buildTile(icon: Icons.payment, title: 'Payment Methods'),
-          _buildTile(icon: Icons.history, title: 'Appointments'),
+          _buildTile(context, icon: Icons.edit, title: 'Edit Profile'),
+          _buildTile(context, icon: Icons.payment, title: 'Payment Methods'),
+          _buildTile(context, icon: Icons.history, title: 'Appointments'),
           const SizedBox(height: 28),
           Padding(
             padding: const EdgeInsets.only(
               left: AppSpacing.xs,
               bottom: AppSpacing.md,
             ),
-            child: Text(
-              'Settings',
-              style: AppTextStyles.overline.copyWith(
-                color: AppColors.textPrimary,
-              ),
-            ),
+            child: Text('Settings', style: textTheme.labelSmall),
           ),
-          _buildTile(icon: Icons.notifications, title: 'Notifications'),
-          _buildTile(icon: Icons.lock, title: 'Privacy & Security'),
-          _buildTile(icon: Icons.palette, title: 'Appearance'),
-          _buildTile(icon: Icons.help_outline, title: 'Help & Support'),
+          _buildTile(
+            context,
+            icon: Icons.notifications,
+            title: 'Notifications',
+          ),
+          _buildTile(context, icon: Icons.lock, title: 'Privacy & Security'),
+          _buildTile(
+            context,
+            icon: Icons.palette,
+            title: 'Appearance',
+            onTap: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const AppearanceView()));
+            },
+          ),
+          _buildTile(
+            context,
+            icon: Icons.help_outline,
+            title: 'Help & Support',
+          ),
           const SizedBox(height: 20),
           _buildTile(
+            context,
             icon: Icons.logout,
             title: 'Sign Out',
             onTap: () => context.read<AuthController>().logout(),
@@ -119,20 +118,24 @@ class ProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildTile({
+  Widget _buildTile(
+    BuildContext context, {
     required IconData icon,
     required String title,
     VoidCallback? onTap,
   }) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-        border: Border.all(color: AppColors.borderLight, width: 1.0),
+        color: scheme.surface,
+        border: Border.all(color: scheme.outline, width: 1.0),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow,
+            color: scheme.shadow,
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -145,17 +148,14 @@ class ProfileView extends StatelessWidget {
         ),
         leading: Container(
           padding: AppSpacing.paddingSM,
-          decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.08),
-            borderRadius: BorderRadius.circular(AppSpacing.radiusSM),
-          ),
-          child: Icon(icon, size: 20, color: AppColors.primary),
+          decoration: BoxDecoration(color: scheme.primary.withOpacity(0.08)),
+          child: Icon(icon, size: 20, color: scheme.primary),
         ),
-        title: Text(title, style: AppTextStyles.titleMedium),
+        title: Text(title, style: textTheme.titleMedium),
         trailing: Icon(
           Icons.chevron_right,
           size: 22,
-          color: AppColors.textTertiary,
+          color: scheme.onSurface.withOpacity(0.6),
         ),
         onTap: onTap,
       ),

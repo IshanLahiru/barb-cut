@@ -39,13 +39,13 @@ class AppSpacing {
 
   // === Border Radius ===
   /// Sharp corners for masculine aesthetic
-  static const double radiusSM = 8.0;
+  static const double radiusSM = 0.0;
 
   /// Standard radius
-  static const double radiusMD = 12.0;
+  static const double radiusMD = 0.0;
 
   /// Large radius (use sparingly)
-  static const double radiusLG = 16.0;
+  static const double radiusLG = 0.0;
 
   static const BorderRadius borderRadiusSM = BorderRadius.all(
     Radius.circular(radiusSM),

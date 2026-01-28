@@ -47,6 +47,8 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(title: Text(_isLogin ? 'Login' : 'Register')),
       body: Center(
@@ -75,7 +77,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
                 const SizedBox(height: 24),
                 if (_error != null) ...[
-                  Text(_error!, style: const TextStyle(color: Colors.red)),
+                  Text(_error!, style: TextStyle(color: scheme.error)),
                   const SizedBox(height: 12),
                 ],
                 _loading

@@ -80,3 +80,45 @@ class AppColors {
   /// Subtle hover state
   static const Color hover = Color(0x0A000000);
 }
+
+/// Dark-mode palette aligned to light palette roles
+class AppColorsDark {
+  AppColorsDark._();
+
+  // === Background Colors ===
+  static const Color background = Color(0xFF0F1115);
+  static const Color backgroundSecondary = Color(0xFF151922);
+  static const Color surface = Color(0xFF1B212B);
+
+  // === Primary Brand Colors ===
+  static const Color primary = Color(0xFFDEE2E6);
+  static const Color primaryDark = Color(0xFFB0B8C1);
+  static const Color primaryLight = Color(0xFFF2F4F6);
+
+  // === Accent Colors ===
+  static const Color accent = Color(0xFFD1A64B);
+  static const Color accentOrange = Color(0xFFE07A2E);
+  static const Color accentBlue = Color(0xFF7A8CA6);
+
+  // === Text Colors ===
+  static const Color textPrimary = Color(0xFFF8F9FA);
+  static const Color textSecondary = Color(0xFFCED4DA);
+  static const Color textTertiary = Color(0xFFADB5BD);
+  static const Color textDisabled = Color(0xFF6C757D);
+
+  // === Border & Divider Colors ===
+  static const Color border = Color(0xFF2C3340);
+  static const Color borderLight = Color(0xFF252B37);
+  static const Color divider = Color(0xFF232934);
+
+  // === Status Colors ===
+  static const Color success = Color(0xFF2ECC71);
+  static const Color error = Color(0xFFEF5A4C);
+  static const Color warning = Color(0xFFF4B63A);
+  static const Color info = Color(0xFF4FA3E3);
+
+  // === Shadow & Overlay ===
+  static const Color shadow = Color(0xB3000000);
+  static const Color overlay = Color(0x99000000);
+  static const Color hover = Color(0x14FFFFFF);
+}

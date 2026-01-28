@@ -97,15 +97,18 @@ class _ExploreViewState extends State<ExploreView> {
       return name.contains(query) || description.contains(query);
     }).toList();
 
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Explore', style: AppTextStyles.titleMedium),
+        title: Text('Explore', style: textTheme.titleMedium),
         toolbarHeight: 22,
         elevation: 0,
-        backgroundColor: AppColors.background,
       ),
       body: Container(
-        decoration: const BoxDecoration(color: AppColors.background),
+        decoration: BoxDecoration(color: scheme.background),
         child: Column(
           children: [
             // Search Bar
@@ -127,14 +130,14 @@ class _ExploreViewState extends State<ExploreView> {
                   hintText: 'Search styles...',
                   prefixIcon: Icon(
                     Icons.search,
-                    color: AppColors.textTertiary,
+                    color: scheme.onSurface.withOpacity(0.6),
                     size: 20,
                   ),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
                           icon: Icon(
                             Icons.clear,
-                            color: AppColors.textTertiary,
+                            color: scheme.onSurface.withOpacity(0.6),
                             size: 20,
                           ),
                           onPressed: () {
@@ -146,34 +149,25 @@ class _ExploreViewState extends State<ExploreView> {
                         )
                       : null,
                   filled: true,
-                  fillColor: AppColors.surface,
+                  fillColor: scheme.surface,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
                     vertical: AppSpacing.md,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSM),
-                    borderSide: BorderSide(
-                      color: AppColors.borderLight,
-                      width: 1.0,
-                    ),
+                    borderRadius: BorderRadius.zero,
+                    borderSide: BorderSide(color: scheme.outline, width: 1.0),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSM),
-                    borderSide: BorderSide(
-                      color: AppColors.borderLight,
-                      width: 1.0,
-                    ),
+                    borderRadius: BorderRadius.zero,
+                    borderSide: BorderSide(color: scheme.outline, width: 1.0),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSM),
-                    borderSide: BorderSide(
-                      color: AppColors.primary,
-                      width: 1.5,
-                    ),
+                    borderRadius: BorderRadius.zero,
+                    borderSide: BorderSide(color: scheme.primary, width: 1.5),
                   ),
                   hintStyle: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textTertiary,
+                    color: scheme.onSurface.withOpacity(0.6),
                   ),
                 ),
                 style: AppTextStyles.bodyMedium,
@@ -189,21 +183,14 @@ class _ExploreViewState extends State<ExploreView> {
                           Icon(
                             Icons.search_off,
                             size: 64,
-                            color: AppColors.textTertiary,
+                            color: scheme.onSurface.withOpacity(0.6),
                           ),
                           const SizedBox(height: AppSpacing.md),
-                          Text(
-                            'No styles found',
-                            style: AppTextStyles.titleMedium.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
+                          Text('No styles found', style: textTheme.titleMedium),
                           const SizedBox(height: AppSpacing.sm),
                           Text(
                             'Try a different search term',
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textTertiary,
-                            ),
+                            style: textTheme.bodySmall,
                           ),
                         ],
                       ),
@@ -218,8 +205,8 @@ class _ExploreViewState extends State<ExploreView> {
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            crossAxisSpacing: AppSpacing.md,
-                            mainAxisSpacing: AppSpacing.md,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
                             childAspectRatio: 0.78,
                           ),
                       itemCount: filteredStyles.length,

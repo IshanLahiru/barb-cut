@@ -112,14 +112,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       appBar: AppBar(
         title: Text(
           'Barbcut',
-          style: AppTextStyles.titleLarge.copyWith(
-            fontWeight: FontWeight.w800,
-          ),
+          style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w800),
         ),
         centerTitle: false,
         toolbarHeight: 22,
         elevation: 0,
-        backgroundColor: AppColors.background,
       ),
       body: SlidingUpPanel(
         controller: _panelController,
@@ -134,75 +131,99 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
+  double _responsiveScale(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    return (width / 390).clamp(0.85, 1.2);
+  }
+
+  int _gridCrossAxisCount(double width) {
+    if (width >= 1100) return 4;
+    if (width >= 820) return 3;
+    return 2;
+  }
+
   Widget _buildMainContent() {
-    final double carouselHeight = MediaQuery.of(context).size.height * 0.52;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final scale = _responsiveScale(context);
+        final scheme = Theme.of(context).colorScheme;
+        final double carouselHeight =
+            (constraints.maxHeight * 0.52).clamp(260, 520) * scale;
+        final double iconSize = (carouselHeight * 0.55).clamp(140, 260);
+        final double titleSize = (16 * scale).clamp(12, 18);
+        final double descriptionSize = (12 * scale).clamp(10, 14);
+        final double chipSize = (12 * scale).clamp(10, 13);
 
-    return GestureDetector(
-      onVerticalDragUpdate: (details) {
-        // If dragging up (negative delta), open the panel
-        if (details.delta.dy < -5) {
-          _panelController.open();
-        }
-      },
-      child: Container(
-        decoration: const BoxDecoration(color: AppColors.background),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 8),
-                SizedBox(
-                  height: carouselHeight,
-                  child: FlutterCarousel(
-                    options: CarouselOptions(
+        return GestureDetector(
+          onVerticalDragUpdate: (details) {
+            // If dragging up (negative delta), open the panel
+            if (details.delta.dy < -5) {
+              _panelController.open();
+            }
+          },
+          child: Container(
+            decoration: BoxDecoration(color: scheme.background),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 8),
+                    SizedBox(
                       height: carouselHeight,
-                      viewportFraction: 0.75,
-                      enlargeCenterPage: true,
-                      enableInfiniteScroll: true,
-                      autoPlay: false,
+                      child: FlutterCarousel(
+                        options: CarouselOptions(
+                          height: carouselHeight,
+                          viewportFraction: (constraints.maxWidth < 360)
+                              ? 0.88
+                              : (constraints.maxWidth < 600 ? 0.8 : 0.7),
+                          enlargeCenterPage: true,
+                          enableInfiniteScroll: true,
+                          autoPlay: false,
 
-                      onPageChanged: (index, reason) {
-                        setState(() {
-                          _selectedHaircutIndex = index;
-                        });
-                      },
-                    ),
-                    items: _haircuts.asMap().entries.map((entry) {
-                      final int itemIndex = entry.key;
-                      final Map<String, dynamic> haircut = entry.value;
-                      final Color baseColor = haircut['color'] as Color;
-                      final List<Color> colors = [
-                        baseColor.withOpacity(0.7),
-                        baseColor.withOpacity(0.5),
-                        baseColor.withOpacity(0.6),
-                        baseColor.withOpacity(0.8),
-                      ];
-
-                      return Align(
-                        alignment: Alignment.center,
-                        child: _buildCarouselCard(
-                          haircut: haircut,
-                          colors: colors,
-                          itemIndex: itemIndex,
-                          iconSize: 210,
-                          titleSize: 16,
-                          descriptionSize: 12,
-                          chipSize: 12,
-                          overlayOpacity: 0.25,
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _selectedHaircutIndex = index;
+                            });
+                          },
                         ),
-                      );
-                    }).toList(),
-                  ),
+                        items: _haircuts.asMap().entries.map((entry) {
+                          final int itemIndex = entry.key;
+                          final Map<String, dynamic> haircut = entry.value;
+                          final Color baseColor = haircut['color'] as Color;
+                          final List<Color> colors = [
+                            baseColor.withOpacity(0.7),
+                            baseColor.withOpacity(0.5),
+                            baseColor.withOpacity(0.6),
+                            baseColor.withOpacity(0.8),
+                          ];
+
+                          return Align(
+                            alignment: Alignment.center,
+                            child: _buildCarouselCard(
+                              haircut: haircut,
+                              colors: colors,
+                              itemIndex: itemIndex,
+                              iconSize: iconSize,
+                              titleSize: titleSize,
+                              descriptionSize: descriptionSize,
+                              chipSize: chipSize,
+                              overlayOpacity: 0.25,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                 ),
-                const SizedBox(height: 8),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -390,12 +411,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             Tab(text: 'Hair'),
             Tab(text: 'Beard'),
           ],
-          labelColor: AppColors.primary,
-          unselectedLabelColor: AppColors.textTertiary,
+          labelColor: Theme.of(context).colorScheme.primary,
+          unselectedLabelColor: Theme.of(
+            context,
+          ).colorScheme.onSurface.withOpacity(0.6),
           labelStyle: AppTextStyles.titleMedium,
           unselectedLabelStyle: AppTextStyles.titleMedium,
           indicatorSize: TabBarIndicatorSize.label,
-          indicatorColor: AppColors.accent,
+          indicatorColor: Theme.of(context).colorScheme.secondary,
         ),
         Expanded(
           child: TabBarView(
@@ -408,13 +431,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildHaircutGrid() {
+    final scale = _responsiveScale(context);
+    final width = MediaQuery.of(context).size.width;
+
     return GridView.builder(
       padding: const EdgeInsets.all(16.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 15,
-        mainAxisSpacing: 15,
-        childAspectRatio: 3 / 4,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: _gridCrossAxisCount(width),
+        crossAxisSpacing: 8 * scale,
+        mainAxisSpacing: 8 * scale,
+        childAspectRatio: width < 360 ? 0.72 : 0.78,
       ),
       itemCount: _haircuts.length,
       itemBuilder: (context, index) {
@@ -424,6 +450,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           item: haircut,
           itemIndex: index,
           isSelected: isSelected,
+          scale: scale,
           onTap: () {
             setState(() {
               _selectedHaircutIndex = index;
@@ -436,13 +463,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildBeardGrid() {
+    final scale = _responsiveScale(context);
+    final width = MediaQuery.of(context).size.width;
+
     return GridView.builder(
       padding: const EdgeInsets.all(16.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 15,
-        mainAxisSpacing: 15,
-        childAspectRatio: 3 / 4,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: _gridCrossAxisCount(width),
+        crossAxisSpacing: 8 * scale,
+        mainAxisSpacing: 8 * scale,
+        childAspectRatio: width < 360 ? 0.72 : 0.78,
       ),
       itemCount: _beardStyles.length,
       itemBuilder: (context, index) {
@@ -452,6 +482,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           item: beard,
           itemIndex: index,
           isSelected: isSelected,
+          scale: scale,
           onTap: () {
             setState(() {
               _selectedBeardIndex = index;
@@ -470,6 +501,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required Map<String, dynamic> item,
     required int itemIndex,
     required bool isSelected,
+    required double scale,
     required VoidCallback onTap,
   }) {
     final Color baseColor = item['color'] as Color;
@@ -506,10 +538,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             haircut: item,
             colors: colors,
             itemIndex: itemIndex,
-            iconSize: 120,
-            titleSize: 12,
-            descriptionSize: 10,
-            chipSize: 10,
+            iconSize: (120 * scale).clamp(90, 150),
+            titleSize: (12 * scale).clamp(10, 13),
+            descriptionSize: (10 * scale).clamp(9, 11),
+            chipSize: (10 * scale).clamp(9, 11),
             overlayOpacity: 0.25,
           ),
         ),
