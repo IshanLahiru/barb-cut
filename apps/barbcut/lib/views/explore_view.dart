@@ -124,6 +124,7 @@ class ExploreView extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -134,9 +135,9 @@ class ExploreView extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: colors[itemIndex % colors.length].withOpacity(0.35),
-            blurRadius: 18,
-            spreadRadius: 2,
+            color: colors[itemIndex % colors.length].withOpacity(0.3),
+            blurRadius: 16,
+            spreadRadius: 1,
             offset: const Offset(0, 8),
           ),
         ],
@@ -155,8 +156,11 @@ class ExploreView extends StatelessWidget {
             right: 12,
             bottom: 12,
             child: Container(
-              padding: const EdgeInsets.all(8),
-              color: Colors.black.withOpacity(0.35),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.35),
+                borderRadius: BorderRadius.circular(14),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -196,8 +200,18 @@ class ExploreView extends StatelessWidget {
             top: 10,
             right: 10,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              color: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
               child: Text(
                 '${itemIndex + 1}',
                 style: TextStyle(
@@ -216,7 +230,10 @@ class ExploreView extends StatelessWidget {
   Widget _chip(String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      color: Colors.white.withOpacity(0.15),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Text(
         text,
         style: const TextStyle(

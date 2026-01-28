@@ -204,6 +204,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -214,10 +215,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         ),
         boxShadow: [
           BoxShadow(
-            color: colors[itemIndex % colors.length].withOpacity(0.35),
-            blurRadius: 18,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
+            color: colors[itemIndex % colors.length].withOpacity(0.3),
+            blurRadius: 20,
+            spreadRadius: 1,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -238,8 +239,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
-                  color: Colors.black.withOpacity(0.35),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.35),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -272,8 +276,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(4),
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               haircut['price'],
@@ -291,8 +295,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(4),
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               haircut['duration'],
@@ -315,10 +319,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             top: 12,
             right: 12,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Text(
                 '${itemIndex + 1}',
@@ -441,22 +452,36 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
             color: isSelected ? baseColor : Colors.transparent,
-            width: 2,
+            width: 2.5,
           ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: baseColor.withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
-        child: _buildCarouselCard(
-          haircut: item,
-          colors: colors,
-          itemIndex: itemIndex,
-          iconSize: 120,
-          titleSize: 12,
-          descriptionSize: 10,
-          chipSize: 10,
-          overlayOpacity: 0.25,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: _buildCarouselCard(
+            haircut: item,
+            colors: colors,
+            itemIndex: itemIndex,
+            iconSize: 120,
+            titleSize: 12,
+            descriptionSize: 10,
+            chipSize: 10,
+            overlayOpacity: 0.25,
+          ),
         ),
       ),
     );
