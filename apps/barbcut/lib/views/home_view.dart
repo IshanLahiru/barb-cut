@@ -210,6 +210,25 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         }).toList(),
                       ),
                     ),
+                    const SizedBox(height: AiSpacing.sm),
+                    // Carousel indicators
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        _haircuts.length,
+                        (index) => Container(
+                          width: 6,
+                          height: 6,
+                          margin: const EdgeInsets.symmetric(horizontal: 3),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _selectedHaircutIndex == index
+                                ? AiColors.neonCyan
+                                : AiColors.borderLight.withValues(alpha: 0.5),
+                          ),
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: AiSpacing.md),
                   ],
                 ),
