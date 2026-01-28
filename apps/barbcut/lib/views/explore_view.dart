@@ -19,7 +19,7 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$25',
       'duration': '30 min',
       'description': 'A timeless fade that never goes out of style',
-      'icon': Icons.content_cut,
+      'image': 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
       'accentColor': AiColors.neonCyan,
     },
     {
@@ -27,7 +27,7 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$15',
       'duration': '15 min',
       'description': 'Clean and simple, perfect for low maintenance',
-      'icon': Icons.face_retouching_natural,
+      'image': 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop',
       'accentColor': AiColors.sunsetCoral,
     },
     {
@@ -35,7 +35,7 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$35',
       'duration': '45 min',
       'description': 'Bold and stylish with volume on top',
-      'icon': Icons.style,
+      'image': 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop',
       'accentColor': AiColors.neonPurple,
     },
     {
@@ -43,7 +43,7 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$30',
       'duration': '35 min',
       'description': 'Modern and edgy with short sides',
-      'icon': Icons.face,
+      'image': 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
       'accentColor': AiColors.neonCyan,
     },
     {
@@ -51,7 +51,7 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$20',
       'duration': '20 min',
       'description': 'Professional and neat for any occasion',
-      'icon': Icons.person,
+      'image': 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
       'accentColor': AiColors.sunsetCoral,
     },
     {
@@ -59,7 +59,7 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$20',
       'duration': '25 min',
       'description': 'A classic full beard, well-groomed.',
-      'icon': Icons.face_retouching_natural,
+      'image': 'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
       'accentColor': AiColors.neonPurple,
     },
     {
@@ -67,7 +67,7 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$15',
       'duration': '20 min',
       'description': 'A stylish goatee, precisely trimmed.',
-      'icon': Icons.face,
+      'image': 'https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop',
       'accentColor': AiColors.neonCyan,
     },
     {
@@ -75,7 +75,7 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$10',
       'duration': '10 min',
       'description': 'A short, rugged stubble.',
-      'icon': Icons.face,
+      'image': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
       'accentColor': AiColors.sunsetCoral,
     },
   ];
@@ -292,11 +292,23 @@ class _ExploreViewState extends State<ExploreView> {
       ),
       child: Stack(
         children: [
-          Center(
-            child: Icon(
-              style['icon'],
-              size: 110,
-              color: accentColor.withValues(alpha: 0.5),
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+              child: Image.network(
+                style['image'],
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: accentColor.withValues(alpha: 0.2),
+                    child: Icon(
+                      Icons.image_not_supported,
+                      size: 110,
+                      color: accentColor.withValues(alpha: 0.5),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
           Positioned(
@@ -306,7 +318,7 @@ class _ExploreViewState extends State<ExploreView> {
             child: Container(
               padding: const EdgeInsets.all(AiSpacing.sm),
               decoration: BoxDecoration(
-                color: AiColors.backgroundDeep,
+                color: AiColors.backgroundDeep.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
                 border: Border.all(
                   color: accentColor.withValues(alpha: 0.3),
