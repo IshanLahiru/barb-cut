@@ -120,6 +120,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       appBar: AppBar(
         backgroundColor: AiColors.backgroundDark,
         elevation: 0,
+        toolbarHeight: 48,
         title: Text(
           'Barbcut',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
