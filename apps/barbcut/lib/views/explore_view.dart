@@ -344,10 +344,12 @@ class _ExploreViewState extends State<ExploreView> {
                   ),
                   const SizedBox(height: AiSpacing.sm),
                   Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _chip(style['price'], accentColor),
+                      Flexible(child: _chip(style['price'], accentColor)),
                       const SizedBox(width: AiSpacing.xs),
-                      _chip(style['duration'], accentColor),
+                      Flexible(child: _chip(style['duration'], accentColor)),
                     ],
                   ),
                 ],
