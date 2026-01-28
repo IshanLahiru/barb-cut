@@ -289,13 +289,6 @@ class _ExploreViewState extends State<ExploreView> {
           color: accentColor.withValues(alpha: 0.3),
           width: 1.5,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: accentColor.withValues(alpha: 0.2),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
       ),
       child: Stack(
         children: [
@@ -367,13 +360,6 @@ class _ExploreViewState extends State<ExploreView> {
               decoration: BoxDecoration(
                 color: accentColor,
                 borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
-                boxShadow: [
-                  BoxShadow(
-                    color: accentColor.withValues(alpha: 0.4),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
               child: Text(
                 '${index + 1}',

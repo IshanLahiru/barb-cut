@@ -155,12 +155,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             child: SafeArea(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                // padding: const EdgeInsets.fromLTRB(
-                //   AiSpacing.lg,
-                //   AiSpacing.md,
-                //   AiSpacing.lg,
-                //   AiSpacing.lg,
-                // ),
+                padding: const EdgeInsets.fromLTRB(
+                  AiSpacing.lg,
+                  AiSpacing.md,
+                  AiSpacing.lg,
+                  AiSpacing.lg,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -186,7 +186,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           final int itemIndex = entry.key;
                           final Map<String, dynamic> haircut = entry.value;
                           final Color accentColor =
-                              (haircut['accentColor'] as Color?) ?? AiColors.neonCyan;
+                              (haircut['accentColor'] as Color?) ??
+                              AiColors.neonCyan;
 
                           return Align(
                             alignment: Alignment.center,
@@ -236,13 +237,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           color: accentColor.withValues(alpha: 0.3),
           width: 1.5,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: accentColor.withValues(alpha: 0.25),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
       ),
       child: Stack(
         children: [
@@ -363,13 +357,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               decoration: BoxDecoration(
                 color: accentColor,
                 borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                boxShadow: [
-                  BoxShadow(
-                    color: accentColor.withValues(alpha: 0.4),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
               ),
               child: Center(
                 child: Text(
@@ -504,7 +491,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    final Color accentColor = (item['accentColor'] as Color?) ?? AiColors.neonCyan;
+    final Color accentColor =
+        (item['accentColor'] as Color?) ?? AiColors.neonCyan;
 
     return InkWell(
       onTap: onTap,
@@ -517,15 +505,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             width: isSelected ? 2 : 1.5,
           ),
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: accentColor.withValues(alpha: 0.3),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : null,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
