@@ -185,6 +185,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           enlargeCenterPage: true,
                           enableInfiniteScroll: true,
                           autoPlay: false,
+                          showIndicator: false,
                           onPageChanged: (index, reason) {
                             setState(() {
                               _selectedHaircutIndex = index;
