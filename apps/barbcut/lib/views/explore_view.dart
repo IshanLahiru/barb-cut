@@ -104,9 +104,9 @@ class _ExploreViewState extends State<ExploreView> {
         title: Text(
           'Explore',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AiColors.textPrimary,
-                fontWeight: FontWeight.w700,
-              ),
+            color: AiColors.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         centerTitle: false,
         surfaceTintColor: Colors.transparent,
@@ -123,10 +123,7 @@ class _ExploreViewState extends State<ExploreView> {
               decoration: BoxDecoration(
                 color: AiColors.backgroundDark,
                 border: Border(
-                  bottom: BorderSide(
-                    color: AiColors.borderGlass,
-                    width: 1,
-                  ),
+                  bottom: BorderSide(color: AiColors.borderGlass, width: 1),
                 ),
               ),
               child: Column(
@@ -135,9 +132,9 @@ class _ExploreViewState extends State<ExploreView> {
                   Text(
                     'Discover Styles',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AiColors.textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      color: AiColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const SizedBox(height: AiSpacing.sm),
                   // Search field with neon cyan focus
@@ -149,13 +146,12 @@ class _ExploreViewState extends State<ExploreView> {
                       });
                     },
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AiColors.textPrimary,
-                        ),
+                      color: AiColors.textPrimary,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Fade, buzz cut, pompadour...',
-                      hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AiColors.textTertiary,
-                          ),
+                      hintStyle: Theme.of(context).textTheme.bodyMedium
+                          ?.copyWith(color: AiColors.textTertiary),
                       prefixIcon: Icon(
                         Icons.search,
                         color: AiColors.textTertiary,
@@ -183,24 +179,27 @@ class _ExploreViewState extends State<ExploreView> {
                         vertical: AiSpacing.md,
                       ),
                       border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(AiSpacing.radiusLarge),
+                        borderRadius: BorderRadius.circular(
+                          AiSpacing.radiusLarge,
+                        ),
                         borderSide: const BorderSide(
                           color: AiColors.borderLight,
                           width: 1.5,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(AiSpacing.radiusLarge),
+                        borderRadius: BorderRadius.circular(
+                          AiSpacing.radiusLarge,
+                        ),
                         borderSide: const BorderSide(
                           color: AiColors.borderLight,
                           width: 1.5,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(AiSpacing.radiusLarge),
+                        borderRadius: BorderRadius.circular(
+                          AiSpacing.radiusLarge,
+                        ),
                         borderSide: const BorderSide(
                           color: AiColors.neonCyan,
                           width: 2,
@@ -227,22 +226,14 @@ class _ExploreViewState extends State<ExploreView> {
                           const SizedBox(height: AiSpacing.md),
                           Text(
                             'No styles found',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  color: AiColors.textPrimary,
-                                ),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(color: AiColors.textPrimary),
                           ),
                           const SizedBox(height: AiSpacing.sm),
                           Text(
                             'Try a different search term',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(
-                                  color: AiColors.textTertiary,
-                                ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AiColors.textTertiary),
                           ),
                         ],
                       ),
@@ -272,8 +263,12 @@ class _ExploreViewState extends State<ExploreView> {
     );
   }
 
-  Widget _buildStyleCard(BuildContext context, Map<String, dynamic> style, int index) {
-    final accentColor = style['accentColor'] as Color;
+  Widget _buildStyleCard(
+    BuildContext context,
+    Map<String, dynamic> style,
+    int index,
+  ) {
+    final accentColor = (style['accentColor'] as Color?) ?? AiColors.neonCyan;
 
     return Container(
       margin: EdgeInsets.symmetric(
@@ -333,9 +328,9 @@ class _ExploreViewState extends State<ExploreView> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: accentColor,
-                          fontWeight: FontWeight.w700,
-                        ),
+                      color: accentColor,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: AiSpacing.xs),
                   Text(
@@ -343,9 +338,9 @@ class _ExploreViewState extends State<ExploreView> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontSize: 10,
-                          color: AiColors.textSecondary,
-                        ),
+                      fontSize: 10,
+                      color: AiColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: AiSpacing.sm),
                   Row(
@@ -381,9 +376,9 @@ class _ExploreViewState extends State<ExploreView> {
               child: Text(
                 '${index + 1}',
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: AiColors.backgroundDeep,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  color: AiColors.backgroundDeep,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),
@@ -409,10 +404,10 @@ class _ExploreViewState extends State<ExploreView> {
       child: Text(
         text,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontSize: 10,
-              color: accentColor,
-              fontWeight: FontWeight.w600,
-            ),
+          fontSize: 10,
+          color: accentColor,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

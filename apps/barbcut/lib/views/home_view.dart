@@ -155,12 +155,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             child: SafeArea(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(
-                  AiSpacing.lg,
-                  AiSpacing.md,
-                  AiSpacing.lg,
-                  AiSpacing.lg,
-                ),
+                // padding: const EdgeInsets.fromLTRB(
+                //   AiSpacing.lg,
+                //   AiSpacing.md,
+                //   AiSpacing.lg,
+                //   AiSpacing.lg,
+                // ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -186,7 +186,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           final int itemIndex = entry.key;
                           final Map<String, dynamic> haircut = entry.value;
                           final Color accentColor =
-                              haircut['accentColor'] as Color;
+                              (haircut['accentColor'] as Color?) ?? AiColors.neonCyan;
 
                           return Align(
                             alignment: Alignment.center,
@@ -504,7 +504,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    final Color accentColor = item['accentColor'] as Color;
+    final Color accentColor = (item['accentColor'] as Color?) ?? AiColors.neonCyan;
 
     return InkWell(
       onTap: onTap,
