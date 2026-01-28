@@ -19,7 +19,8 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$25',
       'duration': '30 min',
       'description': 'A timeless fade that never goes out of style',
-      'image': 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
       'accentColor': AiColors.neonCyan,
     },
     {
@@ -27,7 +28,8 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$15',
       'duration': '15 min',
       'description': 'Clean and simple, perfect for low maintenance',
-      'image': 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop',
       'accentColor': AiColors.sunsetCoral,
     },
     {
@@ -35,7 +37,8 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$35',
       'duration': '45 min',
       'description': 'Bold and stylish with volume on top',
-      'image': 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop',
       'accentColor': AiColors.neonPurple,
     },
     {
@@ -43,7 +46,8 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$30',
       'duration': '35 min',
       'description': 'Modern and edgy with short sides',
-      'image': 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
       'accentColor': AiColors.neonCyan,
     },
     {
@@ -51,7 +55,8 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$20',
       'duration': '20 min',
       'description': 'Professional and neat for any occasion',
-      'image': 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
       'accentColor': AiColors.sunsetCoral,
     },
     {
@@ -59,7 +64,8 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$20',
       'duration': '25 min',
       'description': 'A classic full beard, well-groomed.',
-      'image': 'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
       'accentColor': AiColors.neonPurple,
     },
     {
@@ -67,7 +73,8 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$15',
       'duration': '20 min',
       'description': 'A stylish goatee, precisely trimmed.',
-      'image': 'https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop',
       'accentColor': AiColors.neonCyan,
     },
     {
@@ -75,7 +82,8 @@ class _ExploreViewState extends State<ExploreView> {
       'price': '\$10',
       'duration': '10 min',
       'description': 'A short, rugged stubble.',
-      'image': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
       'accentColor': AiColors.sunsetCoral,
     },
   ];
@@ -311,54 +319,49 @@ class _ExploreViewState extends State<ExploreView> {
               ),
             ),
           ),
+          // Gradient overlay
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.3),
+                    Colors.black.withValues(alpha: 0.7),
+                  ],
+                  stops: const [0.4, 0.7, 1.0],
+                ),
+              ),
+            ),
+          ),
+          // Minimal text overlay
           Positioned(
             left: AiSpacing.md,
             right: AiSpacing.md,
             bottom: AiSpacing.md,
-            child: Container(
-              padding: const EdgeInsets.all(AiSpacing.sm),
-              decoration: BoxDecoration(
-                color: AiColors.backgroundDeep.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-                border: Border.all(
-                  color: accentColor.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    style['name'],
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: accentColor,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: AiSpacing.xs),
-                  Text(
-                    style['description'],
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontSize: 10,
-                      color: AiColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: AiSpacing.sm),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(child: _chip(style['price'], accentColor)),
-                      const SizedBox(width: AiSpacing.xs),
-                      Flexible(child: _chip(style['duration'], accentColor)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  style['name'],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        offset: const Offset(0, 2),
+                        blurRadius: 4,
+                      ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           Positioned(
