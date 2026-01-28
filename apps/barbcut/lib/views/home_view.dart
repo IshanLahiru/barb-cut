@@ -165,14 +165,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(
                   AiSpacing.lg,
-                  AiSpacing.md,
+                  0,
                   AiSpacing.lg,
                   AiSpacing.lg,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: AiSpacing.md),
+                    const SizedBox(height: AiSpacing.xs),
                     SizedBox(
                       height: carouselHeight,
                       child: FlutterCarousel(
