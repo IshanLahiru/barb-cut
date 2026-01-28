@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:barbcut/views/explore_view.dart';
 import 'package:barbcut/views/home_view.dart';
 import 'package:barbcut/views/profile_view.dart';
+import '../theme/app_colors.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -31,10 +32,11 @@ class _MainScreenState extends State<MainScreen> {
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
+          color: AppColors.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 12,
+              color: AppColors.shadow,
+              blurRadius: 8,
               offset: const Offset(0, -2),
             ),
           ],
@@ -49,7 +51,9 @@ class _MainScreenState extends State<MainScreen> {
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Theme.of(context).primaryColor,
+          selectedItemColor: AppColors.primary,
+          unselectedItemColor: AppColors.textTertiary,
+          backgroundColor: AppColors.surface,
           onTap: _onItemTapped,
           showSelectedLabels: false,
           showUnselectedLabels: false,

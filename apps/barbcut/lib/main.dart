@@ -8,6 +8,7 @@ import 'firebase_options.dart';
 import 'controllers/auth_controller.dart';
 import 'services/auth_service.dart';
 import 'auth_screen.dart';
+import 'theme/app_theme.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -36,9 +37,8 @@ class _MyAppState extends State<MyApp> {
       create: (_) => AuthController(AuthService()),
       child: MaterialApp(
         title: 'Barbcut',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
+        theme: AppTheme.lightTheme,
+        debugShowCheckedModeBanner: false,
         home: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {

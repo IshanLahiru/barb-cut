@@ -1,7 +1,24 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_spacing.dart';
 
-class ExploreView extends StatelessWidget {
+class ExploreView extends StatefulWidget {
   const ExploreView({super.key});
+
+  @override
+  State<ExploreView> createState() => _ExploreViewState();
+}
+
+class _ExploreViewState extends State<ExploreView> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   static final List<Map<String, dynamic>> _styles = [
     {
@@ -72,45 +89,159 @@ class ExploreView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final filteredStyles = _styles.where((style) {
+      if (_searchQuery.isEmpty) return true;
+      final name = style['name'].toString().toLowerCase();
+      final description = style['description'].toString().toLowerCase();
+      final query = _searchQuery.toLowerCase();
+      return name.contains(query) || description.contains(query);
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Explore', style: TextStyle(fontSize: 14)),
+        title: Text('Explore', style: AppTextStyles.titleMedium),
         toolbarHeight: 22,
         elevation: 0,
+        backgroundColor: AppColors.background,
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.blue[50]!, Colors.purple[50]!],
-          ),
-        ),
-        child: GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.78,
-          ),
-          itemCount: _styles.length,
-          itemBuilder: (context, index) {
-            final item = _styles[index];
-            final Color baseColor = item['color'] as Color;
-            final List<Color> colors = [
-              baseColor.withOpacity(0.7),
-              baseColor.withOpacity(0.5),
-              baseColor.withOpacity(0.6),
-              baseColor.withOpacity(0.8),
-            ];
+        decoration: const BoxDecoration(color: AppColors.background),
+        child: Column(
+          children: [
+            // Search Bar
+            Container(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.sm,
+              ),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search styles...',
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: AppColors.textTertiary,
+                    size: 20,
+                  ),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.clear,
+                            color: AppColors.textTertiary,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _searchController.clear();
+                              _searchQuery = '';
+                            });
+                          },
+                        )
+                      : null,
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.md,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSM),
+                    borderSide: BorderSide(
+                      color: AppColors.borderLight,
+                      width: 1.0,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSM),
+                    borderSide: BorderSide(
+                      color: AppColors.borderLight,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSM),
+                    borderSide: BorderSide(
+                      color: AppColors.primary,
+                      width: 1.5,
+                    ),
+                  ),
+                  hintStyle: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textTertiary,
+                  ),
+                ),
+                style: AppTextStyles.bodyMedium,
+              ),
+            ),
+            // Grid
+            Expanded(
+              child: filteredStyles.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search_off,
+                            size: 64,
+                            color: AppColors.textTertiary,
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          Text(
+                            'No styles found',
+                            style: AppTextStyles.titleMedium.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          Text(
+                            'Try a different search term',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textTertiary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : GridView.builder(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.md,
+                        AppSpacing.sm,
+                        AppSpacing.md,
+                        AppSpacing.md,
+                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: AppSpacing.md,
+                            mainAxisSpacing: AppSpacing.md,
+                            childAspectRatio: 0.78,
+                          ),
+                      itemCount: filteredStyles.length,
+                      itemBuilder: (context, index) {
+                        final item = filteredStyles[index];
+                        final Color baseColor = item['color'] as Color;
+                        final List<Color> colors = [
+                          baseColor.withOpacity(0.7),
+                          baseColor.withOpacity(0.5),
+                          baseColor.withOpacity(0.6),
+                          baseColor.withOpacity(0.8),
+                        ];
 
-            return _buildExploreCard(
-              item: item,
-              colors: colors,
-              itemIndex: index,
-            );
-          },
+                        return _buildExploreCard(
+                          item: item,
+                          colors: colors,
+                          itemIndex: index,
+                        );
+                      },
+                    ),
+            ),
+          ],
         ),
       ),
     );
@@ -122,9 +253,12 @@ class ExploreView extends StatelessWidget {
     required int itemIndex,
   }) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      margin: EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -135,10 +269,10 @@ class ExploreView extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: colors[itemIndex % colors.length].withOpacity(0.3),
-            blurRadius: 16,
-            spreadRadius: 1,
-            offset: const Offset(0, 8),
+            color: colors[itemIndex % colors.length].withOpacity(0.2),
+            blurRadius: 12,
+            spreadRadius: 0,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -156,10 +290,10 @@ class ExploreView extends StatelessWidget {
             right: 12,
             bottom: 12,
             child: Container(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(AppSpacing.sm + 2),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.35),
-                borderRadius: BorderRadius.circular(14),
+                color: AppColors.primary.withOpacity(0.85),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,20 +302,18 @@ class ExploreView extends StatelessWidget {
                     item['name'],
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                    style: AppTextStyles.titleSmall.copyWith(
+                      color: AppColors.surface,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     item['description'],
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: AppTextStyles.bodySmall.copyWith(
                       fontSize: 10,
-                      color: Colors.white.withOpacity(0.9),
+                      color: AppColors.surface.withOpacity(0.9),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -200,13 +332,16 @@ class ExploreView extends StatelessWidget {
             top: 10,
             right: 10,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm + 2,
+                vertical: AppSpacing.sm,
+              ),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusSM + 2),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: AppColors.shadow,
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -214,11 +349,7 @@ class ExploreView extends StatelessWidget {
               ),
               child: Text(
                 '${itemIndex + 1}',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: item['color'],
-                  fontSize: 12,
-                ),
+                style: AppTextStyles.labelMedium.copyWith(color: item['color']),
               ),
             ),
           ),
@@ -229,17 +360,19 @@ class ExploreView extends StatelessWidget {
 
   Widget _chip(String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.accent.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSM),
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: AppTextStyles.labelSmall.copyWith(
           fontSize: 10,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
+          color: AppColors.surface,
         ),
       ),
     );

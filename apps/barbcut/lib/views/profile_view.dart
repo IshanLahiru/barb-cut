@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../controllers/auth_controller.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_spacing.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -10,23 +12,25 @@ class ProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile', style: TextStyle(fontSize: 14)),
+        title: Text('Profile', style: AppTextStyles.titleMedium),
         toolbarHeight: 22,
         elevation: 0,
+        backgroundColor: AppColors.background,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: AppSpacing.paddingLG,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: AppSpacing.paddingLG,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
+              border: Border.all(color: AppColors.borderLight, width: 1.0),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+                  color: AppColors.shadow,
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -36,15 +40,11 @@ class ProfileView extends StatelessWidget {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.blue[400]!, Colors.purple[400]!],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withOpacity(0.3),
+                        color: AppColors.primary.withOpacity(0.2),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -60,22 +60,13 @@ class ProfileView extends StatelessWidget {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Guest User',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      SizedBox(height: 6),
+                    children: [
+                      Text('Guest User', style: AppTextStyles.headlineSmall),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(
                         'guest@barbcut.app',
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -86,14 +77,14 @@ class ProfileView extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 12),
+            padding: const EdgeInsets.only(
+              left: AppSpacing.xs,
+              bottom: AppSpacing.md,
+            ),
             child: Text(
               'Account',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                color: Colors.black87,
-                letterSpacing: 0.5,
+              style: AppTextStyles.overline.copyWith(
+                color: AppColors.textPrimary,
               ),
             ),
           ),
@@ -102,14 +93,14 @@ class ProfileView extends StatelessWidget {
           _buildTile(icon: Icons.history, title: 'Appointments'),
           const SizedBox(height: 28),
           Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 12),
+            padding: const EdgeInsets.only(
+              left: AppSpacing.xs,
+              bottom: AppSpacing.md,
+            ),
             child: Text(
               'Settings',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                color: Colors.black87,
-                letterSpacing: 0.5,
+              style: AppTextStyles.overline.copyWith(
+                color: AppColors.textPrimary,
               ),
             ),
           ),
@@ -134,37 +125,38 @@ class ProfileView extends StatelessWidget {
     VoidCallback? onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+        border: Border.all(color: AppColors.borderLight, width: 1.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: AppColors.shadow,
+            blurRadius: 4,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.xs,
+        ),
         leading: Container(
-          padding: const EdgeInsets.all(8),
+          padding: AppSpacing.paddingSM,
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.primary.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusSM),
           ),
-          child: Icon(icon, size: 20, color: Colors.blue[700]),
+          child: Icon(icon, size: 20, color: AppColors.primary),
         ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            letterSpacing: -0.2,
-          ),
+        title: Text(title, style: AppTextStyles.titleMedium),
+        trailing: Icon(
+          Icons.chevron_right,
+          size: 22,
+          color: AppColors.textTertiary,
         ),
-        trailing: Icon(Icons.chevron_right, size: 22, color: Colors.grey[400]),
         onTap: onTap,
       ),
     );
