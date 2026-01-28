@@ -3,6 +3,8 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'dart:math';
+import 'dart:async';
+import 'dart:ui';
 import '../theme/ai_colors.dart';
 import '../theme/ai_spacing.dart';
 
@@ -21,6 +23,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   final Random _random = Random();
   late List<double> _haircutHeights;
   late List<double> _beardHeights;
+  bool _isGenerating = false;
+  int? _confirmedHaircutIndex;
+  int? _confirmedBeardIndex;
+  Timer? _carouselTimer;
 
   final List<Map<String, dynamic>> _haircuts = [
     {
@@ -476,9 +482,147 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
+  void _onTryThisPressed() async {
+    // Show dialog asking if user wants to select beard style
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AiColors.backgroundDark,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+          ),
+          title: Text(
+            'Select Beard Style?',
+            style: TextStyle(color: AiColors.textPrimary),
+          ),
+          content: Text(
+            'Do you need to select a beard style as well?',
+            style: TextStyle(color: AiColors.textSecondary),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('No', style: TextStyle(color: AiColors.textTertiary)),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AiColors.neonCyan,
+                foregroundColor: AiColors.backgroundDeep,
+              ),
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == null) return;
+
+    if (result) {
+      // User wants to select beard style - switch to beard tab
+      _tabController.animateTo(1);
+      _panelController.open();
+    } else {
+      // User doesn't want beard style - proceed with confirmation
+      _showConfirmationDialog();
+    }
+  }
+
+  void _showConfirmationDialog() async {
+    final haircut = _haircuts[_confirmedHaircutIndex ?? _selectedHaircutIndex];
+    final beard = _confirmedBeardIndex != null
+        ? _beardStyles[_confirmedBeardIndex!]
+        : null;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AiColors.backgroundDark,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+          ),
+          title: Text(
+            'Confirm Selection',
+            style: TextStyle(color: AiColors.textPrimary),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Haircut: ${haircut['name']}',
+                style: TextStyle(color: AiColors.textSecondary, fontSize: 16),
+              ),
+              if (beard != null) ...[
+                SizedBox(height: 8),
+                Text(
+                  'Beard: ${beard['name']}',
+                  style: TextStyle(color: AiColors.textSecondary, fontSize: 16),
+                ),
+              ],
+              SizedBox(height: 16),
+              Text(
+                'Generate this style?',
+                style: TextStyle(
+                  color: AiColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: AiColors.textTertiary),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AiColors.neonCyan,
+                foregroundColor: AiColors.backgroundDeep,
+              ),
+              child: Text('Generate'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      _startGeneration();
+    }
+  }
+
+  void _startGeneration() {
+    setState(() {
+      _isGenerating = true;
+    });
+
+    _panelController.close();
+
+    // After 5 seconds, reset
+    Future.delayed(Duration(seconds: 5), () {
+      _carouselTimer?.cancel();
+      if (mounted) {
+        setState(() {
+          _isGenerating = false;
+          _confirmedHaircutIndex = null;
+          _confirmedBeardIndex = null;
+        });
+      }
+    });
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
+    _carouselTimer?.cancel();
     super.dispose();
   }
 
@@ -551,41 +695,55 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     const SizedBox(height: AiSpacing.xs),
                     SizedBox(
                       height: carouselHeight,
-                      child: FlutterCarousel(
-                        options: CarouselOptions(
-                          height: carouselHeight,
-                          viewportFraction: (constraints.maxWidth < 360)
-                              ? 0.88
-                              : (constraints.maxWidth < 600 ? 0.8 : 0.7),
-                          enlargeCenterPage: true,
-                          enableInfiniteScroll: true,
-                          autoPlay: false,
-                          showIndicator: false,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _selectedHaircutIndex = index;
-                            });
-                          },
-                        ),
-                        items: _haircuts.take(4).toList().asMap().entries.map((
-                          entry,
-                        ) {
-                          final int itemIndex = entry.key;
-                          final Map<String, dynamic> haircut = entry.value;
-                          final Color accentColor =
-                              (haircut['accentColor'] as Color?) ??
-                              AiColors.neonCyan;
-
-                          return Align(
-                            alignment: Alignment.center,
-                            child: _buildCarouselCard(
-                              haircut: haircut,
-                              accentColor: accentColor,
-                              itemIndex: itemIndex,
-                              iconSize: iconSize,
+                      child: Stack(
+                        children: [
+                          FlutterCarousel(
+                            options: CarouselOptions(
+                              height: carouselHeight,
+                              viewportFraction: (constraints.maxWidth < 360)
+                                  ? 0.88
+                                  : (constraints.maxWidth < 600 ? 0.8 : 0.7),
+                              enlargeCenterPage: true,
+                              enableInfiniteScroll: true,
+                              autoPlay: _isGenerating,
+                              autoPlayInterval: Duration(milliseconds: 1500),
+                              autoPlayAnimationDuration: Duration(
+                                milliseconds: 800,
+                              ),
+                              showIndicator: false,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _selectedHaircutIndex = index;
+                                });
+                              },
                             ),
-                          );
-                        }).toList(),
+                            items: _haircuts
+                                .take(4)
+                                .toList()
+                                .asMap()
+                                .entries
+                                .map((entry) {
+                                  final int itemIndex = entry.key;
+                                  final Map<String, dynamic> haircut =
+                                      entry.value;
+                                  final Color accentColor =
+                                      (haircut['accentColor'] as Color?) ??
+                                      AiColors.neonCyan;
+
+                                  return Align(
+                                    alignment: Alignment.center,
+                                    child: _buildCarouselCard(
+                                      haircut: haircut,
+                                      accentColor: accentColor,
+                                      itemIndex: itemIndex,
+                                      iconSize: iconSize,
+                                      isGenerating: _isGenerating,
+                                    ),
+                                  );
+                                })
+                                .toList(),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: AiSpacing.none),
@@ -623,8 +781,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required Color accentColor,
     required int itemIndex,
     required double iconSize,
+    bool isGenerating = false,
   }) {
-    return Container(
+    Widget cardContent = Container(
       margin: EdgeInsets.symmetric(
         horizontal: AiSpacing.sm,
         vertical: AiSpacing.sm,
@@ -709,6 +868,39 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         ],
       ),
     );
+
+    // Apply blur and spinner overlay if generating
+    if (isGenerating) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+        child: Stack(
+          children: [
+            // Blurred card content
+            ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: cardContent,
+            ),
+            // Spinner overlay
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+                ),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AiColors.neonCyan,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return cardContent;
   }
 
   Widget _buildPanel() {
@@ -776,7 +968,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               setState(() {
                 _selectedHaircutIndex = index;
               });
-              _panelController.close();
             },
           );
         },
@@ -818,7 +1009,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               setState(() {
                 _selectedBeardIndex = index;
               });
-              _panelController.close();
             },
           );
         },
@@ -842,19 +1032,59 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
+          border: isSelected
+              ? Border.all(color: AiColors.neonCyan, width: 3)
+              : null,
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
         ),
-        child: SizedBox(
-          height: height,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-            child: _buildCarouselCard(
-              haircut: item,
-              accentColor: accentColor,
-              itemIndex: itemIndex,
-              iconSize: 120,
+        child: Stack(
+          children: [
+            SizedBox(
+              height: height,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+                child: _buildCarouselCard(
+                  haircut: item,
+                  accentColor: accentColor,
+                  itemIndex: itemIndex,
+                  iconSize: 120,
+                ),
+              ),
             ),
-          ),
+            if (isSelected)
+              Positioned(
+                bottom: 12,
+                left: 12,
+                right: 12,
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      if (_tabController.index == 0) {
+                        _confirmedHaircutIndex = itemIndex;
+                        _onTryThisPressed();
+                      } else {
+                        _confirmedBeardIndex = itemIndex;
+                        _showConfirmationDialog();
+                      }
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AiColors.neonCyan,
+                    foregroundColor: AiColors.backgroundDeep,
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        AiSpacing.radiusMedium,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    'Try This',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
