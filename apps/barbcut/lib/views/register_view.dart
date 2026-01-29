@@ -230,19 +230,19 @@ class _RegisterViewState extends State<RegisterView> {
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: AiColors.error.withValues(alpha: 0.15),
+                          color: AiColors.danger.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(
                             AiSpacing.radiusMedium,
                           ),
                           border: Border.all(
-                            color: AiColors.error.withValues(alpha: 0.4),
+                            color: AiColors.danger.withValues(alpha: 0.4),
                             width: 1.0,
                           ),
                         ),
                         padding: EdgeInsets.all(AiSpacing.md),
                         child: Text(
                           _localError!,
-                          style: TextStyle(color: AiColors.error, fontSize: 14),
+                          style: TextStyle(color: AiColors.danger, fontSize: 14),
                         ),
                       ),
                       SizedBox(height: AiSpacing.md),

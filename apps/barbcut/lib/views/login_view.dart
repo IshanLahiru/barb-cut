@@ -198,19 +198,19 @@ class _LoginViewState extends State<LoginView> {
                       Container(
                         padding: const EdgeInsets.all(AiSpacing.md),
                         decoration: BoxDecoration(
-                          color: AiColors.error.withValues(alpha: 0.15),
+                          color: AiColors.danger.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(
                             AiSpacing.radiusMedium,
                           ),
                           border: Border.all(
-                            color: AiColors.error.withValues(alpha: 0.3),
+                            color: AiColors.danger.withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
                         child: Text(
                           _localError!,
                           style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: AiColors.error),
+                              ?.copyWith(color: AiColors.danger),
                         ),
                       ),
                       const SizedBox(height: AiSpacing.md),

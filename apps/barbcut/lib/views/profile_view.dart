@@ -203,12 +203,12 @@ class ProfileView extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AiSpacing.md),
       decoration: BoxDecoration(
         color: isDestructive
-            ? AiColors.error.withValues(alpha: 0.1)
+            ? AiColors.danger.withValues(alpha: 0.1)
             : AiColors.backgroundSecondary,
         borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
         border: Border.all(
           color: isDestructive
-              ? AiColors.error.withValues(alpha: 0.3)
+              ? AiColors.danger.withValues(alpha: 0.3)
               : accentColor.withValues(alpha: 0.2),
           width: 1,
         ),
@@ -234,13 +234,13 @@ class ProfileView extends StatelessWidget {
           child: Icon(
             icon,
             size: 20,
-            color: isDestructive ? AiColors.error : accentColor,
+            color: isDestructive ? AiColors.danger : accentColor,
           ),
         ),
         title: Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: isDestructive ? AiColors.error : AiColors.textPrimary,
+            color: isDestructive ? AiColors.danger : AiColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
         ),
