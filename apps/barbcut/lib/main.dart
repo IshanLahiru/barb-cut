@@ -12,7 +12,9 @@ import 'auth_screen.dart';
 import 'theme/app_theme.dart';
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final ThemeController themeController;
+  
+  const MyApp({super.key, required this.themeController});
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -26,7 +28,12 @@ void main() async {
     debugPrint('Failed to load .env: $e');
   }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+  
+  // Initialize ThemeController
+  final themeController = ThemeController();
+  await themeController.initialize();
+  
+  runApp(MyApp(themeController: themeController));
 }
 
 class _MyAppState extends State<MyApp> {
@@ -37,7 +44,7 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController(AuthService())),
-        ChangeNotifierProvider(create: (_) => ThemeController()),
+        ChangeNotifierProvider.value(value: widget.themeController),
       ],
       child: Consumer<ThemeController>(
         builder: (context, themeController, _) {
