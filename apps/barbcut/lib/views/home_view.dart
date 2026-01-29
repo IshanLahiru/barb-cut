@@ -717,6 +717,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         accentColor: haircut['accentColor'] as Color? ?? AiColors.neonCyan,
                         onChangePressed: () {
                           Navigator.of(dialogContext).pop();
+                          setState(() {
+                            _selectedHaircutIndex = _confirmedHaircutIndex ?? _selectedHaircutIndex;
+                          });
                           _tabController.animateTo(0);
                           _panelController.open();
                         },
@@ -725,6 +728,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           setState(() {
                             _confirmedHaircutIndex = null;
                             _confirmedBeardIndex = null;
+                            _selectedHaircutIndex = 0;
+                            _selectedBeardIndex = 0;
                           });
                           _panelController.open();
                         },
@@ -739,6 +744,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           accentColor: beard['accentColor'] as Color? ?? AiColors.neonPurple,
                           onChangePressed: () {
                             Navigator.of(dialogContext).pop();
+                            setState(() {
+                              _selectedBeardIndex = _confirmedBeardIndex ?? _selectedBeardIndex;
+                            });
                             _tabController.animateTo(1);
                             _panelController.open();
                           },
