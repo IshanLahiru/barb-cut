@@ -57,8 +57,9 @@ class AppearanceView extends StatelessWidget {
               ),
               value: context.watch<ThemeController>().isDarkMode,
               activeThumbColor: AiColors.neonCyan,
-              onChanged: (value) =>
-                  context.read<ThemeController>().toggleDarkMode(value),
+              onChanged: (value) {
+                context.read<ThemeController>().toggleDarkMode(value);
+              },
             ),
           ),
         ],

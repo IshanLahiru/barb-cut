@@ -13,11 +13,17 @@ import 'theme/app_theme.dart';
 
 class MyApp extends StatefulWidget {
   final ThemeController themeController;
-  
+
   const MyApp({super.key, required this.themeController});
 
   @override
   _MyAppState createState() => _MyAppState();
+}
+
+Future<ThemeController> _initializeThemeController() async {
+  final themeController = ThemeController();
+  await themeController.initialize();
+  return themeController;
 }
 
 void main() async {
@@ -28,11 +34,10 @@ void main() async {
     debugPrint('Failed to load .env: $e');
   }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
+
   // Initialize ThemeController
-  final themeController = ThemeController();
-  await themeController.initialize();
-  
+  final themeController = await _initializeThemeController();
+
   runApp(MyApp(themeController: themeController));
 }
 
