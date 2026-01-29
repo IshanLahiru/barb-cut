@@ -644,11 +644,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return Dialog(
           backgroundColor: Colors.transparent,
           child: Container(
-            constraints: BoxConstraints(maxWidth: 420),
+            constraints: BoxConstraints(maxWidth: 500),
             decoration: BoxDecoration(
               color: AiColors.backgroundDark.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
@@ -657,259 +657,150 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 width: 1.5,
               ),
             ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(AiSpacing.lg),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AiColors.neonCyan.withValues(alpha: 0.2),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.check,
-                              color: AiColors.neonCyan,
-                              size: 18,
-                            ),
-                          ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AiColors.neonCyan.withValues(alpha: 0.2),
                         ),
-                        SizedBox(width: AiSpacing.md),
-                        Column(
+                        child: Icon(Icons.check, color: AiColors.neonCyan, size: 18),
+                      ),
+                      SizedBox(width: AiSpacing.md),
+                      Expanded(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Ready to Generate',
-                              style: Theme.of(context).textTheme.headlineSmall
-                                  ?.copyWith(
-                                    color: AiColors.textPrimary,
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                              style: TextStyle(
+                                color: AiColors.textPrimary,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 20,
+                              ),
                             ),
                             SizedBox(height: 2),
                             Text(
                               'Review your selections',
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(color: AiColors.textTertiary),
+                              style: TextStyle(
+                                color: AiColors.textTertiary,
+                                fontSize: 13,
+                              ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Divider(
-                    color: AiColors.borderLight.withValues(alpha: 0.2),
-                    height: 1,
-                    thickness: 1,
+                ),
+                Divider(color: AiColors.borderLight.withValues(alpha: 0.2), height: 1, thickness: 1),
+                
+                // Cards in horizontal layout
+                SingleChildScrollView(
+                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Haircut Card
+                      _buildCompactStyleCard(
+                        style: haircut,
+                        label: 'Haircut',
+                        accentColor: haircut['accentColor'] as Color? ?? AiColors.neonCyan,
+                        onChangePressed: () {
+                          Navigator.of(dialogContext).pop();
+                          _tabController.animateTo(0);
+                          _panelController.open();
+                        },
+                        onRemovePressed: () {
+                          Navigator.of(dialogContext).pop();
+                          setState(() {
+                            _confirmedHaircutIndex = null;
+                            _confirmedBeardIndex = null;
+                          });
+                          _panelController.open();
+                        },
+                      ),
+                      SizedBox(width: AiSpacing.md),
+                      
+                      // Beard Card or Add CTA
+                      if (beard != null)
+                        _buildCompactStyleCard(
+                          style: beard,
+                          label: 'Beard',
+                          accentColor: beard['accentColor'] as Color? ?? AiColors.neonPurple,
+                          onChangePressed: () {
+                            Navigator.of(dialogContext).pop();
+                            _tabController.animateTo(1);
+                            _panelController.open();
+                          },
+                          onRemovePressed: () {
+                            Navigator.of(dialogContext).pop();
+                            setState(() => _confirmedBeardIndex = null);
+                            _showConfirmationDialog();
+                          },
+                        )
+                      else
+                        _buildAddBeardCard(dialogContext),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(AiSpacing.lg),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Haircut Card
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+                
+                Divider(color: AiColors.borderLight.withValues(alpha: 0.2), height: 1, thickness: 1),
+                
+                // Action Buttons
+                Padding(
+                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(dialogContext).pop(),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AiColors.textSecondary,
+                            side: BorderSide(color: AiColors.borderLight.withValues(alpha: 0.4), width: 1.5),
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AiSpacing.radiusMedium)),
+                          ),
+                          child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+                        ),
+                      ),
+                      SizedBox(width: AiSpacing.md),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                            _startGeneration();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AiColors.neonCyan,
+                            foregroundColor: AiColors.backgroundDeep,
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AiSpacing.radiusMedium)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                'Haircut',
-                                style: Theme.of(context).textTheme.labelMedium
-                                    ?.copyWith(
-                                      color: AiColors.textTertiary,
-                                      letterSpacing: 0.5,
-                                    ),
-                              ),
-                              SizedBox(height: AiSpacing.md),
-                              _buildStylePreviewCard(
-                                haircut,
-                                accentColor:
-                                    haircut['accentColor'] as Color? ??
-                                    AiColors.neonCyan,
-                                onChange: () {
-                                  Navigator.of(context).pop();
-                                  _tabController.animateTo(0);
-                                  _panelController.open();
-                                },
-                                onRemove: () {
-                                  Navigator.of(context).pop();
-                                  setState(() {
-                                    _confirmedHaircutIndex = null;
-                                    _confirmedBeardIndex = null;
-                                  });
-                                  _panelController.open();
-                                },
-                              ),
+                              Icon(Icons.auto_awesome, size: 18),
+                              SizedBox(width: 8),
+                              Text('Generate Style', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
                             ],
                           ),
                         ),
-                        SizedBox(width: AiSpacing.md),
-                        // Beard Card
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Beard Style',
-                                style: Theme.of(context).textTheme.labelMedium
-                                    ?.copyWith(
-                                      color: AiColors.textTertiary,
-                                      letterSpacing: 0.5,
-                                    ),
-                              ),
-                              SizedBox(height: AiSpacing.md),
-                              if (beard != null)
-                                _buildStylePreviewCard(
-                                  beard,
-                                  accentColor:
-                                      beard['accentColor'] as Color? ??
-                                      AiColors.neonPurple,
-                                  onChange: () {
-                                    Navigator.of(context).pop();
-                                    _tabController.animateTo(1);
-                                    _panelController.open();
-                                  },
-                                  onRemove: () {
-                                    Navigator.of(context).pop();
-                                    setState(() => _confirmedBeardIndex = null);
-                                    _showConfirmationDialog();
-                                  },
-                                )
-                              else
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                    _tabController.animateTo(1);
-                                    _panelController.open();
-                                  },
-                                  child: Container(
-                                    width: double.infinity,
-                                    padding: EdgeInsets.all(AiSpacing.lg),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                        AiSpacing.radiusMedium,
-                                      ),
-                                      border: Border.all(
-                                        color: AiColors.neonPurple.withValues(
-                                          alpha: 0.3,
-                                        ),
-                                        width: 2,
-                                      ),
-                                      color: AiColors.neonPurple.withValues(
-                                        alpha: 0.05,
-                                      ),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Icon(
-                                          Icons.add_circle_outline,
-                                          color: AiColors.neonPurple,
-                                          size: 32,
-                                        ),
-                                        SizedBox(height: AiSpacing.md),
-                                        Text(
-                                          'Add Beard',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall
-                                              ?.copyWith(
-                                                color: AiColors.textPrimary,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                        SizedBox(height: AiSpacing.xs),
-                                        Text(
-                                          'Complete look',
-                                          style: Theme.of(context).textTheme.bodySmall
-                                              ?.copyWith(
-                                                color: AiColors.textSecondary,
-                                                fontSize: 11,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Divider(
-                    color: AiColors.borderLight.withValues(alpha: 0.2),
-                    height: 1,
-                    thickness: 1,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(AiSpacing.lg),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: AiColors.textSecondary,
-                              side: BorderSide(
-                                color: AiColors.borderLight.withValues(
-                                  alpha: 0.4,
-                                ),
-                                width: 1.5,
-                              ),
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  AiSpacing.radiusMedium,
-                                ),
-                              ),
-                            ),
-                            child: Text('Cancel'),
-                          ),
-                        ),
-                        SizedBox(width: AiSpacing.md),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              _startGeneration();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AiColors.neonCyan,
-                              foregroundColor: AiColors.backgroundDeep,
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  AiSpacing.radiusMedium,
-                                ),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.auto_awesome, size: 18),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Generate',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
@@ -917,180 +808,209 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildStylePreviewCard(
-    Map<String, dynamic> style, {
+  Widget _buildCompactStyleCard({
+    required Map<String, dynamic> style,
+    required String label,
     required Color accentColor,
-    required VoidCallback onChange,
-    VoidCallback? onRemove,
+    required VoidCallback onChangePressed,
+    required VoidCallback onRemovePressed,
   }) {
     return Container(
+      width: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-        border: Border.all(
-          color: accentColor.withValues(alpha: 0.3),
-          width: 1.5,
-        ),
-        color: accentColor.withValues(alpha: 0.05),
+        border: Border.all(color: accentColor.withValues(alpha: 0.3), width: 1.5),
+        color: accentColor.withValues(alpha: 0.03),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(AiSpacing.radiusMedium),
-            ),
-            child: Stack(
+          // Label
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+            child: Row(
               children: [
-                Image.network(
-                  style['image'] as String,
-                  height: 140,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    height: 140,
-                    color: AiColors.backgroundSecondary.withValues(alpha: 0.5),
-                    child: Center(
-                      child: Icon(
-                        Icons.image_not_supported,
-                        color: AiColors.textTertiary,
-                      ),
-                    ),
-                  ),
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(shape: BoxShape.circle, color: accentColor),
                 ),
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          accentColor.withValues(alpha: 0.1),
-                        ],
-                      ),
-                    ),
+                SizedBox(width: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: AiColors.textTertiary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ],
             ),
           ),
+          
+          // Image
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Stack(
+                children: [
+                  Image.network(
+                    style['image'] as String,
+                    height: 120,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      height: 120,
+                      color: AiColors.backgroundSecondary.withValues(alpha: 0.5),
+                      child: Center(child: Icon(Icons.image_not_supported, color: AiColors.textTertiary, size: 32)),
+                    ),
+                  ),
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.transparent, accentColor.withValues(alpha: 0.15)],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          // Info
           Padding(
-            padding: const EdgeInsets.all(AiSpacing.md),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: accentColor,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        style['name'] as String,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              color: AiColors.textPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
-                    ),
-                  ],
+                Text(
+                  style['name'] as String,
+                  style: TextStyle(
+                    color: AiColors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: AiSpacing.sm),
+                SizedBox(height: 6),
                 Row(
                   children: [
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4),
                         color: accentColor.withValues(alpha: 0.15),
                       ),
                       child: Text(
                         '₹${style['price']}',
-                        style: TextStyle(
-                          color: accentColor,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: accentColor, fontWeight: FontWeight.w700, fontSize: 11),
                       ),
                     ),
-                    SizedBox(width: 8),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        color: AiColors.borderLight.withValues(alpha: 0.15),
-                      ),
-                      child: Text(
-                        '${style['duration'] ?? 45}min',
-                        style: TextStyle(
-                          color: AiColors.textSecondary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                        ),
-                      ),
+                    SizedBox(width: 6),
+                    Text(
+                      '${style['duration'] ?? 45}min',
+                      style: TextStyle(color: AiColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
-                SizedBox(height: AiSpacing.md),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: onChange,
-                        icon: Icon(Icons.edit_outlined, size: 16),
-                        label: Text('Change'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: accentColor,
-                          side: BorderSide(
-                            color: accentColor.withValues(alpha: 0.4),
-                            width: 1,
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              AiSpacing.radiusSmall,
-                            ),
-                          ),
-                        ),
-                      ),
+                SizedBox(height: 10),
+                
+                // Buttons stacked vertically
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: onChangePressed,
+                    icon: Icon(Icons.edit_outlined, size: 14),
+                    label: Text('Change', style: TextStyle(fontSize: 12)),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: accentColor,
+                      side: BorderSide(color: accentColor.withValues(alpha: 0.4), width: 1),
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                     ),
-                    if (onRemove != null) ...[
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: onRemove,
-                          icon: Icon(Icons.close_outlined, size: 16),
-                          label: Text('Remove'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AiColors.textSecondary,
-                            side: BorderSide(
-                              color: AiColors.borderLight.withValues(
-                                alpha: 0.4,
-                              ),
-                              width: 1,
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AiSpacing.radiusSmall,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
+                  ),
+                ),
+                SizedBox(height: 6),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: onRemovePressed,
+                    icon: Icon(Icons.close_outlined, size: 14),
+                    label: Text('Remove', style: TextStyle(fontSize: 12)),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AiColors.textSecondary,
+                      side: BorderSide(color: AiColors.borderLight.withValues(alpha: 0.3), width: 1),
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAddBeardCard(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pop();
+        _tabController.animateTo(1);
+        _panelController.open();
+      },
+      child: Container(
+        width: 200,
+        height: 300,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
+          border: Border.all(color: AiColors.neonPurple.withValues(alpha: 0.3), width: 2),
+          color: AiColors.neonPurple.withValues(alpha: 0.05),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AiColors.neonPurple.withValues(alpha: 0.15),
+              ),
+              child: Icon(Icons.add_circle_outline, color: AiColors.neonPurple, size: 32),
+            ),
+            SizedBox(height: AiSpacing.md),
+            Text(
+              'Add Beard Style',
+              style: TextStyle(
+                color: AiColors.textPrimary,
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+              ),
+            ),
+            SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Complete your look',
+                style: TextStyle(
+                  color: AiColors.textSecondary,
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
