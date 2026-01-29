@@ -7,6 +7,7 @@ import 'dart:async';
 import 'dart:ui';
 import '../theme/ai_colors.dart';
 import '../theme/ai_spacing.dart';
+import '../theme/adaptive_theme_colors.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -606,7 +607,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           ),
                           child: Text(
                             'Just Haircut',
-                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                       ),
@@ -1387,15 +1391,15 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final maxPanelHeight = availableHeight * 0.9;
 
     return Scaffold(
-      backgroundColor: AiColors.backgroundDeep,
+      backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
       appBar: AppBar(
-        backgroundColor: AiColors.backgroundDark,
+        backgroundColor: AdaptiveThemeColors.backgroundDark(context),
         elevation: 0,
         toolbarHeight: 48,
         title: Text(
           'Barbcut',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AiColors.textPrimary,
+            color: AdaptiveThemeColors.textPrimary(context),
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -1657,7 +1661,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   Widget _buildPanel() {
     return Container(
-      color: AiColors.backgroundDark,
+      color: AdaptiveThemeColors.backgroundDark(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1667,13 +1671,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               Tab(text: 'Hair'),
               Tab(text: 'Beard'),
             ],
-            labelColor: AiColors.neonCyan,
-            unselectedLabelColor: AiColors.textTertiary,
+            labelColor: AdaptiveThemeColors.neonCyan(context),
+            unselectedLabelColor: AdaptiveThemeColors.textTertiary(context),
             labelStyle: Theme.of(context).textTheme.titleMedium,
             unselectedLabelStyle: Theme.of(context).textTheme.titleMedium,
             indicatorSize: TabBarIndicatorSize.label,
-            indicatorColor: AiColors.neonCyan,
-            dividerColor: AiColors.borderLight,
+            indicatorColor: AdaptiveThemeColors.neonCyan(context),
+            dividerColor: AdaptiveThemeColors.borderLight(context),
           ),
           Expanded(
             child: TabBarView(
@@ -1776,7 +1780,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required double height,
   }) {
     final Color accentColor =
-        (item['accentColor'] as Color?) ?? AiColors.neonCyan;
+        (item['accentColor'] as Color?) ?? AdaptiveThemeColors.neonCyan(context);
 
     return InkWell(
       onTap: onTap,
@@ -1785,7 +1789,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
           border: isSelected
-              ? Border.all(color: AiColors.neonCyan, width: 3)
+              ? Border.all(color: AdaptiveThemeColors.neonCyan(context), width: 3)
               : null,
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
         ),
@@ -1831,8 +1835,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AiColors.neonCyan,
-                    foregroundColor: AiColors.backgroundDeep,
+                    backgroundColor: AdaptiveThemeColors.neonCyan(context),
+                    foregroundColor: AdaptiveThemeColors.backgroundDeep(context),
                     padding: EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(

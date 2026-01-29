@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/theme_controller.dart';
-import '../theme/ai_colors.dart';
 import '../theme/ai_spacing.dart';
+import '../theme/adaptive_theme_colors.dart';
 
 class AppearanceView extends StatelessWidget {
   const AppearanceView({super.key});
@@ -10,15 +10,15 @@ class AppearanceView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AiColors.backgroundDeep,
+      backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
       appBar: AppBar(
-        backgroundColor: AiColors.backgroundDark,
+        backgroundColor: AdaptiveThemeColors.backgroundDark(context),
         elevation: 0,
         title: Text(
           'Appearance',
           style: Theme.of(
             context,
-          ).textTheme.titleLarge?.copyWith(color: AiColors.textPrimary),
+          ).textTheme.titleLarge?.copyWith(color: AdaptiveThemeColors.textPrimary(context)),
         ),
         centerTitle: false,
       ),
@@ -28,17 +28,17 @@ class AppearanceView extends StatelessWidget {
           Text(
             'Theme',
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: AiColors.textSecondary,
+              color: AdaptiveThemeColors.textSecondary(context),
               letterSpacing: 0.5,
             ),
           ),
           SizedBox(height: AiSpacing.md),
           Container(
             decoration: BoxDecoration(
-              color: AiColors.backgroundSecondary,
+              color: AdaptiveThemeColors.backgroundSecondary(context),
               borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
               border: Border.all(
-                color: AiColors.neonCyan.withValues(alpha: 0.2),
+                color: AdaptiveThemeColors.neonCyan(context).withValues(alpha: 0.2),
                 width: 1.5,
               ),
             ),
@@ -47,16 +47,16 @@ class AppearanceView extends StatelessWidget {
                 'Dark mode',
                 style: Theme.of(
                   context,
-                ).textTheme.titleMedium?.copyWith(color: AiColors.textPrimary),
+                ).textTheme.titleMedium?.copyWith(color: AdaptiveThemeColors.textPrimary(context)),
               ),
               subtitle: Text(
                 'Use dark appearance across the app',
                 style: Theme.of(
                   context,
-                ).textTheme.bodySmall?.copyWith(color: AiColors.textSecondary),
+                ).textTheme.bodySmall?.copyWith(color: AdaptiveThemeColors.textSecondary(context)),
               ),
               value: context.watch<ThemeController>().isDarkMode,
-              activeThumbColor: AiColors.neonCyan,
+              activeThumbColor: AdaptiveThemeColors.neonCyan(context),
               onChanged: (value) {
                 context.read<ThemeController>().toggleDarkMode(value);
               },
