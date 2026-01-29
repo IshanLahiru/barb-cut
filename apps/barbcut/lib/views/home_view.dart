@@ -486,7 +486,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final haircut = _haircuts[_confirmedHaircutIndex ?? _selectedHaircutIndex];
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return Dialog(
           backgroundColor: Colors.transparent,
           child: Container(
@@ -558,13 +558,15 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     children: [
                       Text(
                         'Your Selection',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        style: TextStyle(
                           color: AiColors.textTertiary,
                           letterSpacing: 0.5,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
                         ),
                       ),
                       SizedBox(height: AiSpacing.md),
-                      _buildStylePreviewCardInline(haircut),
+                      _buildStylePreviewCardInline(dialogContext, haircut),
                     ],
                   ),
                 ),
@@ -580,7 +582,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(dialogContext).pop();
                             setState(
                               () => _confirmedHaircutIndex =
                                   _selectedHaircutIndex,
@@ -610,7 +612,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         flex: 3,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(dialogContext).pop();
                             setState(
                               () => _confirmedHaircutIndex =
                                   _selectedHaircutIndex,
@@ -659,7 +661,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final beard = _beardStyles[_confirmedBeardIndex ?? _selectedBeardIndex];
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return Dialog(
           backgroundColor: Colors.transparent,
           child: Container(
@@ -731,13 +733,15 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     children: [
                       Text(
                         'Your Selection',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        style: TextStyle(
                           color: AiColors.textTertiary,
                           letterSpacing: 0.5,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
                         ),
                       ),
                       SizedBox(height: AiSpacing.md),
-                      _buildStylePreviewCardInline(beard),
+                      _buildStylePreviewCardInline(dialogContext, beard),
                     ],
                   ),
                 ),
@@ -753,7 +757,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(dialogContext).pop();
                             setState(
                               () => _confirmedBeardIndex =
                                   _selectedBeardIndex,
@@ -783,7 +787,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         flex: 3,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(dialogContext).pop();
                             setState(
                               () => _confirmedBeardIndex =
                                   _selectedBeardIndex,
@@ -1294,7 +1298,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildStylePreviewCardInline(Map<String, dynamic> style) {
+  Widget _buildStylePreviewCardInline(BuildContext context, Map<String, dynamic> style) {
     return Row(
       children: [
         ClipRRect(
@@ -1325,9 +1329,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             children: [
               Text(
                 style['name'] as String,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                style: TextStyle(
                   color: AiColors.textPrimary,
                   fontWeight: FontWeight.w600,
+                  fontSize: 15,
                 ),
               ),
               SizedBox(height: 4),
@@ -1342,9 +1347,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               SizedBox(height: 2),
               Text(
                 '${style['duration'] ?? 45} mins',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: AiColors.textTertiary),
+                style: TextStyle(
+                  color: AiColors.textTertiary,
+                  fontSize: 12,
+                ),
               ),
             ],
           ),
