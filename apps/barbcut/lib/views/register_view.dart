@@ -242,7 +242,10 @@ class _RegisterViewState extends State<RegisterView> {
                         padding: EdgeInsets.all(AiSpacing.md),
                         child: Text(
                           _localError!,
-                          style: TextStyle(color: AiColors.danger, fontSize: 14),
+                          style: TextStyle(
+                            color: AiColors.danger,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                       SizedBox(height: AiSpacing.md),

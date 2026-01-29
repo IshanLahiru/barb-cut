@@ -16,9 +16,9 @@ class AppearanceView extends StatelessWidget {
         elevation: 0,
         title: Text(
           'Appearance',
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(color: AdaptiveThemeColors.textPrimary(context)),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: AdaptiveThemeColors.textPrimary(context),
+          ),
         ),
         centerTitle: false,
       ),
@@ -38,22 +38,24 @@ class AppearanceView extends StatelessWidget {
               color: AdaptiveThemeColors.backgroundSecondary(context),
               borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
               border: Border.all(
-                color: AdaptiveThemeColors.neonCyan(context).withValues(alpha: 0.2),
+                color: AdaptiveThemeColors.neonCyan(
+                  context,
+                ).withValues(alpha: 0.2),
                 width: 1.5,
               ),
             ),
             child: SwitchListTile(
               title: Text(
                 'Dark mode',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(color: AdaptiveThemeColors.textPrimary(context)),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AdaptiveThemeColors.textPrimary(context),
+                ),
               ),
               subtitle: Text(
                 'Use dark appearance across the app',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: AdaptiveThemeColors.textSecondary(context)),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AdaptiveThemeColors.textSecondary(context),
+                ),
               ),
               value: context.watch<ThemeController>().isDarkMode,
               activeThumbColor: AdaptiveThemeColors.neonCyan(context),

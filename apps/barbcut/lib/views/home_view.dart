@@ -512,11 +512,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         height: 32,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AiColors.neonCyan.withValues(alpha: 0.2),
+                          color: AdaptiveThemeColors.neonCyan(
+                            context,
+                          ).withValues(alpha: 0.2),
                         ),
                         child: Icon(
                           Icons.add,
-                          color: AiColors.neonCyan,
+                          color: AdaptiveThemeColors.neonCyan(context),
                           size: 18,
                         ),
                       ),
@@ -627,8 +629,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                             _panelController.open();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AiColors.neonCyan,
-                            foregroundColor: AiColors.backgroundDeep,
+                            backgroundColor: AdaptiveThemeColors.neonCyan(
+                              context,
+                            ),
+                            foregroundColor: AdaptiveThemeColors.backgroundDeep(
+                              context,
+                            ),
                             padding: EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
@@ -685,11 +691,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         height: 32,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AiColors.neonCyan.withValues(alpha: 0.2),
+                          color: AdaptiveThemeColors.neonCyan(
+                            context,
+                          ).withValues(alpha: 0.2),
                         ),
                         child: Icon(
                           Icons.add,
-                          color: AiColors.neonCyan,
+                          color: AdaptiveThemeColors.neonCyan(context),
                           size: 18,
                         ),
                       ),
@@ -796,8 +804,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                             _panelController.open();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AiColors.neonCyan,
-                            foregroundColor: AiColors.backgroundDeep,
+                            backgroundColor: AdaptiveThemeColors.neonCyan(
+                              context,
+                            ),
+                            foregroundColor: AdaptiveThemeColors.backgroundDeep(
+                              context,
+                            ),
                             padding: EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
@@ -859,11 +871,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         height: 32,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AiColors.neonCyan.withValues(alpha: 0.2),
+                          color: AdaptiveThemeColors.neonCyan(
+                            context,
+                          ).withValues(alpha: 0.2),
                         ),
                         child: Icon(
                           Icons.check,
-                          color: AiColors.neonCyan,
+                          color: AdaptiveThemeColors.neonCyan(context),
                           size: 18,
                         ),
                       ),
@@ -911,7 +925,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       _buildCompactStyleCard(
                         style: haircut,
                         label: 'Haircut',
-                        accentColor: AiColors.neonCyan,
+                        accentColor: AdaptiveThemeColors.neonCyan(context),
                         onChangePressed: () {
                           Navigator.of(dialogContext).pop();
                           setState(() {
@@ -939,7 +953,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         _buildCompactStyleCard(
                           style: beard,
                           label: 'Beard',
-                          accentColor: AiColors.neonCyan,
+                          accentColor: AdaptiveThemeColors.neonCyan(context),
                           onChangePressed: () {
                             Navigator.of(dialogContext).pop();
                             setState(() {
@@ -1012,8 +1026,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                             _startGeneration();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AiColors.neonCyan,
-                            foregroundColor: AiColors.backgroundDeep,
+                            backgroundColor: AdaptiveThemeColors.neonCyan(
+                              context,
+                            ),
+                            foregroundColor: AdaptiveThemeColors.backgroundDeep(
+                              context,
+                            ),
                             padding: EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
@@ -1338,7 +1356,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               Text(
                 '₹${style['price']}',
                 style: TextStyle(
-                  color: AiColors.neonCyan,
+                  color: AdaptiveThemeColors.neonCyan(context),
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
@@ -1435,7 +1453,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             }
           },
           child: Container(
-            decoration: BoxDecoration(color: AiColors.backgroundDeep),
+            decoration: BoxDecoration(
+              color: AdaptiveThemeColors.backgroundDeep(context),
+            ),
             child: SafeArea(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -1484,7 +1504,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                       entry.value;
                                   final Color accentColor =
                                       (haircut['accentColor'] as Color?) ??
-                                      AiColors.neonCyan;
+                                      AdaptiveThemeColors.neonCyan(context);
 
                                   return Align(
                                     alignment: Alignment.center,
@@ -1515,7 +1535,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: _selectedHaircutIndex == index
-                                ? AiColors.neonCyan
+                                ? AdaptiveThemeColors.neonCyan(context)
                                 : AiColors.borderLight.withValues(alpha: 0.5),
                           ),
                         ),
@@ -1645,7 +1665,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 child: Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      AiColors.neonCyan,
+                      AdaptiveThemeColors.neonCyan(context),
                     ),
                   ),
                 ),
@@ -1780,7 +1800,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required double height,
   }) {
     final Color accentColor =
-        (item['accentColor'] as Color?) ?? AdaptiveThemeColors.neonCyan(context);
+        (item['accentColor'] as Color?) ??
+        AdaptiveThemeColors.neonCyan(context);
 
     return InkWell(
       onTap: onTap,
@@ -1789,7 +1810,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
           border: isSelected
-              ? Border.all(color: AdaptiveThemeColors.neonCyan(context), width: 3)
+              ? Border.all(
+                  color: AdaptiveThemeColors.neonCyan(context),
+                  width: 3,
+                )
               : null,
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
         ),
@@ -1836,7 +1860,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AdaptiveThemeColors.neonCyan(context),
-                    foregroundColor: AdaptiveThemeColors.backgroundDeep(context),
+                    foregroundColor: AdaptiveThemeColors.backgroundDeep(
+                      context,
+                    ),
                     padding: EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(

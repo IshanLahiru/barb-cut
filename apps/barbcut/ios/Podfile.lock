@@ -56,12 +56,16 @@ PODS:
   - image_picker_ios (0.0.1):
     - Flutter
   - RecaptchaInterop (101.0.0)
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
 
 DEPENDENCIES:
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - Flutter (from `Flutter`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
 
 SPEC REPOS:
   trunk:
@@ -85,6 +89,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
 
 SPEC CHECKSUMS:
   Firebase: 9a58fdbc9d8655ed7b79a19cf9690bb007d3d46d
@@ -101,6 +107,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 02d6e866e90bc236f48a703a041dfe43e6221a29
   image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
+  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
 
 PODFILE CHECKSUM: d2cf5ecfc0d05e8410422c3fc7e8ea13a24e15c8
 

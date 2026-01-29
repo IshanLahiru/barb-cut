@@ -3,7 +3,7 @@ import 'package:barbcut/views/explore_view.dart';
 import 'package:barbcut/views/home_view.dart';
 import 'package:barbcut/views/profile_view.dart';
 import 'package:barbcut/views/products_view.dart';
-import '../theme/ai_colors.dart';
+import '../theme/adaptive_theme_colors.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -34,10 +34,10 @@ class _MainScreenState extends State<MainScreen> {
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: AiColors.backgroundSecondary,
+          color: AdaptiveThemeColors.backgroundSecondary(context),
           boxShadow: [
             BoxShadow(
-              color: AiColors.neonCyan.withValues(alpha: 0.1),
+              color: AdaptiveThemeColors.neonCyan(context).withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, -2),
             ),
@@ -57,9 +57,9 @@ class _MainScreenState extends State<MainScreen> {
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: AiColors.neonCyan,
-          unselectedItemColor: AiColors.textSecondary.withValues(alpha: 0.6),
-          backgroundColor: AiColors.backgroundSecondary,
+          selectedItemColor: AdaptiveThemeColors.neonCyan(context),
+          unselectedItemColor: AdaptiveThemeColors.textSecondary(context).withValues(alpha: 0.6),
+          backgroundColor: AdaptiveThemeColors.backgroundSecondary(context),
           onTap: _onItemTapped,
           showSelectedLabels: false,
           showUnselectedLabels: false,
