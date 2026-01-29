@@ -604,12 +604,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-                          child: Text('Just Haircut', style: TextStyle(fontWeight: FontWeight.w600)),
+                          child: Text(
+                            'Just Haircut',
+                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                          ),
                         ),
                       ),
                       SizedBox(width: AiSpacing.md),
                       Expanded(
-                        flex: 2,
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.of(dialogContext).pop();
@@ -634,7 +636,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                             'Add Beard Style',
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
-                              fontSize: 14,
+                              fontSize: 13,
                             ),
                           ),
                         ),
@@ -752,8 +754,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           onPressed: () {
                             Navigator.of(dialogContext).pop();
                             setState(
-                              () => _confirmedBeardIndex =
-                                  _selectedBeardIndex,
+                              () => _confirmedBeardIndex = _selectedBeardIndex,
                             );
                             _showConfirmationDialog();
                           },
@@ -772,7 +773,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-                          child: Text('Just Beard', style: TextStyle(fontWeight: FontWeight.w600)),
+                          child: Text(
+                            'Just Beard',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ),
                       SizedBox(width: AiSpacing.md),
@@ -782,8 +786,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           onPressed: () {
                             Navigator.of(dialogContext).pop();
                             setState(
-                              () => _confirmedBeardIndex =
-                                  _selectedBeardIndex,
+                              () => _confirmedBeardIndex = _selectedBeardIndex,
                             );
                             _tabController.animateTo(0);
                             _panelController.open();
@@ -802,7 +805,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                             'Add Haircut Style',
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
-                              fontSize: 14,
+                              fontSize: 13,
                             ),
                           ),
                         ),
@@ -990,7 +993,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-                          child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ),
                       SizedBox(width: AiSpacing.md),
@@ -1284,7 +1290,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildStylePreviewCardInline(BuildContext context, Map<String, dynamic> style) {
+  Widget _buildStylePreviewCardInline(
+    BuildContext context,
+    Map<String, dynamic> style,
+  ) {
     return Row(
       children: [
         ClipRRect(
@@ -1333,10 +1342,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               SizedBox(height: 2),
               Text(
                 '${style['duration'] ?? 45} mins',
-                style: TextStyle(
-                  color: AiColors.textTertiary,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: AiColors.textTertiary, fontSize: 12),
               ),
             ],
           ),
