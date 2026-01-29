@@ -636,6 +636,160 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
+  void _showBeardSelectionPrompt() async {
+    final beard = _beardStyles[_confirmedBeardIndex ?? _selectedBeardIndex];
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 420),
+            decoration: BoxDecoration(
+              color: AiColors.backgroundDark.withValues(alpha: 0.95),
+              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+              border: Border.all(
+                color: AiColors.borderLight.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Complete Your Look',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: AiColors.textPrimary,
+                              fontWeight: FontWeight.w800,
+                            ),
+                      ),
+                      SizedBox(height: AiSpacing.xs),
+                      Text(
+                        'Add a haircut style to complete your transformation',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AiColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(
+                  color: AiColors.borderLight.withValues(alpha: 0.2),
+                  height: 1,
+                  thickness: 1,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Your Selection',
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: AiColors.textTertiary,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      SizedBox(height: AiSpacing.md),
+                      _buildStylePreviewCardInline(beard),
+                    ],
+                  ),
+                ),
+                Divider(
+                  color: AiColors.borderLight.withValues(alpha: 0.2),
+                  height: 1,
+                  thickness: 1,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            setState(
+                              () => _confirmedBeardIndex =
+                                  _selectedBeardIndex,
+                            );
+                            _tabController.animateTo(0);
+                            _panelController.open();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AiColors.neonPurple.withValues(
+                              alpha: 0.8,
+                            ),
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusMedium,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            'Add Haircut Style',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: AiSpacing.md),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            setState(
+                              () => _confirmedBeardIndex =
+                                  _selectedBeardIndex,
+                            );
+                            _showConfirmationDialog();
+                          },
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AiColors.textSecondary,
+                            side: BorderSide(
+                              color: AiColors.borderLight.withValues(
+                                alpha: 0.4,
+                              ),
+                              width: 1.5,
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusMedium,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            'Just Beard',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _showConfirmationDialog() async {
     final haircut = _haircuts[_confirmedHaircutIndex ?? _selectedHaircutIndex];
     final beard = _confirmedBeardIndex != null
@@ -1631,7 +1785,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         }
                       } else {
                         _confirmedBeardIndex = itemIndex;
-                        _showConfirmationDialog();
+                        // If haircut is already confirmed, go directly to confirmation dialog
+                        if (_confirmedHaircutIndex != null) {
+                          _showConfirmationDialog();
+                        } else {
+                          _showBeardSelectionPrompt();
+                        }
                       }
                     });
                   },
