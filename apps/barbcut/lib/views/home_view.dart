@@ -609,7 +609,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       ),
                       SizedBox(width: AiSpacing.md),
                       Expanded(
-                        flex: 3,
+                        flex: 2,
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.of(dialogContext).pop();
@@ -623,26 +623,19 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AiColors.neonCyan,
                             foregroundColor: AiColors.backgroundDeep,
-                            padding: EdgeInsets.symmetric(vertical: 14),
+                            padding: EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                 AiSpacing.radiusMedium,
                               ),
                             ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.face_retouching_natural, size: 18),
-                              SizedBox(width: 8),
-                              Text(
-                                'Add Beard Style',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            'Add Beard Style',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ),
@@ -784,7 +777,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       ),
                       SizedBox(width: AiSpacing.md),
                       Expanded(
-                        flex: 3,
+                        flex: 2,
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.of(dialogContext).pop();
@@ -798,26 +791,19 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AiColors.neonCyan,
                             foregroundColor: AiColors.backgroundDeep,
-                            padding: EdgeInsets.symmetric(vertical: 14),
+                            padding: EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                 AiSpacing.radiusMedium,
                               ),
                             ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.content_cut, size: 18),
-                              SizedBox(width: 8),
-                              Text(
-                                'Add Haircut Style',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            'Add Haircut Style',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ),
