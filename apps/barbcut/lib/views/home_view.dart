@@ -511,11 +511,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         height: 32,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AiColors.neonPurple.withValues(alpha: 0.2),
+                          color: AiColors.neonCyan.withValues(alpha: 0.2),
                         ),
                         child: Icon(
                           Icons.add,
-                          color: AiColors.neonPurple,
+                          color: AiColors.neonCyan,
                           size: 18,
                         ),
                       ),
@@ -607,7 +607,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       ),
                       SizedBox(width: AiSpacing.md),
                       Expanded(
-                        flex: 2,
+                        flex: 3,
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).pop();
@@ -619,10 +619,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                             _panelController.open();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AiColors.neonPurple.withValues(
-                              alpha: 0.8,
-                            ),
-                            foregroundColor: Colors.white,
+                            backgroundColor: AiColors.neonCyan,
+                            foregroundColor: AiColors.backgroundDeep,
                             padding: EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
@@ -686,11 +684,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         height: 32,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AiColors.neonPurple.withValues(alpha: 0.2),
+                          color: AiColors.neonCyan.withValues(alpha: 0.2),
                         ),
                         child: Icon(
                           Icons.add,
-                          color: AiColors.neonPurple,
+                          color: AiColors.neonCyan,
                           size: 18,
                         ),
                       ),
@@ -782,7 +780,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       ),
                       SizedBox(width: AiSpacing.md),
                       Expanded(
-                        flex: 2,
+                        flex: 3,
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).pop();
@@ -794,10 +792,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                             _panelController.open();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AiColors.neonPurple.withValues(
-                              alpha: 0.8,
-                            ),
-                            foregroundColor: Colors.white,
+                            backgroundColor: AiColors.neonCyan,
+                            foregroundColor: AiColors.backgroundDeep,
                             padding: EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
