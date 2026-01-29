@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'ai_colors.dart';
 import 'ai_spacing.dart';
 
-/// Complete 2026 AI App Theme - Dark Mode First with Cyberpunk Aesthetics
+/// Complete 2026 AI App Theme - Material Design 3 Inspired
 class AiTheme {
   AiTheme._();
 
@@ -12,19 +12,19 @@ class AiTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
 
-      // === Color Scheme (Cyberpunk Deep Charcoal + Neon) ===
+      // === Color Scheme (Material Design 3) ===
       colorScheme: const ColorScheme.dark(
-        primary: AiColors.neonCyan,
-        primaryContainer: AiColors.neonCyanDim,
-        secondary: AiColors.sunsetCoral,
-        secondaryContainer: AiColors.coralDim,
-        tertiary: AiColors.neonPurple,
-        tertiaryContainer: AiColors.purpleDim,
+        primary: AiColors.primary,
+        primaryContainer: AiColors.primaryA10,
+        secondary: AiColors.warning,
+        secondaryContainer: AiColors.warningDark,
+        tertiary: AiColors.info,
+        tertiaryContainer: AiColors.infoDark,
         surface: AiColors.surface,
         background: AiColors.backgroundDeep,
-        error: AiColors.error,
+        error: AiColors.danger,
         onPrimary: AiColors.backgroundDeep,
-        onSecondary: AiColors.textPrimary,
+        onSecondary: AiColors.backgroundDeep,
         onSurface: AiColors.textPrimary,
         onBackground: AiColors.textPrimary,
         onError: AiColors.textPrimary,
@@ -185,11 +185,11 @@ class AiTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-          borderSide: const BorderSide(color: AiColors.neonCyan, width: 2.0),
+          borderSide: const BorderSide(color: AiColors.primary, width: 2.0),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-          borderSide: const BorderSide(color: AiColors.error, width: 1.5),
+          borderSide: const BorderSide(color: AiColors.danger, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AiSpacing.md,
@@ -213,7 +213,7 @@ class AiTheme {
       // === Elevated Button Theme ===
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AiColors.neonCyan,
+          backgroundColor: AiColors.primary,
           foregroundColor: AiColors.backgroundDeep,
           disabledBackgroundColor: AiColors.textDisabled,
           disabledForegroundColor: AiColors.textTertiary,
@@ -236,8 +236,8 @@ class AiTheme {
       // === Outlined Button Theme ===
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AiColors.neonCyan,
-          side: const BorderSide(color: AiColors.neonCyan, width: 2.0),
+          foregroundColor: AiColors.primary,
+          side: const BorderSide(color: AiColors.primary, width: 2.0),
           padding: const EdgeInsets.symmetric(
             horizontal: AiSpacing.lg,
             vertical: AiSpacing.md,
@@ -256,7 +256,7 @@ class AiTheme {
       // === Text Button Theme ===
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AiColors.neonCyan,
+          foregroundColor: AiColors.primary,
           padding: const EdgeInsets.symmetric(
             horizontal: AiSpacing.md,
             vertical: AiSpacing.sm,
@@ -272,7 +272,7 @@ class AiTheme {
       // === Bottom Navigation Bar (Glassmorphic) ===
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Color(0x0DFFFFFF), // 5% white overlay (glass)
-        selectedItemColor: AiColors.neonCyan,
+        selectedItemColor: AiColors.primary,
         unselectedItemColor: AiColors.textTertiary,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
@@ -296,7 +296,7 @@ class AiTheme {
       checkboxTheme: CheckboxThemeData(
         fillColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.selected)) {
-            return AiColors.neonCyan;
+            return AiColors.primary;
           }
           return AiColors.surface;
         }),
@@ -306,7 +306,7 @@ class AiTheme {
       radioTheme: RadioThemeData(
         fillColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.selected)) {
-            return AiColors.neonCyan;
+            return AiColors.primary;
           }
           return AiColors.surface;
         }),
@@ -314,10 +314,10 @@ class AiTheme {
 
       // === Slider Theme ===
       sliderTheme: const SliderThemeData(
-        activeTrackColor: AiColors.neonCyan,
+        activeTrackColor: AiColors.primary,
         inactiveTrackColor: AiColors.borderLight,
-        thumbColor: AiColors.neonCyan,
-        overlayColor: Color(0x2D00D9FF),
+        thumbColor: AiColors.primary,
+        overlayColor: Color(0x2D90CAF9),
       ),
 
       // === Snackbar Theme ===
@@ -336,7 +336,7 @@ class AiTheme {
       ),
 
       // === Dialog Theme ===
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AiColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
@@ -357,7 +357,7 @@ class AiTheme {
 
       // === Floating Action Button Theme ===
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: AiColors.neonCyan,
+        backgroundColor: AiColors.primary,
         foregroundColor: AiColors.backgroundDeep,
         elevation: 8,
         shape: RoundedRectangleBorder(
@@ -367,7 +367,7 @@ class AiTheme {
 
       // === Progress Indicator Theme ===
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: AiColors.neonCyan,
+        color: AiColors.primary,
         linearTrackColor: AiColors.borderLight,
         linearMinHeight: 4,
       ),
