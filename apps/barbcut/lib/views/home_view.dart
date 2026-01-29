@@ -785,7 +785,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     children: [
                       Expanded(
                         child: OutlinedButton(
-                          onPressed: () => Navigator.of(dialogContext).pop(),
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                            setState(() {
+                              _confirmedHaircutIndex = null;
+                              _confirmedBeardIndex = null;
+                            });
+                            _panelController.close();
+                          },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AiColors.textSecondary,
                             side: BorderSide(
@@ -801,10 +808,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
+                          child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
                         ),
                       ),
                       SizedBox(width: AiSpacing.md),
