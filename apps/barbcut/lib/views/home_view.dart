@@ -672,7 +672,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           shape: BoxShape.circle,
                           color: AiColors.neonCyan.withValues(alpha: 0.2),
                         ),
-                        child: Icon(Icons.check, color: AiColors.neonCyan, size: 18),
+                        child: Icon(
+                          Icons.check,
+                          color: AiColors.neonCyan,
+                          size: 18,
+                        ),
                       ),
                       SizedBox(width: AiSpacing.md),
                       Expanded(
@@ -701,8 +705,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
-                Divider(color: AiColors.borderLight.withValues(alpha: 0.2), height: 1, thickness: 1),
-                
+                Divider(
+                  color: AiColors.borderLight.withValues(alpha: 0.2),
+                  height: 1,
+                  thickness: 1,
+                ),
+
                 // Cards in horizontal layout
                 SingleChildScrollView(
                   padding: const EdgeInsets.all(AiSpacing.lg),
@@ -714,11 +722,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       _buildCompactStyleCard(
                         style: haircut,
                         label: 'Haircut',
-                        accentColor: haircut['accentColor'] as Color? ?? AiColors.neonCyan,
+                        accentColor:
+                            haircut['accentColor'] as Color? ??
+                            AiColors.neonCyan,
                         onChangePressed: () {
                           Navigator.of(dialogContext).pop();
                           setState(() {
-                            _selectedHaircutIndex = _confirmedHaircutIndex ?? _selectedHaircutIndex;
+                            _selectedHaircutIndex =
+                                _confirmedHaircutIndex ?? _selectedHaircutIndex;
                           });
                           _tabController.animateTo(0);
                           _panelController.open();
@@ -735,17 +746,20 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         },
                       ),
                       SizedBox(width: AiSpacing.md),
-                      
+
                       // Beard Card or Add CTA
                       if (beard != null)
                         _buildCompactStyleCard(
                           style: beard,
                           label: 'Beard',
-                          accentColor: beard['accentColor'] as Color? ?? AiColors.neonPurple,
+                          accentColor:
+                              beard['accentColor'] as Color? ??
+                              AiColors.neonPurple,
                           onChangePressed: () {
                             Navigator.of(dialogContext).pop();
                             setState(() {
-                              _selectedBeardIndex = _confirmedBeardIndex ?? _selectedBeardIndex;
+                              _selectedBeardIndex =
+                                  _confirmedBeardIndex ?? _selectedBeardIndex;
                             });
                             _tabController.animateTo(1);
                             _panelController.open();
@@ -761,9 +775,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
-                
-                Divider(color: AiColors.borderLight.withValues(alpha: 0.2), height: 1, thickness: 1),
-                
+
+                Divider(
+                  color: AiColors.borderLight.withValues(alpha: 0.2),
+                  height: 1,
+                  thickness: 1,
+                ),
+
                 // Action Buttons
                 Padding(
                   padding: const EdgeInsets.all(AiSpacing.lg),
@@ -774,11 +792,23 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           onPressed: () => Navigator.of(dialogContext).pop(),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AiColors.textSecondary,
-                            side: BorderSide(color: AiColors.borderLight.withValues(alpha: 0.4), width: 1.5),
+                            side: BorderSide(
+                              color: AiColors.borderLight.withValues(
+                                alpha: 0.4,
+                              ),
+                              width: 1.5,
+                            ),
                             padding: EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AiSpacing.radiusMedium)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusMedium,
+                              ),
+                            ),
                           ),
-                          child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ),
                       SizedBox(width: AiSpacing.md),
@@ -793,14 +823,24 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                             backgroundColor: AiColors.neonCyan,
                             foregroundColor: AiColors.backgroundDeep,
                             padding: EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AiSpacing.radiusMedium)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusMedium,
+                              ),
+                            ),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.auto_awesome, size: 18),
                               SizedBox(width: 8),
-                              Text('Generate Style', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                              Text(
+                                'Generate Style',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -827,7 +867,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       width: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-        border: Border.all(color: accentColor.withValues(alpha: 0.3), width: 1.5),
+        border: Border.all(
+          color: accentColor.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
         color: accentColor.withValues(alpha: 0.03),
       ),
       child: Column(
@@ -842,7 +885,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 Container(
                   width: 6,
                   height: 6,
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: accentColor),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: accentColor,
+                  ),
                 ),
                 SizedBox(width: 6),
                 Text(
@@ -857,7 +903,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               ],
             ),
           ),
-          
+
           // Image
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
@@ -872,8 +918,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
                       height: 120,
-                      color: AiColors.backgroundSecondary.withValues(alpha: 0.5),
-                      child: Center(child: Icon(Icons.image_not_supported, color: AiColors.textTertiary, size: 32)),
+                      color: AiColors.backgroundSecondary.withValues(
+                        alpha: 0.5,
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.image_not_supported,
+                          color: AiColors.textTertiary,
+                          size: 32,
+                        ),
+                      ),
                     ),
                   ),
                   Positioned.fill(
@@ -882,7 +936,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [Colors.transparent, accentColor.withValues(alpha: 0.15)],
+                          colors: [
+                            Colors.transparent,
+                            accentColor.withValues(alpha: 0.15),
+                          ],
                         ),
                       ),
                     ),
@@ -891,7 +948,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               ),
             ),
           ),
-          
+
           // Info
           Padding(
             padding: const EdgeInsets.all(12),
@@ -919,18 +976,26 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       ),
                       child: Text(
                         '₹${style['price']}',
-                        style: TextStyle(color: accentColor, fontWeight: FontWeight.w700, fontSize: 11),
+                        style: TextStyle(
+                          color: accentColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 11,
+                        ),
                       ),
                     ),
                     SizedBox(width: 6),
                     Text(
                       '${style['duration'] ?? 45}min',
-                      style: TextStyle(color: AiColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        color: AiColors.textSecondary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
                 SizedBox(height: 10),
-                
+
                 // Buttons stacked vertically
                 SizedBox(
                   width: double.infinity,
@@ -940,9 +1005,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     label: Text('Change', style: TextStyle(fontSize: 12)),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: accentColor,
-                      side: BorderSide(color: accentColor.withValues(alpha: 0.4), width: 1),
+                      side: BorderSide(
+                        color: accentColor.withValues(alpha: 0.4),
+                        width: 1,
+                      ),
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                     ),
                   ),
                 ),
@@ -955,9 +1025,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     label: Text('Remove', style: TextStyle(fontSize: 12)),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AiColors.textSecondary,
-                      side: BorderSide(color: AiColors.borderLight.withValues(alpha: 0.3), width: 1),
+                      side: BorderSide(
+                        color: AiColors.borderLight.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                     ),
                   ),
                 ),
@@ -981,7 +1056,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         height: 300,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-          border: Border.all(color: AiColors.neonPurple.withValues(alpha: 0.3), width: 2),
+          border: Border.all(
+            color: AiColors.neonPurple.withValues(alpha: 0.3),
+            width: 2,
+          ),
           color: AiColors.neonPurple.withValues(alpha: 0.05),
         ),
         child: Column(
@@ -994,7 +1072,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 shape: BoxShape.circle,
                 color: AiColors.neonPurple.withValues(alpha: 0.15),
               ),
-              child: Icon(Icons.add_circle_outline, color: AiColors.neonPurple, size: 32),
+              child: Icon(
+                Icons.add_circle_outline,
+                color: AiColors.neonPurple,
+                size: 32,
+              ),
             ),
             SizedBox(height: AiSpacing.md),
             Text(
@@ -1010,10 +1092,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 'Complete your look',
-                style: TextStyle(
-                  color: AiColors.textSecondary,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: AiColors.textSecondary, fontSize: 12),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -1544,7 +1623,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     setState(() {
                       if (_tabController.index == 0) {
                         _confirmedHaircutIndex = itemIndex;
-                        _onTryThisPressed();
+                        // If beard is already confirmed, go directly to confirmation dialog
+                        if (_confirmedBeardIndex != null) {
+                          _showConfirmationDialog();
+                        } else {
+                          _onTryThisPressed();
+                        }
                       } else {
                         _confirmedBeardIndex = itemIndex;
                         _showConfirmationDialog();
