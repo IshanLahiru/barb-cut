@@ -722,9 +722,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       _buildCompactStyleCard(
                         style: haircut,
                         label: 'Haircut',
-                        accentColor:
-                            haircut['accentColor'] as Color? ??
-                            AiColors.neonCyan,
+                        accentColor: AiColors.neonCyan,
                         onChangePressed: () {
                           Navigator.of(dialogContext).pop();
                           setState(() {
@@ -752,9 +750,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         _buildCompactStyleCard(
                           style: beard,
                           label: 'Beard',
-                          accentColor:
-                              beard['accentColor'] as Color? ??
-                              AiColors.neonPurple,
+                          accentColor: AiColors.neonCyan,
                           onChangePressed: () {
                             Navigator.of(dialogContext).pop();
                             setState(() {
