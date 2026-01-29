@@ -504,22 +504,43 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(AiSpacing.lg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      Text(
-                        'Complete Your Look',
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              color: AiColors.textPrimary,
-                              fontWeight: FontWeight.w800,
-                            ),
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AiColors.neonPurple.withValues(alpha: 0.2),
+                        ),
+                        child: Icon(
+                          Icons.add,
+                          color: AiColors.neonPurple,
+                          size: 18,
+                        ),
                       ),
-                      SizedBox(height: AiSpacing.xs),
-                      Text(
-                        'Add a beard style to complete your transformation',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AiColors.textSecondary,
+                      SizedBox(width: AiSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Complete Your Look',
+                              style: TextStyle(
+                                color: AiColors.textPrimary,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 20,
+                              ),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              'Add a beard style to complete your transformation',
+                              style: TextStyle(
+                                color: AiColors.textTertiary,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -554,44 +575,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(AiSpacing.lg),
-                  child: Column(
+                  child: Row(
                     children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            setState(
-                              () => _confirmedHaircutIndex =
-                                  _selectedHaircutIndex,
-                            );
-                            _tabController.animateTo(1);
-                            _panelController.open();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AiColors.neonPurple.withValues(
-                              alpha: 0.8,
-                            ),
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AiSpacing.radiusMedium,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'Add Beard Style',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: AiSpacing.md),
-                      SizedBox(
-                        width: double.infinity,
+                      Expanded(
                         child: OutlinedButton(
                           onPressed: () {
                             Navigator.of(context).pop();
@@ -616,12 +602,47 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-                          child: Text(
-                            'Just Haircut',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
+                          child: Text('Just Haircut', style: TextStyle(fontWeight: FontWeight.w600)),
+                        ),
+                      ),
+                      SizedBox(width: AiSpacing.md),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            setState(
+                              () => _confirmedHaircutIndex =
+                                  _selectedHaircutIndex,
+                            );
+                            _tabController.animateTo(1);
+                            _panelController.open();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AiColors.neonPurple.withValues(
+                              alpha: 0.8,
                             ),
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusMedium,
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.face_retouching_natural, size: 18),
+                              SizedBox(width: 8),
+                              Text(
+                                'Add Beard Style',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -658,22 +679,43 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(AiSpacing.lg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      Text(
-                        'Complete Your Look',
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              color: AiColors.textPrimary,
-                              fontWeight: FontWeight.w800,
-                            ),
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AiColors.neonPurple.withValues(alpha: 0.2),
+                        ),
+                        child: Icon(
+                          Icons.add,
+                          color: AiColors.neonPurple,
+                          size: 18,
+                        ),
                       ),
-                      SizedBox(height: AiSpacing.xs),
-                      Text(
-                        'Add a haircut style to complete your transformation',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AiColors.textSecondary,
+                      SizedBox(width: AiSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Complete Your Look',
+                              style: TextStyle(
+                                color: AiColors.textPrimary,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 20,
+                              ),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              'Add a haircut style to complete your transformation',
+                              style: TextStyle(
+                                color: AiColors.textTertiary,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -708,44 +750,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(AiSpacing.lg),
-                  child: Column(
+                  child: Row(
                     children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            setState(
-                              () => _confirmedBeardIndex =
-                                  _selectedBeardIndex,
-                            );
-                            _tabController.animateTo(0);
-                            _panelController.open();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AiColors.neonPurple.withValues(
-                              alpha: 0.8,
-                            ),
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AiSpacing.radiusMedium,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'Add Haircut Style',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: AiSpacing.md),
-                      SizedBox(
-                        width: double.infinity,
+                      Expanded(
                         child: OutlinedButton(
                           onPressed: () {
                             Navigator.of(context).pop();
@@ -770,12 +777,47 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-                          child: Text(
-                            'Just Beard',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
+                          child: Text('Just Beard', style: TextStyle(fontWeight: FontWeight.w600)),
+                        ),
+                      ),
+                      SizedBox(width: AiSpacing.md),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            setState(
+                              () => _confirmedBeardIndex =
+                                  _selectedBeardIndex,
+                            );
+                            _tabController.animateTo(0);
+                            _panelController.open();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AiColors.neonPurple.withValues(
+                              alpha: 0.8,
                             ),
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusMedium,
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.content_cut, size: 18),
+                              SizedBox(width: 8),
+                              Text(
+                                'Add Haircut Style',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
