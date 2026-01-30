@@ -485,6 +485,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   void _onTryThisPressed() async {
     final haircut = _haircuts[_confirmedHaircutIndex ?? _selectedHaircutIndex];
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -513,12 +514,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AdaptiveThemeColors.neonCyan(
-                            context,
+                            dialogContext,
                           ).withValues(alpha: 0.2),
                         ),
                         child: Icon(
                           Icons.add,
-                          color: AdaptiveThemeColors.neonCyan(context),
+                          color: AdaptiveThemeColors.neonCyan(dialogContext),
                           size: 18,
                         ),
                       ),
@@ -544,6 +545,27 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: AiColors.textSecondary,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                          if (mounted) {
+                            setState(() {
+                              _confirmedHaircutIndex = null;
+                              _confirmedBeardIndex = null;
+                            });
+                          }
+                        },
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(
+                          minWidth: 40,
+                          minHeight: 40,
                         ),
                       ),
                     ],
@@ -630,10 +652,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AdaptiveThemeColors.neonCyan(
-                              context,
+                              dialogContext,
                             ),
                             foregroundColor: AdaptiveThemeColors.backgroundDeep(
-                              context,
+                              dialogContext,
                             ),
                             padding: EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
@@ -664,6 +686,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   void _showBeardSelectionPrompt() async {
     final beard = _beardStyles[_confirmedBeardIndex ?? _selectedBeardIndex];
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -692,12 +715,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AdaptiveThemeColors.neonCyan(
-                            context,
+                            dialogContext,
                           ).withValues(alpha: 0.2),
                         ),
                         child: Icon(
                           Icons.add,
-                          color: AdaptiveThemeColors.neonCyan(context),
+                          color: AdaptiveThemeColors.neonCyan(dialogContext),
                           size: 18,
                         ),
                       ),
@@ -723,6 +746,27 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: AiColors.textSecondary,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                          if (mounted) {
+                            setState(() {
+                              _confirmedHaircutIndex = null;
+                              _confirmedBeardIndex = null;
+                            });
+                          }
+                        },
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(
+                          minWidth: 40,
+                          minHeight: 40,
                         ),
                       ),
                     ],
@@ -805,10 +849,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AdaptiveThemeColors.neonCyan(
-                              context,
+                              dialogContext,
                             ),
                             foregroundColor: AdaptiveThemeColors.backgroundDeep(
-                              context,
+                              dialogContext,
                             ),
                             padding: EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
@@ -838,10 +882,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   void _showConfirmationDialog() async {
-    final haircut = _haircuts[_confirmedHaircutIndex ?? _selectedHaircutIndex];
+    final haircut = _confirmedHaircutIndex != null
+        ? _haircuts[_confirmedHaircutIndex!]
+        : null;
     final beard = _confirmedBeardIndex != null
         ? _beardStyles[_confirmedBeardIndex!]
         : null;
+
+    if (!mounted) return;
 
     showDialog(
       context: context,
@@ -872,12 +920,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AdaptiveThemeColors.neonCyan(
-                            context,
+                            dialogContext,
                           ).withValues(alpha: 0.2),
                         ),
                         child: Icon(
                           Icons.check,
-                          color: AdaptiveThemeColors.neonCyan(context),
+                          color: AdaptiveThemeColors.neonCyan(dialogContext),
                           size: 18,
                         ),
                       ),
@@ -905,6 +953,27 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           ],
                         ),
                       ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: AiColors.textSecondary,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                          if (mounted) {
+                            setState(() {
+                              _confirmedHaircutIndex = null;
+                              _confirmedBeardIndex = null;
+                            });
+                          }
+                        },
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(
+                          minWidth: 40,
+                          minHeight: 40,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -921,31 +990,32 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Haircut Card
-                      _buildCompactStyleCard(
-                        style: haircut,
-                        label: 'Haircut',
-                        accentColor: AdaptiveThemeColors.neonCyan(context),
-                        onChangePressed: () {
-                          Navigator.of(dialogContext).pop();
-                          setState(() {
-                            _selectedHaircutIndex =
-                                _confirmedHaircutIndex ?? _selectedHaircutIndex;
-                          });
-                          _tabController.animateTo(0);
-                          _panelController.open();
-                        },
-                        onRemovePressed: () {
-                          Navigator.of(dialogContext).pop();
-                          setState(() {
-                            _confirmedHaircutIndex = null;
-                            _confirmedBeardIndex = null;
-                            _selectedHaircutIndex = 0;
-                            _selectedBeardIndex = 0;
-                          });
-                          _panelController.open();
-                        },
-                      ),
+                      // Haircut Card or Add CTA
+                      if (haircut != null)
+                        _buildCompactStyleCard(
+                          style: haircut,
+                          label: 'Haircut',
+                          accentColor: AdaptiveThemeColors.neonCyan(
+                            dialogContext,
+                          ),
+                          onChangePressed: () {
+                            Navigator.of(dialogContext).pop();
+                            setState(() {
+                              _selectedHaircutIndex =
+                                  _confirmedHaircutIndex ??
+                                  _selectedHaircutIndex;
+                            });
+                            _tabController.animateTo(0);
+                            _panelController.open();
+                          },
+                          onRemovePressed: () {
+                            Navigator.of(dialogContext).pop();
+                            setState(() => _confirmedHaircutIndex = null);
+                            _showConfirmationDialog();
+                          },
+                        )
+                      else
+                        _buildAddHaircutCard(dialogContext),
                       SizedBox(width: AiSpacing.md),
 
                       // Beard Card or Add CTA
@@ -953,7 +1023,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         _buildCompactStyleCard(
                           style: beard,
                           label: 'Beard',
-                          accentColor: AdaptiveThemeColors.neonCyan(context),
+                          accentColor: AdaptiveThemeColors.neonCyan(
+                            dialogContext,
+                          ),
                           onChangePressed: () {
                             Navigator.of(dialogContext).pop();
                             setState(() {
@@ -1250,6 +1322,64 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAddHaircutCard(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pop();
+        _tabController.animateTo(0);
+        _panelController.open();
+      },
+      child: Container(
+        width: 200,
+        height: 300,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
+          border: Border.all(
+            color: AiColors.neonCyan.withValues(alpha: 0.3),
+            width: 2,
+          ),
+          color: AiColors.neonCyan.withValues(alpha: 0.05),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AiColors.neonCyan.withValues(alpha: 0.15),
+              ),
+              child: Icon(
+                Icons.add_circle_outline,
+                color: AiColors.neonCyan,
+                size: 32,
+              ),
+            ),
+            SizedBox(height: AiSpacing.md),
+            Text(
+              'Add Haircut Style',
+              style: TextStyle(
+                color: AiColors.textPrimary,
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+              ),
+            ),
+            SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Complete your look',
+                style: TextStyle(color: AiColors.textSecondary, fontSize: 12),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
