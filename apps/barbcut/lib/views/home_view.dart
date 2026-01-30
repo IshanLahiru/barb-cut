@@ -18,8 +18,11 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   final PanelController _panelController = PanelController();
+  final TextEditingController _panelSearchController = TextEditingController();
   int _selectedHaircutIndex = 0;
   int _selectedBeardIndex = 0;
+  String _panelSearchQuery = '';
+  double _panelSlidePosition = 0.0;
   late TabController _tabController;
   final Random _random = Random();
   late List<double> _haircutHeights;
@@ -1527,7 +1530,18 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   void dispose() {
     _tabController.dispose();
     _carouselTimer?.cancel();
+    _panelSearchController.dispose();
     super.dispose();
+  }
+
+  bool _matchesPanelSearch(Map<String, dynamic> item) {
+    if (_panelSearchQuery.trim().isEmpty) {
+      return true;
+    }
+    final query = _panelSearchQuery.toLowerCase();
+    final name = item['name']?.toString().toLowerCase() ?? '';
+    final description = item['description']?.toString().toLowerCase() ?? '';
+    return name.contains(query) || description.contains(query);
   }
 
   @override
@@ -1561,6 +1575,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         borderRadius: BorderRadius.zero,
         backdropEnabled: false,
         isDraggable: true,
+        onPanelSlide: (position) {
+          setState(() {
+            _panelSlidePosition = position;
+          });
+        },
         panelBuilder: (scrollController) => _buildPanel(),
         body: _buildMainContent(),
       ),
@@ -1829,6 +1848,104 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             indicatorColor: AdaptiveThemeColors.neonCyan(context),
             dividerColor: AdaptiveThemeColors.borderLight(context),
           ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOutCubic,
+            alignment: Alignment.topCenter,
+            child: SizedBox(
+              height: _panelSlidePosition * 70,
+              child: Transform.translate(
+                offset: Offset(0, 30 * (1 - _panelSlidePosition)),
+                child: Opacity(
+                  opacity: _panelSlidePosition,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AiSpacing.lg,
+                      AiSpacing.md,
+                      AiSpacing.lg,
+                      AiSpacing.sm,
+                    ),
+                    child: TextField(
+                      controller: _panelSearchController,
+                      onChanged: (value) {
+                        setState(() {
+                          _panelSearchQuery = value;
+                        });
+                      },
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AdaptiveThemeColors.textPrimary(context),
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Fade, buzz cut, pompadour...',
+                        hintStyle: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(
+                              color: AdaptiveThemeColors.textTertiary(context),
+                            ),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: AdaptiveThemeColors.textTertiary(context),
+                          size: 20,
+                        ),
+                        suffixIcon: _panelSearchQuery.isNotEmpty
+                            ? IconButton(
+                                icon: Icon(
+                                  Icons.clear,
+                                  color: AdaptiveThemeColors.textTertiary(
+                                    context,
+                                  ),
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _panelSearchController.clear();
+                                    _panelSearchQuery = '';
+                                  });
+                                },
+                              )
+                            : null,
+                        filled: true,
+                        fillColor: AdaptiveThemeColors.backgroundSecondary(
+                          context,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: AiSpacing.md,
+                          vertical: AiSpacing.md,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AiSpacing.radiusLarge,
+                          ),
+                          borderSide: BorderSide(
+                            color: AdaptiveThemeColors.borderLight(context),
+                            width: 1.5,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AiSpacing.radiusLarge,
+                          ),
+                          borderSide: BorderSide(
+                            color: AdaptiveThemeColors.borderLight(context),
+                            width: 1.5,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AiSpacing.radiusLarge,
+                          ),
+                          borderSide: BorderSide(
+                            color: AdaptiveThemeColors.neonCyan(context),
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      cursorColor: AdaptiveThemeColors.neonCyan(context),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -1848,6 +1965,42 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     else if (width >= 820)
       crossAxisCount = 3;
 
+    final filteredIndices = _haircuts
+        .asMap()
+        .entries
+        .where((entry) => _matchesPanelSearch(entry.value))
+        .map((entry) => entry.key)
+        .toList();
+
+    if (filteredIndices.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off,
+              size: 64,
+              color: AdaptiveThemeColors.textTertiary(context),
+            ),
+            const SizedBox(height: AiSpacing.md),
+            Text(
+              'No styles found',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AdaptiveThemeColors.textPrimary(context),
+              ),
+            ),
+            const SizedBox(height: AiSpacing.sm),
+            Text(
+              'Try a different search term',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AdaptiveThemeColors.textTertiary(context),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AiSpacing.md,
@@ -1859,20 +2012,21 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
         ),
-        itemCount: _haircuts.length,
+        itemCount: filteredIndices.length,
         mainAxisSpacing: AiSpacing.md,
         crossAxisSpacing: AiSpacing.md,
         itemBuilder: (context, index) {
-          final haircut = _haircuts[index];
-          final isSelected = _selectedHaircutIndex == index;
+          final itemIndex = filteredIndices[index];
+          final haircut = _haircuts[itemIndex];
+          final isSelected = _selectedHaircutIndex == itemIndex;
           return _buildStyleCard(
             item: haircut,
-            itemIndex: index,
+            itemIndex: itemIndex,
             isSelected: isSelected,
-            height: _haircutHeights[index],
+            height: _haircutHeights[itemIndex],
             onTap: () {
               setState(() {
-                _selectedHaircutIndex = index;
+                _selectedHaircutIndex = itemIndex;
               });
             },
           );
@@ -1889,6 +2043,42 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     else if (width >= 820)
       crossAxisCount = 3;
 
+    final filteredIndices = _beardStyles
+        .asMap()
+        .entries
+        .where((entry) => _matchesPanelSearch(entry.value))
+        .map((entry) => entry.key)
+        .toList();
+
+    if (filteredIndices.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off,
+              size: 64,
+              color: AdaptiveThemeColors.textTertiary(context),
+            ),
+            const SizedBox(height: AiSpacing.md),
+            Text(
+              'No styles found',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AdaptiveThemeColors.textPrimary(context),
+              ),
+            ),
+            const SizedBox(height: AiSpacing.sm),
+            Text(
+              'Try a different search term',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AdaptiveThemeColors.textTertiary(context),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AiSpacing.md,
@@ -1900,20 +2090,21 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
         ),
-        itemCount: _beardStyles.length,
+        itemCount: filteredIndices.length,
         mainAxisSpacing: AiSpacing.md,
         crossAxisSpacing: AiSpacing.md,
         itemBuilder: (context, index) {
-          final beard = _beardStyles[index];
-          final isSelected = _selectedBeardIndex == index;
+          final itemIndex = filteredIndices[index];
+          final beard = _beardStyles[itemIndex];
+          final isSelected = _selectedBeardIndex == itemIndex;
           return _buildStyleCard(
             item: beard,
-            itemIndex: index,
+            itemIndex: itemIndex,
             isSelected: isSelected,
-            height: _beardHeights[index],
+            height: _beardHeights[itemIndex],
             onTap: () {
               setState(() {
-                _selectedBeardIndex = index;
+                _selectedBeardIndex = itemIndex;
               });
             },
           );
