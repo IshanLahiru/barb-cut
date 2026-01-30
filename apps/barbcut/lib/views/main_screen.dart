@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:barbcut/views/explore_view.dart';
+import 'package:barbcut/views/history_view.dart';
 import 'package:barbcut/views/home_view.dart';
 import 'package:barbcut/views/profile_view.dart';
 import 'package:barbcut/views/products_view.dart';
@@ -17,7 +17,7 @@ class _MainScreenState extends State<MainScreen> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     HomeView(),
-    ExploreView(),
+    HistoryView(),
     ProductsView(),
     ProfileView(),
   ];
@@ -47,8 +47,8 @@ class _MainScreenState extends State<MainScreen> {
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(
-              icon: Icon(Icons.explore),
-              label: 'Explore',
+              icon: Icon(Icons.history),
+              label: 'History',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.shopping_bag),
