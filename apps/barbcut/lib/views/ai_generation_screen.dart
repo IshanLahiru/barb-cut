@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../theme/ai_colors.dart';
 import '../theme/ai_spacing.dart';
-import '../widgets/ai_buttons.dart';
-import '../widgets/ai_input_components.dart';
-import '../widgets/ai_loading_states.dart';
-import '../widgets/ai_image_card.dart';
+import '../shared/widgets/atoms/ai_buttons.dart';
+import '../shared/widgets/atoms/ai_input_components.dart';
+import '../shared/widgets/organisms/ai_loading_states.dart';
 
 /// Example AI Image Generation Screen
 /// Demonstrates all custom widgets in a real-world scenario

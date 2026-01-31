@@ -1,10 +1,10 @@
 /// Base exception class for internal error handling
-/// 
+///
 /// Exceptions are thrown internally; Failures are returned to presentation layer
 /// This separation maintains clean architecture boundaries
 abstract class AppException implements Exception {
   final String message;
-  
+
   AppException(this.message);
 }
 

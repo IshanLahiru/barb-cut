@@ -3,23 +3,24 @@ class AppConstants {
   // API endpoints
   static const String apiBaseUrl = 'https://api.barbcut.local/v1';
   static const String apiTimeout = '30';
-  
+
   // Cache keys
   static const String cacheKeyHaircuts = 'cached_haircuts';
   static const String cacheKeyBeardStyles = 'cached_beard_styles';
   static const String cacheKeyUserProfile = 'cached_user_profile';
   static const String cacheKeyFavorites = 'cached_favorites';
-  
+
   // Durations
   static const Duration cacheExpiration = Duration(days: 7);
   static const Duration debounceDelay = Duration(milliseconds: 400);
   static const Duration animationDuration = Duration(milliseconds: 300);
-  
+
   // Pagination
   static const int pageSize = 20;
-  
+
   // Form validation patterns
-  static const String emailPattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+  static const String emailPattern =
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
   static const String phonePattern = r'^[0-9]{10,}$';
 }
 

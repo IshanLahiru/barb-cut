@@ -18,14 +18,16 @@ extension ThemeExtension on BuildContext {
   /// Screen size helpers
   bool get isMobile => mediaQuery.size.width < 600;
 
-  bool get isTablet => mediaQuery.size.width >= 600 && mediaQuery.size.width < 1000;
+  bool get isTablet =>
+      mediaQuery.size.width >= 600 && mediaQuery.size.width < 1000;
 
   bool get isDesktop => mediaQuery.size.width >= 1000;
 
   /// Padding helpers
   EdgeInsets get paddingAll => const EdgeInsets.all(16);
 
-  EdgeInsets get paddingHorizontal => const EdgeInsets.symmetric(horizontal: 16);
+  EdgeInsets get paddingHorizontal =>
+      const EdgeInsets.symmetric(horizontal: 16);
 
   EdgeInsets get paddingVertical => const EdgeInsets.symmetric(vertical: 16);
 

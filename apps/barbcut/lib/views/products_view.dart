@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/ai_colors.dart';
 import '../theme/adaptive_theme_colors.dart';
 import '../theme/ai_spacing.dart';
-import '../widgets/ai_buttons.dart';
+import '../shared/widgets/atoms/ai_buttons.dart';
 
 class ProductsView extends StatefulWidget {
   const ProductsView({super.key});

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
 import '../theme/ai_colors.dart';
 import '../theme/ai_spacing.dart';
-import '../widgets/ai_buttons.dart';
+import '../shared/widgets/atoms/ai_buttons.dart';
 
 class LoginView extends StatefulWidget {
   final VoidCallback onSwitchToRegister;

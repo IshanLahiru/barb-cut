@@ -1,10 +1,10 @@
 /// Base failure class for error handling throughout the app
-/// 
+///
 /// Use Either<Failure, SuccessType> for type-safe error handling
 /// Example: Either<Failure, List<User>>
 abstract class Failure {
   final String message;
-  
+
   Failure(this.message);
 }
 

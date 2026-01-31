@@ -59,26 +59,31 @@ class AdaptiveColors {
 
   AdaptiveColors(this.brightness);
 
-  Color get surface =>
-      brightness == Brightness.light ? CoreColors.lightSurface : CoreColors.darkSurface;
+  Color get surface => brightness == Brightness.light
+      ? CoreColors.lightSurface
+      : CoreColors.darkSurface;
 
-  Color get background =>
-      brightness == Brightness.light ? CoreColors.lightBackground : CoreColors.darkBackground;
+  Color get background => brightness == Brightness.light
+      ? CoreColors.lightBackground
+      : CoreColors.darkBackground;
 
-  Color get border =>
-      brightness == Brightness.light ? CoreColors.lightBorder : CoreColors.darkBorder;
+  Color get border => brightness == Brightness.light
+      ? CoreColors.lightBorder
+      : CoreColors.darkBorder;
 
-  Color get shadow =>
-      brightness == Brightness.light ? CoreColors.lightShadow : CoreColors.darkShadow;
+  Color get shadow => brightness == Brightness.light
+      ? CoreColors.lightShadow
+      : CoreColors.darkShadow;
 
-  Color get textPrimary =>
-      brightness == Brightness.light ? CoreColors.lightTextPrimary : CoreColors.darkTextPrimary;
+  Color get textPrimary => brightness == Brightness.light
+      ? CoreColors.lightTextPrimary
+      : CoreColors.darkTextPrimary;
 
-  Color get textSecondary =>
-      brightness == Brightness.light
-          ? CoreColors.lightTextSecondary
-          : CoreColors.darkTextSecondary;
+  Color get textSecondary => brightness == Brightness.light
+      ? CoreColors.lightTextSecondary
+      : CoreColors.darkTextSecondary;
 
-  Color get textTertiary =>
-      brightness == Brightness.light ? CoreColors.lightTextTertiary : CoreColors.darkTextTertiary;
+  Color get textTertiary => brightness == Brightness.light
+      ? CoreColors.lightTextTertiary
+      : CoreColors.darkTextTertiary;
 }
