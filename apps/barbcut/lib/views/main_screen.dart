@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:barbcut/views/history_view.dart';
-import 'package:barbcut/views/home_view.dart';
+import 'package:barbcut/features/home/presentation/pages/home_page.dart';
 import 'package:barbcut/views/profile_view.dart';
 import 'package:barbcut/views/products_view.dart';
 import '../theme/adaptive_theme_colors.dart';
@@ -16,7 +16,7 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    HomeView(),
+    HomePage(),
     HistoryView(),
     ProductsView(),
     ProfileView(),
