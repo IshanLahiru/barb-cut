@@ -1601,89 +1601,86 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           decoration: BoxDecoration(
             color: AdaptiveThemeColors.backgroundDeep(context),
           ),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(
-                AiSpacing.lg,
-                0,
-                AiSpacing.lg,
-                AiSpacing.lg,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: AiSpacing.xs),
-                  SizedBox(
-                    height: carouselHeight,
-                    child: Stack(
-                      children: [
-                        FlutterCarousel(
-                          options: CarouselOptions(
-                            height: carouselHeight,
-                            viewportFraction: (constraints.maxWidth < 360)
-                                ? 0.88
-                                : (constraints.maxWidth < 600 ? 0.8 : 0.7),
-                            enlargeCenterPage: true,
-                            enableInfiniteScroll: true,
-                            autoPlay: _isGenerating,
-                            autoPlayInterval: Duration(milliseconds: 1500),
-                            autoPlayAnimationDuration: Duration(
-                              milliseconds: 800,
-                            ),
-                            showIndicator: false,
-                            onPageChanged: (index, reason) {
-                              setState(() {
-                                _selectedHaircutIndex = index;
-                              });
-                            },
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(
+              AiSpacing.lg,
+              0,
+              AiSpacing.lg,
+              AiSpacing.lg,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: carouselHeight,
+                  child: Stack(
+                    children: [
+                      FlutterCarousel(
+                        options: CarouselOptions(
+                          height: carouselHeight,
+                          viewportFraction: (constraints.maxWidth < 360)
+                              ? 0.88
+                              : (constraints.maxWidth < 600 ? 0.8 : 0.7),
+                          enlargeCenterPage: true,
+                          enableInfiniteScroll: true,
+                          autoPlay: _isGenerating,
+                          autoPlayInterval: Duration(milliseconds: 1500),
+                          autoPlayAnimationDuration: Duration(
+                            milliseconds: 800,
                           ),
-                          items: _haircuts.take(4).toList().asMap().entries.map(
-                            (entry) {
-                              final int itemIndex = entry.key;
-                              final Map<String, dynamic> haircut = entry.value;
-                              final Color accentColor =
-                                  (haircut['accentColor'] as Color?) ??
-                                  AdaptiveThemeColors.neonCyan(context);
+                          showIndicator: false,
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _selectedHaircutIndex = index;
+                            });
+                          },
+                        ),
+                        items: _haircuts.take(4).toList().asMap().entries.map((
+                          entry,
+                        ) {
+                          final int itemIndex = entry.key;
+                          final Map<String, dynamic> haircut = entry.value;
+                          final Color accentColor =
+                              (haircut['accentColor'] as Color?) ??
+                              AdaptiveThemeColors.neonCyan(context);
 
-                              return Align(
-                                alignment: Alignment.center,
-                                child: _buildCarouselCard(
-                                  haircut: haircut,
-                                  accentColor: accentColor,
-                                  itemIndex: itemIndex,
-                                  iconSize: iconSize,
-                                  isGenerating: _isGenerating,
-                                ),
-                              );
-                            },
-                          ).toList(),
-                        ),
-                      ],
-                    ),
+                          return Align(
+                            alignment: Alignment.center,
+                            child: _buildCarouselCard(
+                              haircut: haircut,
+                              accentColor: accentColor,
+                              itemIndex: itemIndex,
+                              iconSize: iconSize,
+                              isGenerating: _isGenerating,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: AiSpacing.none),
-                  // Carousel indicators
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      4,
-                      (index) => Container(
-                        width: 6,
-                        height: 6,
-                        margin: const EdgeInsets.symmetric(horizontal: 3),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _selectedHaircutIndex == index
-                              ? AdaptiveThemeColors.neonCyan(context)
-                              : AiColors.borderLight.withValues(alpha: 0.5),
-                        ),
+                ),
+                const SizedBox(height: AiSpacing.none),
+                // Carousel indicators
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    4,
+                    (index) => Container(
+                      width: 6,
+                      height: 6,
+                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _selectedHaircutIndex == index
+                            ? AdaptiveThemeColors.neonCyan(context)
+                            : AiColors.borderLight.withValues(alpha: 0.5),
                       ),
                     ),
                   ),
-                  const SizedBox(height: AiSpacing.md),
-                ],
-              ),
+                ),
+                const SizedBox(height: AiSpacing.md),
+              ],
             ),
           ),
         );
@@ -1824,6 +1821,23 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Draggable area (drag handle + padding makes it easy to grab)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AdaptiveThemeColors.borderLight(
+                    context,
+                  ).withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+          ),
           TabBar(
             controller: _tabController,
             tabs: const [

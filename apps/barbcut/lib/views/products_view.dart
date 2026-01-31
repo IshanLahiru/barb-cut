@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/ai_colors.dart';
+import '../theme/adaptive_theme_colors.dart';
 import '../theme/ai_spacing.dart';
 import '../widgets/ai_buttons.dart';
 
@@ -83,15 +84,15 @@ class _ProductsViewState extends State<ProductsView> {
         .toList();
 
     return Scaffold(
-      backgroundColor: AiColors.backgroundDeep,
+      backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
       appBar: AppBar(
-        backgroundColor: AiColors.backgroundDark,
+        backgroundColor: AdaptiveThemeColors.backgroundDark(context),
         elevation: 0,
         toolbarHeight: 48,
         title: Text(
           'Shop',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AiColors.textPrimary,
+            color: AdaptiveThemeColors.textPrimary(context),
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -108,9 +109,19 @@ class _ProductsViewState extends State<ProductsView> {
                 vertical: AiSpacing.md,
               ),
               decoration: BoxDecoration(
-                color: AiColors.backgroundDark,
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AdaptiveThemeColors.backgroundDark(context),
+                    AdaptiveThemeColors.backgroundSecondary(context),
+                  ],
+                ),
                 border: Border(
-                  bottom: BorderSide(color: AiColors.borderGlass, width: 1),
+                  bottom: BorderSide(
+                    color: AdaptiveThemeColors.borderLight(context),
+                    width: 1,
+                  ),
                 ),
               ),
               child: Column(
@@ -119,7 +130,7 @@ class _ProductsViewState extends State<ProductsView> {
                   Text(
                     'Find Premium Products',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AiColors.textSecondary,
+                      color: AdaptiveThemeColors.textSecondary(context),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -133,22 +144,26 @@ class _ProductsViewState extends State<ProductsView> {
                       });
                     },
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AiColors.textPrimary,
+                      color: AdaptiveThemeColors.textPrimary(context),
                     ),
                     decoration: InputDecoration(
                       hintText: 'Hair gel, clippers, shampoo...',
                       hintStyle: Theme.of(context).textTheme.bodyMedium
-                          ?.copyWith(color: AiColors.textTertiary),
+                          ?.copyWith(
+                            color: AdaptiveThemeColors.textTertiary(context),
+                          ),
                       prefixIcon: Icon(
                         Icons.search,
-                        color: AiColors.textTertiary,
+                        color: AdaptiveThemeColors.textTertiary(context),
                         size: 20,
                       ),
                       suffixIcon: _searchQuery.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.clear,
-                                color: AiColors.textTertiary,
+                                color: AdaptiveThemeColors.textTertiary(
+                                  context,
+                                ),
                                 size: 20,
                               ),
                               onPressed: () {
@@ -160,7 +175,9 @@ class _ProductsViewState extends State<ProductsView> {
                             )
                           : null,
                       filled: true,
-                      fillColor: AiColors.backgroundSecondary,
+                      fillColor: AdaptiveThemeColors.backgroundSecondary(
+                        context,
+                      ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: AiSpacing.md,
                         vertical: AiSpacing.md,
@@ -169,8 +186,8 @@ class _ProductsViewState extends State<ProductsView> {
                         borderRadius: BorderRadius.circular(
                           AiSpacing.radiusLarge,
                         ),
-                        borderSide: const BorderSide(
-                          color: AiColors.borderLight,
+                        borderSide: BorderSide(
+                          color: AdaptiveThemeColors.borderLight(context),
                           width: 1.5,
                         ),
                       ),
@@ -178,8 +195,8 @@ class _ProductsViewState extends State<ProductsView> {
                         borderRadius: BorderRadius.circular(
                           AiSpacing.radiusLarge,
                         ),
-                        borderSide: const BorderSide(
-                          color: AiColors.borderLight,
+                        borderSide: BorderSide(
+                          color: AdaptiveThemeColors.borderLight(context),
                           width: 1.5,
                         ),
                       ),
@@ -187,13 +204,35 @@ class _ProductsViewState extends State<ProductsView> {
                         borderRadius: BorderRadius.circular(
                           AiSpacing.radiusLarge,
                         ),
-                        borderSide: const BorderSide(
-                          color: AiColors.neonCyan,
+                        borderSide: BorderSide(
+                          color: AdaptiveThemeColors.neonCyan(context),
                           width: 2,
                         ),
                       ),
                     ),
-                    cursorColor: AiColors.neonCyan,
+                    cursorColor: AdaptiveThemeColors.neonCyan(context),
+                  ),
+                  const SizedBox(height: AiSpacing.md),
+                  Wrap(
+                    spacing: AiSpacing.sm,
+                    runSpacing: AiSpacing.sm,
+                    children: [
+                      _buildCategoryChip(
+                        context,
+                        label: 'Hair Care',
+                        color: AdaptiveThemeColors.neonCyan(context),
+                      ),
+                      _buildCategoryChip(
+                        context,
+                        label: 'Beard Care',
+                        color: AdaptiveThemeColors.sunsetCoral(context),
+                      ),
+                      _buildCategoryChip(
+                        context,
+                        label: 'Tools',
+                        color: AdaptiveThemeColors.neonPurple(context),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -208,24 +247,33 @@ class _ProductsViewState extends State<ProductsView> {
                           Icon(
                             Icons.shopping_bag_outlined,
                             size: 64,
-                            color: AiColors.textTertiary,
+                            color: AdaptiveThemeColors.textTertiary(context),
                           ),
                           const SizedBox(height: AiSpacing.md),
                           Text(
                             'No products found',
                             style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(color: AiColors.textPrimary),
+                                ?.copyWith(
+                                  color: AdaptiveThemeColors.textPrimary(
+                                    context,
+                                  ),
+                                ),
                           ),
                           const SizedBox(height: AiSpacing.sm),
                           Text(
                             'Try a different search term',
                             style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(color: AiColors.textTertiary),
+                                ?.copyWith(
+                                  color: AdaptiveThemeColors.textTertiary(
+                                    context,
+                                  ),
+                                ),
                           ),
                         ],
                       ),
                     )
                   : ListView.builder(
+                      physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.symmetric(
                         horizontal: AiSpacing.lg,
                         vertical: AiSpacing.md,
@@ -258,6 +306,31 @@ class _ProductsViewState extends State<ProductsView> {
     );
   }
 
+  Widget _buildCategoryChip(
+    BuildContext context, {
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AiSpacing.md,
+        vertical: AiSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: AdaptiveThemeColors.backgroundSecondary(context),
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+        border: Border.all(color: color.withValues(alpha: 0.35), width: 1),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+          color: AdaptiveThemeColors.textPrimary(context),
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
   Widget _buildAiProductCard(
     BuildContext context,
     Map<String, dynamic> product,
@@ -272,10 +345,14 @@ class _ProductsViewState extends State<ProductsView> {
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
         decoration: BoxDecoration(
-          color: isSelected ? AiColors.surface : AiColors.backgroundSecondary,
+          color: isSelected
+              ? AdaptiveThemeColors.surface(context)
+              : AdaptiveThemeColors.backgroundSecondary(context),
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
           border: Border.all(
-            color: isSelected ? accentColor : AiColors.borderLight,
+            color: isSelected
+                ? accentColor
+                : AdaptiveThemeColors.borderLight(context),
             width: isSelected ? 2 : 1.5,
           ),
           boxShadow: [
@@ -327,7 +404,7 @@ class _ProductsViewState extends State<ProductsView> {
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
-                                color: AiColors.textPrimary,
+                                color: AdaptiveThemeColors.textPrimary(context),
                                 fontWeight: FontWeight.w600,
                               ),
                         ),
@@ -337,7 +414,11 @@ class _ProductsViewState extends State<ProductsView> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: AiColors.textTertiary),
+                              ?.copyWith(
+                                color: AdaptiveThemeColors.textTertiary(
+                                  context,
+                                ),
+                              ),
                         ),
                       ],
                     ),
@@ -370,89 +451,85 @@ class _ProductsViewState extends State<ProductsView> {
                 ],
               ),
               const SizedBox(height: AiSpacing.md),
-              // Rating + Actions (visible when selected)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Rating
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AiSpacing.sm,
-                      vertical: AiSpacing.xs,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AiColors.backgroundDeep,
-                      borderRadius: BorderRadius.circular(
-                        AiSpacing.radiusSmall,
-                      ),
-                      border: Border.all(color: AiColors.borderLight, width: 1),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.star_rounded,
-                          size: 16,
-                          color: AiColors.neonCyan,
-                        ),
-                        const SizedBox(width: AiSpacing.xs),
-                        Text(
-                          product['rating'].toString(),
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: AiColors.textSecondary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                        ),
-                      ],
+              // Rating or Action buttons
+              if (!isSelected)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AiSpacing.sm,
+                    vertical: AiSpacing.xs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AdaptiveThemeColors.backgroundDeep(context),
+                    borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
+                    border: Border.all(
+                      color: AdaptiveThemeColors.borderLight(context),
+                      width: 1,
                     ),
                   ),
-                  // Action buttons (show when selected)
-                  if (isSelected)
-                    Row(
-                      children: [
-                        Expanded(
-                          child: SizedBox(
-                            height: 40,
-                            child: AiSecondaryButton(
-                              label: 'View',
-                              onPressed: () {},
-                              accentColor: AiColors.neonCyan,
-                            ),
-                          ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.star_rounded,
+                        size: 16,
+                        color: AdaptiveThemeColors.neonCyan(context),
+                      ),
+                      const SizedBox(width: AiSpacing.xs),
+                      Text(
+                        product['rating'].toString(),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AdaptiveThemeColors.textSecondary(context),
+                          fontWeight: FontWeight.w600,
                         ),
-                        const SizedBox(width: AiSpacing.sm),
-                        Expanded(
-                          child: SizedBox(
-                            height: 40,
-                            child: AiPrimaryButton(
-                              label: 'Add',
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      '${product['name']} added to cart!',
-                                      style: const TextStyle(
-                                        color: AiColors.textPrimary,
-                                      ),
-                                    ),
-                                    backgroundColor: AiColors.success,
-                                    duration: const Duration(
-                                      milliseconds: 1500,
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 40,
+                        child: AiSecondaryButton(
+                          label: 'View',
+                          onPressed: () {},
+                          accentColor: AdaptiveThemeColors.neonCyan(context),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AiSpacing.sm),
+                    Expanded(
+                      child: SizedBox(
+                        height: 40,
+                        child: AiPrimaryButton(
+                          label: 'Add',
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  '${product['name']} added to cart!',
+                                  style: TextStyle(
+                                    color: AdaptiveThemeColors.textPrimary(
+                                      context,
                                     ),
                                   ),
-                                );
-                                setState(() {
-                                  _selectedProductIndex = null;
-                                });
-                              },
-                            ),
-                          ),
+                                ),
+                                backgroundColor: AdaptiveThemeColors.success(
+                                  context,
+                                ),
+                                duration: const Duration(milliseconds: 1500),
+                              ),
+                            );
+                            setState(() {
+                              _selectedProductIndex = null;
+                            });
+                          },
                         ),
-                      ],
+                      ),
                     ),
-                ],
-              ),
+                  ],
+                ),
             ],
           ),
         ),

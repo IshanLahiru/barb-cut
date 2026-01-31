@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
 import '../theme/ai_colors.dart';
+import '../theme/adaptive_theme_colors.dart';
 import '../theme/ai_spacing.dart';
 import 'appearance_view.dart';
 
@@ -11,15 +12,15 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AiColors.backgroundDeep,
+      backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
       appBar: AppBar(
-        backgroundColor: AiColors.backgroundDark,
+        backgroundColor: AdaptiveThemeColors.backgroundDark(context),
         elevation: 0,
         toolbarHeight: 48,
         title: Text(
           'Profile',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AiColors.textPrimary,
+            color: AdaptiveThemeColors.textPrimary(context),
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -27,6 +28,7 @@ class ProfileView extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
       ),
       body: ListView(
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(
           horizontal: AiSpacing.lg,
           vertical: AiSpacing.md,
@@ -35,12 +37,24 @@ class ProfileView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AiSpacing.lg),
             decoration: BoxDecoration(
-              color: AiColors.surface,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AdaptiveThemeColors.backgroundSecondary(context),
+                  AdaptiveThemeColors.surface(context),
+                ],
+              ),
               borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-              border: Border.all(color: AiColors.borderLight, width: 1.5),
+              border: Border.all(
+                color: AdaptiveThemeColors.borderLight(context),
+                width: 1.5,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: AiColors.neonCyan.withValues(alpha: 0.1),
+                  color: AdaptiveThemeColors.neonCyan(
+                    context,
+                  ).withValues(alpha: 0.1),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -56,14 +70,20 @@ class ProfileView extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        AiColors.neonCyan.withValues(alpha: 0.3),
-                        AiColors.neonPurple.withValues(alpha: 0.3),
+                        AdaptiveThemeColors.neonCyan(
+                          context,
+                        ).withValues(alpha: 0.3),
+                        AdaptiveThemeColors.neonPurple(
+                          context,
+                        ).withValues(alpha: 0.3),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
                     boxShadow: [
                       BoxShadow(
-                        color: AiColors.neonCyan.withValues(alpha: 0.2),
+                        color: AdaptiveThemeColors.neonCyan(
+                          context,
+                        ).withValues(alpha: 0.2),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -84,7 +104,7 @@ class ProfileView extends StatelessWidget {
                         'Guest User',
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(
-                              color: AiColors.textPrimary,
+                              color: AdaptiveThemeColors.textPrimary(context),
                               fontWeight: FontWeight.w700,
                             ),
                       ),
@@ -92,8 +112,30 @@ class ProfileView extends StatelessWidget {
                       Text(
                         'guest@barbcut.app',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AiColors.textTertiary,
+                          color: AdaptiveThemeColors.textTertiary(context),
                         ),
+                      ),
+                      const SizedBox(height: AiSpacing.md),
+                      Row(
+                        children: [
+                          _buildStatItem(
+                            context,
+                            label: 'Generations',
+                            value: '24',
+                          ),
+                          const SizedBox(width: AiSpacing.md),
+                          _buildStatItem(
+                            context,
+                            label: 'Favorites',
+                            value: '8',
+                          ),
+                          const SizedBox(width: AiSpacing.md),
+                          _buildStatItem(
+                            context,
+                            label: 'Bookings',
+                            value: '3',
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -110,7 +152,7 @@ class ProfileView extends StatelessWidget {
             child: Text(
               'ACCOUNT',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: AiColors.textTertiary,
+                color: AdaptiveThemeColors.textTertiary(context),
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1,
               ),
@@ -120,19 +162,19 @@ class ProfileView extends StatelessWidget {
             context,
             icon: Icons.edit,
             title: 'Edit Profile',
-            accentColor: AiColors.neonCyan,
+            accentColor: AdaptiveThemeColors.neonCyan(context),
           ),
           _buildTile(
             context,
             icon: Icons.payment,
             title: 'Payment Methods',
-            accentColor: AiColors.sunsetCoral,
+            accentColor: AdaptiveThemeColors.sunsetCoral(context),
           ),
           _buildTile(
             context,
             icon: Icons.history,
             title: 'Appointments',
-            accentColor: AiColors.neonPurple,
+            accentColor: AdaptiveThemeColors.neonPurple(context),
           ),
           const SizedBox(height: AiSpacing.xxl),
           Padding(
@@ -143,7 +185,7 @@ class ProfileView extends StatelessWidget {
             child: Text(
               'SETTINGS',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: AiColors.textTertiary,
+                color: AdaptiveThemeColors.textTertiary(context),
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1,
               ),
@@ -153,19 +195,19 @@ class ProfileView extends StatelessWidget {
             context,
             icon: Icons.notifications,
             title: 'Notifications',
-            accentColor: AiColors.neonCyan,
+            accentColor: AdaptiveThemeColors.neonCyan(context),
           ),
           _buildTile(
             context,
             icon: Icons.lock,
             title: 'Privacy & Security',
-            accentColor: AiColors.sunsetCoral,
+            accentColor: AdaptiveThemeColors.sunsetCoral(context),
           ),
           _buildTile(
             context,
             icon: Icons.palette,
             title: 'Appearance',
-            accentColor: AiColors.neonPurple,
+            accentColor: AdaptiveThemeColors.neonPurple(context),
             onTap: () {
               Navigator.of(
                 context,
@@ -176,14 +218,14 @@ class ProfileView extends StatelessWidget {
             context,
             icon: Icons.help_outline,
             title: 'Help & Support',
-            accentColor: AiColors.neonCyan,
+            accentColor: AdaptiveThemeColors.neonCyan(context),
           ),
           const SizedBox(height: AiSpacing.lg),
           _buildTile(
             context,
             icon: Icons.logout,
             title: 'Sign Out',
-            accentColor: AiColors.sunsetCoral,
+            accentColor: AdaptiveThemeColors.sunsetCoral(context),
             isDestructive: true,
             onTap: () => context.read<AuthController>().logout(),
           ),
@@ -204,12 +246,12 @@ class ProfileView extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AiSpacing.md),
       decoration: BoxDecoration(
         color: isDestructive
-            ? AiColors.danger.withValues(alpha: 0.1)
-            : AiColors.backgroundSecondary,
+            ? AdaptiveThemeColors.error(context).withValues(alpha: 0.1)
+            : AdaptiveThemeColors.backgroundSecondary(context),
         borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
         border: Border.all(
           color: isDestructive
-              ? AiColors.danger.withValues(alpha: 0.3)
+              ? AdaptiveThemeColors.error(context).withValues(alpha: 0.3)
               : accentColor.withValues(alpha: 0.2),
           width: 1,
         ),
@@ -235,22 +277,69 @@ class ProfileView extends StatelessWidget {
           child: Icon(
             icon,
             size: 20,
-            color: isDestructive ? AiColors.danger : accentColor,
+            color: isDestructive
+                ? AdaptiveThemeColors.error(context)
+                : accentColor,
           ),
         ),
         title: Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: isDestructive ? AiColors.danger : AiColors.textPrimary,
+            color: isDestructive
+                ? AdaptiveThemeColors.error(context)
+                : AdaptiveThemeColors.textPrimary(context),
             fontWeight: FontWeight.w600,
           ),
         ),
         trailing: Icon(
           Icons.chevron_right,
           size: 22,
-          color: AiColors.textTertiary,
+          color: AdaptiveThemeColors.textTertiary(context),
         ),
         onTap: onTap,
+      ),
+    );
+  }
+
+  Widget _buildStatItem(
+    BuildContext context, {
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AiSpacing.sm,
+        vertical: AiSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: AdaptiveThemeColors.backgroundDark(
+          context,
+        ).withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
+        border: Border.all(
+          color: AdaptiveThemeColors.borderLight(context),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: AdaptiveThemeColors.textPrimary(context),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: AdaptiveThemeColors.textTertiary(context),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
