@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../theme/ai_colors.dart';
 import '../theme/adaptive_theme_colors.dart';
 import '../theme/ai_spacing.dart';
-import '../shared/widgets/atoms/ai_buttons.dart';
+import '../shared/widgets/atoms/category_chip.dart';
+import '../shared/widgets/molecules/product_card.dart';
 
 class ProductsView extends StatefulWidget {
   const ProductsView({super.key});
@@ -217,18 +218,15 @@ class _ProductsViewState extends State<ProductsView> {
                     spacing: AiSpacing.sm,
                     runSpacing: AiSpacing.sm,
                     children: [
-                      _buildCategoryChip(
-                        context,
+                      CategoryChip(
                         label: 'Hair Care',
                         color: AdaptiveThemeColors.neonCyan(context),
                       ),
-                      _buildCategoryChip(
-                        context,
+                      CategoryChip(
                         label: 'Beard Care',
                         color: AdaptiveThemeColors.sunsetCoral(context),
                       ),
-                      _buildCategoryChip(
-                        context,
+                      CategoryChip(
                         label: 'Tools',
                         color: AdaptiveThemeColors.neonPurple(context),
                       ),
@@ -284,15 +282,36 @@ class _ProductsViewState extends State<ProductsView> {
                         final isSelected = _selectedProductIndex == index;
                         return Padding(
                           padding: const EdgeInsets.only(bottom: AiSpacing.md),
-                          child: _buildAiProductCard(
-                            context,
-                            product,
-                            isSelected,
-                            () {
+                          child: ProductCard(
+                            product: product,
+                            isSelected: isSelected,
+                            onTap: () {
                               setState(() {
                                 _selectedProductIndex = isSelected
                                     ? null
                                     : index;
+                              });
+                            },
+                            onView: () {},
+                            onAdd: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '${product['name']} added to cart!',
+                                    style: TextStyle(
+                                      color: AdaptiveThemeColors.textPrimary(
+                                        context,
+                                      ),
+                                    ),
+                                  ),
+                                  backgroundColor: AdaptiveThemeColors.success(
+                                    context,
+                                  ),
+                                  duration: const Duration(milliseconds: 1500),
+                                ),
+                              );
+                              setState(() {
+                                _selectedProductIndex = null;
                               });
                             },
                           ),
@@ -306,234 +325,4 @@ class _ProductsViewState extends State<ProductsView> {
     );
   }
 
-  Widget _buildCategoryChip(
-    BuildContext context, {
-    required String label,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AiSpacing.md,
-        vertical: AiSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: AdaptiveThemeColors.backgroundSecondary(context),
-        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-        border: Border.all(color: color.withValues(alpha: 0.35), width: 1),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: AdaptiveThemeColors.textPrimary(context),
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAiProductCard(
-    BuildContext context,
-    Map<String, dynamic> product,
-    bool isSelected,
-    VoidCallback onTap,
-  ) {
-    final accentColor = product['accentColor'] as Color;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AdaptiveThemeColors.surface(context)
-              : AdaptiveThemeColors.backgroundSecondary(context),
-          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-          border: Border.all(
-            color: isSelected
-                ? accentColor
-                : AdaptiveThemeColors.borderLight(context),
-            width: isSelected ? 2 : 1.5,
-          ),
-          boxShadow: [
-            if (isSelected)
-              BoxShadow(
-                color: accentColor.withValues(alpha: 0.3),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-              ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(AiSpacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Top row: Icon + Title + Price
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Icon container
-                  Container(
-                    padding: const EdgeInsets.all(AiSpacing.md),
-                    decoration: BoxDecoration(
-                      color: accentColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(
-                        AiSpacing.radiusLarge,
-                      ),
-                      border: Border.all(
-                        color: accentColor.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      product['icon'] as IconData,
-                      color: accentColor,
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(width: AiSpacing.md),
-                  // Title + Description
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product['name'],
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: AdaptiveThemeColors.textPrimary(context),
-                                fontWeight: FontWeight.w600,
-                              ),
-                        ),
-                        const SizedBox(height: AiSpacing.xs),
-                        Text(
-                          product['description'],
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: AdaptiveThemeColors.textTertiary(
-                                  context,
-                                ),
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: AiSpacing.md),
-                  // Price badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AiSpacing.sm,
-                      vertical: AiSpacing.xs,
-                    ),
-                    decoration: BoxDecoration(
-                      color: accentColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(
-                        AiSpacing.radiusSmall,
-                      ),
-                      border: Border.all(
-                        color: accentColor.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      product['price'],
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: accentColor,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AiSpacing.md),
-              // Rating or Action buttons
-              if (!isSelected)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AiSpacing.sm,
-                    vertical: AiSpacing.xs,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AdaptiveThemeColors.backgroundDeep(context),
-                    borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
-                    border: Border.all(
-                      color: AdaptiveThemeColors.borderLight(context),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.star_rounded,
-                        size: 16,
-                        color: AdaptiveThemeColors.neonCyan(context),
-                      ),
-                      const SizedBox(width: AiSpacing.xs),
-                      Text(
-                        product['rating'].toString(),
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: AdaptiveThemeColors.textSecondary(context),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              else
-                Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 40,
-                        child: AiSecondaryButton(
-                          label: 'View',
-                          onPressed: () {},
-                          accentColor: AdaptiveThemeColors.neonCyan(context),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: AiSpacing.sm),
-                    Expanded(
-                      child: SizedBox(
-                        height: 40,
-                        child: AiPrimaryButton(
-                          label: 'Add',
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  '${product['name']} added to cart!',
-                                  style: TextStyle(
-                                    color: AdaptiveThemeColors.textPrimary(
-                                      context,
-                                    ),
-                                  ),
-                                ),
-                                backgroundColor: AdaptiveThemeColors.success(
-                                  context,
-                                ),
-                                duration: const Duration(milliseconds: 1500),
-                              ),
-                            );
-                            setState(() {
-                              _selectedProductIndex = null;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
