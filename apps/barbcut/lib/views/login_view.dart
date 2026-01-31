@@ -4,6 +4,7 @@ import '../controllers/auth_controller.dart';
 import '../theme/ai_colors.dart';
 import '../theme/ai_spacing.dart';
 import '../shared/widgets/atoms/ai_buttons.dart';
+import '../shared/widgets/atoms/auth_text_field.dart';
 
 class LoginView extends StatefulWidget {
   final VoidCallback onSwitchToRegister;
@@ -75,123 +76,33 @@ class _LoginViewState extends State<LoginView> {
                 child: Column(
                   children: [
                     // Email field
-                    TextField(
+                    AuthTextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AiColors.textPrimary,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Email address',
-                        hintStyle: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(color: AiColors.textTertiary),
-                        prefixIcon: const Icon(
-                          Icons.mail_outline,
-                          color: AiColors.neonCyan,
-                          size: 20,
-                        ),
-                        filled: true,
-                        fillColor: AiColors.backgroundDeep,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: AiSpacing.md,
-                          vertical: AiSpacing.md,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AiSpacing.radiusMedium,
-                          ),
-                          borderSide: const BorderSide(
-                            color: AiColors.borderLight,
-                            width: 1,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AiSpacing.radiusMedium,
-                          ),
-                          borderSide: const BorderSide(
-                            color: AiColors.borderLight,
-                            width: 1,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AiSpacing.radiusMedium,
-                          ),
-                          borderSide: const BorderSide(
-                            color: AiColors.neonCyan,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                      cursorColor: AiColors.neonCyan,
+                      hintText: 'Email address',
+                      prefixIcon: Icons.mail_outline,
                     ),
                     const SizedBox(height: AiSpacing.md),
                     // Password field
-                    TextField(
+                    AuthTextField(
                       controller: _passwordController,
+                      hintText: 'Password',
+                      prefixIcon: Icons.lock_outline,
                       obscureText: !_showPassword,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AiColors.textPrimary,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Password',
-                        hintStyle: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(color: AiColors.textTertiary),
-                        prefixIcon: const Icon(
-                          Icons.lock_outline,
-                          color: AiColors.neonCyan,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: AiColors.textTertiary,
                           size: 20,
                         ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _showPassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: AiColors.textTertiary,
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _showPassword = !_showPassword;
-                            });
-                          },
-                        ),
-                        filled: true,
-                        fillColor: AiColors.backgroundDeep,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: AiSpacing.md,
-                          vertical: AiSpacing.md,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AiSpacing.radiusMedium,
-                          ),
-                          borderSide: const BorderSide(
-                            color: AiColors.borderLight,
-                            width: 1,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AiSpacing.radiusMedium,
-                          ),
-                          borderSide: const BorderSide(
-                            color: AiColors.borderLight,
-                            width: 1,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AiSpacing.radiusMedium,
-                          ),
-                          borderSide: const BorderSide(
-                            color: AiColors.neonCyan,
-                            width: 2,
-                          ),
-                        ),
+                        onPressed: () {
+                          setState(() {
+                            _showPassword = !_showPassword;
+                          });
+                        },
                       ),
-                      cursorColor: AiColors.neonCyan,
                     ),
                     const SizedBox(height: AiSpacing.lg),
                     if (_localError != null) ...[

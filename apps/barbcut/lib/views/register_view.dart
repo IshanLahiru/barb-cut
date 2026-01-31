@@ -4,6 +4,7 @@ import '../controllers/auth_controller.dart';
 import '../theme/ai_colors.dart';
 import '../theme/ai_spacing.dart';
 import '../shared/widgets/atoms/ai_buttons.dart';
+import '../shared/widgets/atoms/auth_text_field.dart';
 
 class RegisterView extends StatefulWidget {
   final VoidCallback onSwitchToLogin;
@@ -96,131 +97,49 @@ class _RegisterViewState extends State<RegisterView> {
                 child: Column(
                   children: [
                     // Email field
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AiColors.backgroundDark.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(
-                          AiSpacing.radiusMedium,
-                        ),
-                        border: Border.all(
-                          color: AiColors.borderLight,
-                          width: 1.0,
-                        ),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: AiSpacing.md,
-                        vertical: AiSpacing.sm,
-                      ),
-                      child: TextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AiColors.textPrimary,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Email address',
-                          hintStyle: TextStyle(color: AiColors.textSecondary),
-                          prefixIcon: Icon(
-                            Icons.mail_outline,
-                            color: AiColors.neonCyan,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.zero,
-                          isDense: true,
-                        ),
-                      ),
+                    AuthTextField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      hintText: 'Email address',
+                      prefixIcon: Icons.mail_outline,
                     ),
                     SizedBox(height: AiSpacing.md),
                     // Password field
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AiColors.backgroundDark.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(
-                          AiSpacing.radiusMedium,
-                        ),
-                        border: Border.all(
-                          color: AiColors.borderLight,
-                          width: 1.0,
-                        ),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: AiSpacing.md,
-                        vertical: AiSpacing.sm,
-                      ),
-                      child: TextField(
-                        controller: _passwordController,
-                        obscureText: !_showPassword,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AiColors.textPrimary,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          hintStyle: TextStyle(color: AiColors.textSecondary),
-                          prefixIcon: Icon(
-                            Icons.lock_outline,
-                            color: AiColors.sunsetCoral,
-                          ),
-                          suffixIcon: GestureDetector(
-                            onTap: () =>
-                                setState(() => _showPassword = !_showPassword),
-                            child: Icon(
-                              _showPassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: AiColors.neonCyan,
-                              size: 20,
-                            ),
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.zero,
-                          isDense: true,
+                    AuthTextField(
+                      controller: _passwordController,
+                      hintText: 'Password',
+                      prefixIcon: Icons.lock_outline,
+                      obscureText: !_showPassword,
+                      accentColor: AiColors.sunsetCoral,
+                      suffixIcon: GestureDetector(
+                        onTap: () =>
+                            setState(() => _showPassword = !_showPassword),
+                        child: Icon(
+                          _showPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: AiColors.neonCyan,
+                          size: 20,
                         ),
                       ),
                     ),
                     SizedBox(height: AiSpacing.md),
                     // Confirm password field
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AiColors.backgroundDark.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(
-                          AiSpacing.radiusMedium,
-                        ),
-                        border: Border.all(
-                          color: AiColors.borderLight,
-                          width: 1.0,
-                        ),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: AiSpacing.md,
-                        vertical: AiSpacing.sm,
-                      ),
-                      child: TextField(
-                        controller: _confirmController,
-                        obscureText: !_showConfirm,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AiColors.textPrimary,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Confirm password',
-                          hintStyle: TextStyle(color: AiColors.textSecondary),
-                          prefixIcon: Icon(
-                            Icons.lock_reset,
-                            color: AiColors.neonPurple,
-                          ),
-                          suffixIcon: GestureDetector(
-                            onTap: () =>
-                                setState(() => _showConfirm = !_showConfirm),
-                            child: Icon(
-                              _showConfirm
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: AiColors.neonCyan,
-                              size: 20,
-                            ),
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.zero,
-                          isDense: true,
+                    AuthTextField(
+                      controller: _confirmController,
+                      hintText: 'Confirm password',
+                      prefixIcon: Icons.lock_reset,
+                      obscureText: !_showConfirm,
+                      accentColor: AiColors.neonPurple,
+                      suffixIcon: GestureDetector(
+                        onTap: () =>
+                            setState(() => _showConfirm = !_showConfirm),
+                        child: Icon(
+                          _showConfirm
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: AiColors.neonCyan,
+                          size: 20,
                         ),
                       ),
                     ),
