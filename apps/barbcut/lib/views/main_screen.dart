@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:barbcut/views/history_view.dart';
 import 'package:barbcut/features/home/presentation/pages/home_page.dart';
-import 'package:barbcut/views/profile_view.dart';
-import 'package:barbcut/views/products_view.dart';
+import 'package:barbcut/features/history/presentation/pages/history_page.dart';
+import 'package:barbcut/features/products/presentation/pages/products_page.dart';
+import 'package:barbcut/features/profile/presentation/pages/profile_page.dart';
 import '../theme/adaptive_theme_colors.dart';
 
 class MainScreen extends StatefulWidget {
@@ -17,9 +17,9 @@ class _MainScreenState extends State<MainScreen> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     HomePage(),
-    HistoryView(),
-    ProductsView(),
-    ProfileView(),
+    HistoryPage(),
+    ProductsPage(),
+    ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
