@@ -161,23 +161,26 @@ class _ProfileViewState extends State<ProfileView> {
                                 ),
                           ),
                           const SizedBox(height: AiSpacing.md),
-                          Row(
-                            children: [
-                              StatItem(
-                                label: 'Appointments',
-                                value: '$_appointmentsCount',
-                              ),
-                              const SizedBox(width: AiSpacing.md),
-                              StatItem(
-                                label: 'Favorites',
-                                value: '$_favoritesCount',
-                              ),
-                              const SizedBox(width: AiSpacing.md),
-                              StatItem(
-                                label: 'Rating',
-                                value: _averageRating.toStringAsFixed(1),
-                              ),
-                            ],
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                StatItem(
+                                  label: 'Appointments',
+                                  value: '$_appointmentsCount',
+                                ),
+                                const SizedBox(width: AiSpacing.md),
+                                StatItem(
+                                  label: 'Favorites',
+                                  value: '$_favoritesCount',
+                                ),
+                                const SizedBox(width: AiSpacing.md),
+                                StatItem(
+                                  label: 'Rating',
+                                  value: _averageRating.toStringAsFixed(1),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
