@@ -1,5 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../features/home/data/datasources/home_local_data_source.dart';
+import '../../features/home/data/repositories/home_repository_impl.dart';
+import '../../features/home/domain/repositories/home_repository.dart';
+import '../../features/home/domain/usecases/get_beard_styles_usecase.dart';
+import '../../features/home/domain/usecases/get_haircuts_usecase.dart';
 
 final getIt = GetIt.instance;
 
@@ -12,34 +17,27 @@ Future<void> setupServiceLocator() async {
 
   // Add more registrations here as features are added
   // Example pattern:
-  // _setupHomeFeature();
+  _setupHomeFeature();
   // _setupProductsFeature();
   // etc.
 }
 
 // Feature setup functions will go here
 // Example:
-// void _setupHomeFeature() {
-//   // Data sources
-//   getIt.registerSingleton<HomeRemoteDataSource>(
-//     HomeRemoteDataSourceImpl(getIt<ApiClient>()),
-//   );
-//
-//   // Repository
-//   getIt.registerSingleton<HomeRepository>(
-//     HomeRepositoryImpl(
-//       remoteDataSource: getIt<HomeRemoteDataSource>(),
-//       networkInfo: getIt<NetworkInfo>(),
-//     ),
-//   );
-//
-//   // Use cases
-//   getIt.registerSingleton<GetHaircutsUseCase>(
-//     GetHaircutsUseCase(getIt<HomeRepository>()),
-//   );
-//
-//   // BLoC
-//   getIt.registerSingleton<HomeBloc>(
-//     HomeBloc(useCase: getIt<GetHaircutsUseCase>()),
-//   );
-// }
+void _setupHomeFeature() {
+  getIt.registerLazySingleton<HomeLocalDataSource>(
+    () => HomeLocalDataSourceImpl(),
+  );
+
+  getIt.registerLazySingleton<HomeRepository>(
+    () => HomeRepositoryImpl(localDataSource: getIt<HomeLocalDataSource>()),
+  );
+
+  getIt.registerLazySingleton<GetHaircutsUseCase>(
+    () => GetHaircutsUseCase(getIt<HomeRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetBeardStylesUseCase>(
+    () => GetBeardStylesUseCase(getIt<HomeRepository>()),
+  );
+}
