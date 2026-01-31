@@ -16,6 +16,8 @@ import '../features/home/domain/usecases/get_haircuts_usecase.dart';
 import '../features/home/presentation/bloc/home_bloc.dart';
 import '../features/home/presentation/bloc/home_event.dart';
 import '../features/home/presentation/bloc/home_state.dart';
+import '../shared/widgets/molecules/add_style_card.dart';
+import '../shared/widgets/molecules/style_preview_card_inline.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -200,7 +202,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         ),
                       ),
                       SizedBox(height: AiSpacing.md),
-                      _buildStylePreviewCardInline(dialogContext, haircut),
+                      StylePreviewCardInline(style: haircut),
                     ],
                   ),
                 ),
@@ -411,7 +413,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         ),
                       ),
                       SizedBox(height: AiSpacing.md),
-                      _buildStylePreviewCardInline(dialogContext, beard),
+                      StylePreviewCardInline(style: beard),
                     ],
                   ),
                 ),
@@ -634,7 +636,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           },
                         )
                       else
-                        _buildAddHaircutCard(dialogContext),
+                        AddStyleCard(
+                          title: 'Add Haircut Style',
+                          subtitle: 'Complete your look',
+                          accentColor: AiColors.neonCyan,
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                            _tabController.animateTo(0);
+                            _panelController.open();
+                          },
+                        ),
                       SizedBox(width: AiSpacing.md),
 
                       // Beard Card or Add CTA
@@ -661,7 +672,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           },
                         )
                       else
-                        _buildAddBeardCard(dialogContext),
+                        AddStyleCard(
+                          title: 'Add Beard Style',
+                          subtitle: 'Complete your look',
+                          accentColor: AiColors.neonPurple,
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                            _tabController.animateTo(1);
+                            _panelController.open();
+                          },
+                        ),
                     ],
                   ),
                 ),
@@ -942,183 +962,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildAddHaircutCard(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.of(context).pop();
-        _tabController.animateTo(0);
-        _panelController.open();
-      },
-      child: Container(
-        width: 200,
-        height: 300,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-          border: Border.all(
-            color: AiColors.neonCyan.withValues(alpha: 0.3),
-            width: 2,
-          ),
-          color: AiColors.neonCyan.withValues(alpha: 0.05),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AiColors.neonCyan.withValues(alpha: 0.15),
-              ),
-              child: Icon(
-                Icons.add_circle_outline,
-                color: AiColors.neonCyan,
-                size: 32,
-              ),
-            ),
-            SizedBox(height: AiSpacing.md),
-            Text(
-              'Add Haircut Style',
-              style: TextStyle(
-                color: AiColors.textPrimary,
-                fontWeight: FontWeight.w700,
-                fontSize: 15,
-              ),
-            ),
-            SizedBox(height: 4),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'Complete your look',
-                style: TextStyle(color: AiColors.textSecondary, fontSize: 12),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddBeardCard(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.of(context).pop();
-        _tabController.animateTo(1);
-        _panelController.open();
-      },
-      child: Container(
-        width: 200,
-        height: 300,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-          border: Border.all(
-            color: AiColors.neonPurple.withValues(alpha: 0.3),
-            width: 2,
-          ),
-          color: AiColors.neonPurple.withValues(alpha: 0.05),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AiColors.neonPurple.withValues(alpha: 0.15),
-              ),
-              child: Icon(
-                Icons.add_circle_outline,
-                color: AiColors.neonPurple,
-                size: 32,
-              ),
-            ),
-            SizedBox(height: AiSpacing.md),
-            Text(
-              'Add Beard Style',
-              style: TextStyle(
-                color: AiColors.textPrimary,
-                fontWeight: FontWeight.w700,
-                fontSize: 15,
-              ),
-            ),
-            SizedBox(height: 4),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'Complete your look',
-                style: TextStyle(color: AiColors.textSecondary, fontSize: 12),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStylePreviewCardInline(
-    BuildContext context,
-    Map<String, dynamic> style,
-  ) {
-    return Row(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-          child: Image.network(
-            style['image'] as String,
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
-              width: 100,
-              height: 100,
-              color: AiColors.backgroundSecondary.withValues(alpha: 0.5),
-              child: Center(
-                child: Icon(
-                  Icons.image_not_supported,
-                  color: AiColors.textTertiary,
-                  size: 32,
-                ),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(width: AiSpacing.md),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                style['name'] as String,
-                style: TextStyle(
-                  color: AiColors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                '₹${style['price']}',
-                style: TextStyle(
-                  color: AdaptiveThemeColors.neonCyan(context),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                '${style['duration'] ?? 45} mins',
-                style: TextStyle(color: AiColors.textTertiary, fontSize: 12),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 
