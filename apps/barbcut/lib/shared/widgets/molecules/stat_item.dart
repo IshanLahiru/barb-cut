@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
-import '../../../theme/adaptive_theme_colors.dart';
-import '../../../theme/ai_spacing.dart';
+import '../../../theme/theme.dart';
 
 class StatItem extends StatelessWidget {
   final String label;
   final String value;
 
-  const StatItem({
-    super.key,
-    required this.label,
-    required this.value,
-  });
+  const StatItem({super.key, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
+      padding: EdgeInsets.symmetric(
         horizontal: AiSpacing.sm,
         vertical: AiSpacing.xs,
       ),

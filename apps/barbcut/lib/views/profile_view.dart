@@ -65,13 +65,13 @@ class _ProfileViewState extends State<ProfileView> {
           ),
           body: ListView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(
+            padding: EdgeInsets.symmetric(
               horizontal: AiSpacing.lg,
               vertical: AiSpacing.md,
             ),
             children: [
               Container(
-                padding: const EdgeInsets.all(AiSpacing.lg),
+                padding: EdgeInsets.all(AiSpacing.lg),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
@@ -133,7 +133,7 @@ class _ProfileViewState extends State<ProfileView> {
                         color: AiColors.neonCyan,
                       ),
                     ),
-                    const SizedBox(width: AiSpacing.lg),
+                    SizedBox(width: AiSpacing.lg),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,7 +148,7 @@ class _ProfileViewState extends State<ProfileView> {
                                   fontWeight: FontWeight.w700,
                                 ),
                           ),
-                          const SizedBox(height: AiSpacing.xs),
+                          SizedBox(height: AiSpacing.xs),
                           Text(
                             _email,
                             style: Theme.of(context).textTheme.bodyMedium
@@ -158,7 +158,7 @@ class _ProfileViewState extends State<ProfileView> {
                                   ),
                                 ),
                           ),
-                          const SizedBox(height: AiSpacing.md),
+                          SizedBox(height: AiSpacing.md),
                           SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
@@ -167,12 +167,12 @@ class _ProfileViewState extends State<ProfileView> {
                                   label: 'Appointments',
                                   value: '$_appointmentsCount',
                                 ),
-                                const SizedBox(width: AiSpacing.md),
+                                SizedBox(width: AiSpacing.md),
                                 StatItem(
                                   label: 'Favorites',
                                   value: '$_favoritesCount',
                                 ),
-                                const SizedBox(width: AiSpacing.md),
+                                SizedBox(width: AiSpacing.md),
                                 StatItem(
                                   label: 'Rating',
                                   value: _averageRating.toStringAsFixed(1),
@@ -186,9 +186,9 @@ class _ProfileViewState extends State<ProfileView> {
                   ],
                 ),
               ),
-              const SizedBox(height: AiSpacing.xxxl),
+              SizedBox(height: AiSpacing.xxxl),
               Padding(
-                padding: const EdgeInsets.only(
+                padding: EdgeInsets.only(
                   left: AiSpacing.sm,
                   bottom: AiSpacing.md,
                 ),
@@ -219,9 +219,9 @@ class _ProfileViewState extends State<ProfileView> {
                 title: 'Appointments',
                 accentColor: AdaptiveThemeColors.neonPurple(context),
               ),
-              const SizedBox(height: AiSpacing.xxl),
+              SizedBox(height: AiSpacing.xxl),
               Padding(
-                padding: const EdgeInsets.only(
+                padding: EdgeInsets.only(
                   left: AiSpacing.sm,
                   bottom: AiSpacing.md,
                 ),
@@ -263,7 +263,7 @@ class _ProfileViewState extends State<ProfileView> {
                 title: 'Help & Support',
                 accentColor: AdaptiveThemeColors.neonCyan(context),
               ),
-              const SizedBox(height: AiSpacing.lg),
+              SizedBox(height: AiSpacing.lg),
               _buildTile(
                 context,
                 icon: Icons.logout,
@@ -288,7 +288,7 @@ class _ProfileViewState extends State<ProfileView> {
     VoidCallback? onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: AiSpacing.md),
+      margin: EdgeInsets.only(bottom: AiSpacing.md),
       decoration: BoxDecoration(
         color: isDestructive
             ? AdaptiveThemeColors.error(context).withValues(alpha: 0.1)
@@ -309,12 +309,12 @@ class _ProfileViewState extends State<ProfileView> {
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
+        contentPadding: EdgeInsets.symmetric(
           horizontal: AiSpacing.lg,
           vertical: AiSpacing.sm,
         ),
         leading: Container(
-          padding: const EdgeInsets.all(AiSpacing.sm),
+          padding: EdgeInsets.all(AiSpacing.sm),
           decoration: BoxDecoration(
             color: accentColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../theme/ai_colors.dart';
-import '../../../theme/ai_spacing.dart';
+import '../../../theme/theme.dart';
 
 class StylePreviewCardInline extends StatelessWidget {
   final Map<String, dynamic> style;

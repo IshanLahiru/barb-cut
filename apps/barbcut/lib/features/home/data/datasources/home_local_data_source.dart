@@ -1,4 +1,4 @@
-import 'package:barbcut/theme/ai_colors.dart';
+import 'package:barbcut/theme/theme.dart';
 import '../../domain/entities/style_entity.dart';
 import '../models/style_model.dart';
 

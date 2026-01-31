@@ -34,7 +34,7 @@ class _AiPromptChipState extends State<AiPromptChip> {
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
             color: AiColors.surface.withValues(alpha: _isHovered ? 1.0 : 0.7),
             border: Border.all(

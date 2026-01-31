@@ -27,9 +27,9 @@ extension ThemeExtension on BuildContext {
   EdgeInsets get paddingAll => const EdgeInsets.all(16);
 
   EdgeInsets get paddingHorizontal =>
-      const EdgeInsets.symmetric(horizontal: 16);
+      EdgeInsets.symmetric(horizontal: 16);
 
-  EdgeInsets get paddingVertical => const EdgeInsets.symmetric(vertical: 16);
+  EdgeInsets get paddingVertical => EdgeInsets.symmetric(vertical: 16);
 
   EdgeInsets get paddingSmall => const EdgeInsets.all(8);
 

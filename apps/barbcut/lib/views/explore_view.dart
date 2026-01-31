@@ -124,7 +124,7 @@ class _ExploreViewState extends State<ExploreView> {
           children: [
             // Header with gradient
             Container(
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 horizontal: AiSpacing.lg,
                 vertical: AiSpacing.md,
               ),
@@ -144,7 +144,7 @@ class _ExploreViewState extends State<ExploreView> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: AiSpacing.sm),
+                  SizedBox(height: AiSpacing.sm),
                   // Search field with neon cyan focus
                   TextField(
                     controller: _searchController,
@@ -182,7 +182,7 @@ class _ExploreViewState extends State<ExploreView> {
                           : null,
                       filled: true,
                       fillColor: AiColors.backgroundSecondary,
-                      contentPadding: const EdgeInsets.symmetric(
+                      contentPadding: EdgeInsets.symmetric(
                         horizontal: AiSpacing.md,
                         vertical: AiSpacing.md,
                       ),
@@ -231,13 +231,13 @@ class _ExploreViewState extends State<ExploreView> {
                             size: 64,
                             color: AiColors.textTertiary,
                           ),
-                          const SizedBox(height: AiSpacing.md),
+                          SizedBox(height: AiSpacing.md),
                           Text(
                             'No styles found',
                             style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(color: AiColors.textPrimary),
                           ),
-                          const SizedBox(height: AiSpacing.sm),
+                          SizedBox(height: AiSpacing.sm),
                           Text(
                             'Try a different search term',
                             style: Theme.of(context).textTheme.bodySmall
@@ -247,7 +247,7 @@ class _ExploreViewState extends State<ExploreView> {
                       ),
                     )
                   : GridView.builder(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         horizontal: AiSpacing.lg,
                         vertical: AiSpacing.md,
                       ),
@@ -368,7 +368,7 @@ class _ExploreViewState extends State<ExploreView> {
             top: AiSpacing.md,
             right: AiSpacing.md,
             child: Container(
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 horizontal: AiSpacing.sm,
                 vertical: AiSpacing.xs,
               ),

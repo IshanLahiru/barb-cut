@@ -46,11 +46,11 @@ class _LoginViewState extends State<LoginView> {
       backgroundColor: AiColors.backgroundDeep,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AiSpacing.lg),
+          padding: EdgeInsets.all(AiSpacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: AiSpacing.lg),
+              SizedBox(height: AiSpacing.lg),
               Text(
                 'Welcome back',
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
@@ -58,16 +58,16 @@ class _LoginViewState extends State<LoginView> {
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: AiSpacing.sm),
+              SizedBox(height: AiSpacing.sm),
               Text(
                 'Sign in to continue',
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(color: AiColors.textTertiary),
               ),
-              const SizedBox(height: AiSpacing.xxl),
+              SizedBox(height: AiSpacing.xxl),
               Container(
-                padding: const EdgeInsets.all(AiSpacing.lg),
+                padding: EdgeInsets.all(AiSpacing.lg),
                 decoration: BoxDecoration(
                   color: AiColors.backgroundSecondary,
                   borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
@@ -82,7 +82,7 @@ class _LoginViewState extends State<LoginView> {
                       hintText: 'Email address',
                       prefixIcon: Icons.mail_outline,
                     ),
-                    const SizedBox(height: AiSpacing.md),
+                    SizedBox(height: AiSpacing.md),
                     // Password field
                     AuthTextField(
                       controller: _passwordController,
@@ -104,10 +104,10 @@ class _LoginViewState extends State<LoginView> {
                         },
                       ),
                     ),
-                    const SizedBox(height: AiSpacing.lg),
+                    SizedBox(height: AiSpacing.lg),
                     if (_localError != null) ...[
                       AuthErrorBanner(message: _localError!),
-                      const SizedBox(height: AiSpacing.md),
+                      SizedBox(height: AiSpacing.md),
                     ],
                     if (controller.isLoading)
                       const SizedBox(
@@ -137,7 +137,7 @@ class _LoginViewState extends State<LoginView> {
                   ],
                 ),
               ),
-              const SizedBox(height: AiSpacing.lg),
+              SizedBox(height: AiSpacing.lg),
               Center(
                 child: TextButton(
                   onPressed: widget.onSwitchToRegister,

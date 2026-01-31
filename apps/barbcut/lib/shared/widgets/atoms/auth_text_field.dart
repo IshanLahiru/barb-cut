@@ -49,7 +49,7 @@ class AuthTextField extends StatelessWidget {
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: AiColors.backgroundDeep,
-        contentPadding: const EdgeInsets.symmetric(
+        contentPadding: EdgeInsets.symmetric(
           horizontal: AiSpacing.md,
           vertical: AiSpacing.md,
         ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../theme/ai_colors.dart';
-import '../../../theme/ai_spacing.dart';
+import '../../../theme/theme.dart';
 
 class AddStyleCard extends StatelessWidget {
   final String title;
@@ -58,7 +57,7 @@ class AddStyleCard extends StatelessWidget {
             ),
             SizedBox(height: 4),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 subtitle,
                 style: TextStyle(color: AiColors.textSecondary, fontSize: 12),

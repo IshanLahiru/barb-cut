@@ -154,7 +154,7 @@ class _HistoryViewState extends State<HistoryView> {
                           size: 64,
                           color: AdaptiveThemeColors.textTertiary(context),
                         ),
-                        const SizedBox(height: AiSpacing.md),
+                        SizedBox(height: AiSpacing.md),
                         Text(
                           'No generation history yet',
                           style: Theme.of(context).textTheme.titleMedium
@@ -162,7 +162,7 @@ class _HistoryViewState extends State<HistoryView> {
                                 color: AdaptiveThemeColors.textPrimary(context),
                               ),
                         ),
-                        const SizedBox(height: AiSpacing.sm),
+                        SizedBox(height: AiSpacing.sm),
                         Text(
                           'Generate your first style to see it here',
                           style: Theme.of(context).textTheme.bodyMedium
@@ -178,7 +178,7 @@ class _HistoryViewState extends State<HistoryView> {
                 : CustomScrollView(
                     slivers: [
                       SliverPadding(
-                        padding: const EdgeInsets.all(AiSpacing.lg),
+                        padding: EdgeInsets.all(AiSpacing.lg),
                         sliver: SliverGrid(
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
@@ -269,7 +269,7 @@ class _HistoryViewState extends State<HistoryView> {
                       _buildBadge(context, item['beard'] as String),
                     ],
                   ),
-                  const SizedBox(height: AiSpacing.sm),
+                  SizedBox(height: AiSpacing.sm),
                   // Timestamp
                   Row(
                     children: [
@@ -288,7 +288,7 @@ class _HistoryViewState extends State<HistoryView> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: AiSpacing.sm),
+                  SizedBox(height: AiSpacing.sm),
                   // Full date and time
                   Text(
                     _formatDateTime(item['timestamp'] as DateTime),
@@ -308,7 +308,7 @@ class _HistoryViewState extends State<HistoryView> {
 
   Widget _buildBadge(BuildContext context, String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(
+      padding: EdgeInsets.symmetric(
         horizontal: AiSpacing.sm,
         vertical: 4,
       ),
@@ -337,7 +337,7 @@ class _HistoryViewState extends State<HistoryView> {
       barrierDismissible: true,
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.all(AiSpacing.md),
+        insetPadding: EdgeInsets.all(AiSpacing.md),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -364,9 +364,9 @@ class _HistoryViewState extends State<HistoryView> {
                 ),
               ),
             ),
-            const SizedBox(height: AiSpacing.lg),
+            SizedBox(height: AiSpacing.lg),
             Container(
-              padding: const EdgeInsets.all(AiSpacing.lg),
+              padding: EdgeInsets.all(AiSpacing.lg),
               decoration: BoxDecoration(
                 color: AdaptiveThemeColors.backgroundDark(context),
                 borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
@@ -386,28 +386,28 @@ class _HistoryViewState extends State<HistoryView> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: AiSpacing.md),
+                  SizedBox(height: AiSpacing.md),
                   _buildDetailRow(
                     context,
                     'Haircut',
                     item['haircut'] as String,
                   ),
-                  const SizedBox(height: AiSpacing.sm),
+                  SizedBox(height: AiSpacing.sm),
                   _buildDetailRow(context, 'Beard', item['beard'] as String),
-                  const SizedBox(height: AiSpacing.sm),
+                  SizedBox(height: AiSpacing.sm),
                   _buildDetailRow(
                     context,
                     'Generated',
                     _formatDateTimeWithSeconds(item['timestamp'] as DateTime),
                   ),
-                  const SizedBox(height: AiSpacing.lg),
+                  SizedBox(height: AiSpacing.lg),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AdaptiveThemeColors.neonCyan(context),
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                           vertical: AiSpacing.md,
                         ),
                         shape: RoundedRectangleBorder(
@@ -446,7 +446,7 @@ class _HistoryViewState extends State<HistoryView> {
           ),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(
+          padding: EdgeInsets.symmetric(
             horizontal: AiSpacing.md,
             vertical: AiSpacing.sm,
           ),

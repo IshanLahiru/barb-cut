@@ -30,7 +30,7 @@ class StyleCard extends StatelessWidget {
           children: [
             // Title
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Text(
                 style['name'] as String,
                 style: TextStyle(
@@ -45,7 +45,7 @@ class StyleCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: EdgeInsets.symmetric(horizontal: 12),
                 child: Stack(
                   children: [
                     Image.network(

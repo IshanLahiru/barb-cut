@@ -63,7 +63,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(AiSpacing.lg),
+            padding: EdgeInsets.all(AiSpacing.lg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -77,7 +77,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
                     letterSpacing: -0.5,
                   ),
                 ),
-                const SizedBox(height: AiSpacing.sm),
+                SizedBox(height: AiSpacing.sm),
                 const Text(
                   'Create stunning visuals with AI',
                   style: TextStyle(
@@ -86,7 +86,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                const SizedBox(height: AiSpacing.xl),
+                SizedBox(height: AiSpacing.xl),
 
                 // Show appropriate state
                 if (_generationStep == 1)
@@ -117,7 +117,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
             letterSpacing: 1.0,
           ),
         ),
-        const SizedBox(height: AiSpacing.md),
+        SizedBox(height: AiSpacing.md),
         AiTextField(
           label: 'Prompt',
           hintText: 'A serene landscape with golden sunset...',
@@ -127,7 +127,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
           accentColor: AiColors.neonCyan,
           onChanged: (_) => setState(() {}),
         ),
-        const SizedBox(height: AiSpacing.lg),
+        SizedBox(height: AiSpacing.lg),
 
         // Suggested Prompts
         const Text(
@@ -139,7 +139,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
             letterSpacing: 1.0,
           ),
         ),
-        const SizedBox(height: AiSpacing.md),
+        SizedBox(height: AiSpacing.md),
         Wrap(
           spacing: AiSpacing.sm,
           runSpacing: AiSpacing.sm,
@@ -159,7 +159,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
             );
           }).toList(),
         ),
-        const SizedBox(height: AiSpacing.xxl),
+        SizedBox(height: AiSpacing.xxl),
 
         // Aspect Ratio Section
         AiAspectRatioSelector(
@@ -168,7 +168,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
             setState(() => _selectedAspectRatio = ratio);
           },
         ),
-        const SizedBox(height: AiSpacing.xxl),
+        SizedBox(height: AiSpacing.xxl),
 
         // Advanced Options (Glassmorphic Card)
         AiGlassCard(
@@ -185,16 +185,16 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
                   letterSpacing: 0.3,
                 ),
               ),
-              const SizedBox(height: AiSpacing.md),
+              SizedBox(height: AiSpacing.md),
               _buildOptionRow('Quality', 'Ultra High'),
-              const SizedBox(height: AiSpacing.md),
+              SizedBox(height: AiSpacing.md),
               _buildOptionRow('Speed', 'Balanced'),
-              const SizedBox(height: AiSpacing.md),
+              SizedBox(height: AiSpacing.md),
               _buildOptionRow('Style', 'Cinematic'),
             ],
           ),
         ),
-        const SizedBox(height: AiSpacing.xxl),
+        SizedBox(height: AiSpacing.xxl),
 
         // Generate Button
         AiPrimaryButton(
@@ -206,7 +206,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
               ? _startGeneration
               : null,
         ),
-        const SizedBox(height: AiSpacing.xl),
+        SizedBox(height: AiSpacing.xl),
 
         // Recent Gallery
         const Text(
@@ -218,7 +218,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
             letterSpacing: 1.0,
           ),
         ),
-        const SizedBox(height: AiSpacing.md),
+        SizedBox(height: AiSpacing.md),
         GridView.count(
           crossAxisCount: 2,
           childAspectRatio: 1,

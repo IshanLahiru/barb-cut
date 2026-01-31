@@ -94,7 +94,7 @@ class _ProductsViewState extends State<ProductsView> {
               children: [
                 // Header with gradient
                 Container(
-                  padding: const EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: AiSpacing.lg,
                     vertical: AiSpacing.md,
                   ),
@@ -125,7 +125,7 @@ class _ProductsViewState extends State<ProductsView> {
                               fontWeight: FontWeight.w500,
                             ),
                       ),
-                      const SizedBox(height: AiSpacing.sm),
+                      SizedBox(height: AiSpacing.sm),
                       // Search field with neon cyan focus
                       TextField(
                         controller: _searchController,
@@ -171,7 +171,7 @@ class _ProductsViewState extends State<ProductsView> {
                           fillColor: AdaptiveThemeColors.backgroundSecondary(
                             context,
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
+                          contentPadding: EdgeInsets.symmetric(
                             horizontal: AiSpacing.md,
                             vertical: AiSpacing.md,
                           ),
@@ -205,7 +205,7 @@ class _ProductsViewState extends State<ProductsView> {
                         ),
                         cursorColor: AdaptiveThemeColors.neonCyan(context),
                       ),
-                      const SizedBox(height: AiSpacing.md),
+                      SizedBox(height: AiSpacing.md),
                       Wrap(
                         spacing: AiSpacing.sm,
                         runSpacing: AiSpacing.sm,
@@ -241,7 +241,7 @@ class _ProductsViewState extends State<ProductsView> {
                                   context,
                                 ),
                               ),
-                              const SizedBox(height: AiSpacing.md),
+                              SizedBox(height: AiSpacing.md),
                               Text(
                                 'No products found',
                                 style: Theme.of(context).textTheme.titleMedium
@@ -251,7 +251,7 @@ class _ProductsViewState extends State<ProductsView> {
                                       ),
                                     ),
                               ),
-                              const SizedBox(height: AiSpacing.sm),
+                              SizedBox(height: AiSpacing.sm),
                               Text(
                                 'Try a different search term',
                                 style: Theme.of(context).textTheme.bodySmall
@@ -266,7 +266,7 @@ class _ProductsViewState extends State<ProductsView> {
                         )
                       : ListView.builder(
                           physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                             horizontal: AiSpacing.lg,
                             vertical: AiSpacing.md,
                           ),
@@ -275,7 +275,7 @@ class _ProductsViewState extends State<ProductsView> {
                             final product = filteredProducts[index];
                             final isSelected = _selectedProductIndex == index;
                             return Padding(
-                              padding: const EdgeInsets.only(
+                              padding: EdgeInsets.only(
                                 bottom: AiSpacing.md,
                               ),
                               child: ProductCard(

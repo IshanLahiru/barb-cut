@@ -194,7 +194,7 @@ class _DotProgress extends StatelessWidget {
             return ScaleTransition(
               scale: AlwaysStoppedAnimation(scale),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: EdgeInsets.symmetric(horizontal: 4),
                 child: Container(
                   width: 6,
                   height: 6,
@@ -302,7 +302,7 @@ class _AiSuccessStateState extends State<AiSuccessState>
                 onPressed: widget.onContinue,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AiColors.neonCyan,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

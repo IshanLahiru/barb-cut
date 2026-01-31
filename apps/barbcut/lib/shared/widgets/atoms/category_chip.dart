@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
-import '../../../theme/adaptive_theme_colors.dart';
-import '../../../theme/ai_spacing.dart';
+import '../../../theme/theme.dart';
 
 class CategoryChip extends StatelessWidget {
   final String label;
   final Color color;
 
-  const CategoryChip({
-    super.key,
-    required this.label,
-    required this.color,
-  });
+  const CategoryChip({super.key, required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
+      padding: EdgeInsets.symmetric(
         horizontal: AiSpacing.md,
         vertical: AiSpacing.xs,
       ),

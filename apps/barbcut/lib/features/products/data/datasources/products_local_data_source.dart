@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/product_entity.dart';
 import '../models/product_model.dart';
-import '../../../../theme/ai_colors.dart';
+import '../../../../theme/theme.dart';
 
 class ProductsLocalDataSource {
   List<ProductEntity> getProducts() {

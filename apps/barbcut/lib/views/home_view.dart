@@ -6,9 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
 import 'dart:async';
 import 'dart:ui';
-import '../theme/ai_colors.dart';
-import '../theme/ai_spacing.dart';
-import '../theme/adaptive_theme_colors.dart';
+import '../theme/theme.dart';
 import '../core/di/service_locator.dart';
 import '../features/home/domain/entities/style_entity.dart';
 import '../features/home/domain/usecases/get_beard_styles_usecase.dart';
@@ -116,7 +114,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  padding: EdgeInsets.all(AiSpacing.lg),
                   child: Row(
                     children: [
                       Container(
@@ -188,7 +186,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   thickness: 1,
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  padding: EdgeInsets.all(AiSpacing.lg),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -212,7 +210,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   thickness: 1,
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  padding: EdgeInsets.all(AiSpacing.lg),
                   child: Row(
                     children: [
                       Expanded(
@@ -327,7 +325,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  padding: EdgeInsets.all(AiSpacing.lg),
                   child: Row(
                     children: [
                       Container(
@@ -399,7 +397,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   thickness: 1,
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  padding: EdgeInsets.all(AiSpacing.lg),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -423,7 +421,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   thickness: 1,
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  padding: EdgeInsets.all(AiSpacing.lg),
                   child: Row(
                     children: [
                       Expanded(
@@ -532,7 +530,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               children: [
                 // Header
                 Padding(
-                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  padding: EdgeInsets.all(AiSpacing.lg),
                   child: Row(
                     children: [
                       Container(
@@ -606,7 +604,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
                 // Cards in horizontal layout
                 SingleChildScrollView(
-                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  padding: EdgeInsets.all(AiSpacing.lg),
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -694,7 +692,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
                 // Action Buttons
                 Padding(
-                  padding: const EdgeInsets.all(AiSpacing.lg),
+                  padding: EdgeInsets.all(AiSpacing.lg),
                   child: Row(
                     children: [
                       Expanded(
@@ -829,7 +827,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: EdgeInsets.symmetric(horizontal: 12),
               child: Stack(
                 children: [
                   Image.network(
@@ -1173,7 +1171,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
-                const SizedBox(height: AiSpacing.none),
+                SizedBox(height: AiSpacing.none),
                 // Carousel indicators
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -1182,7 +1180,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     (index) => Container(
                       width: 6,
                       height: 6,
-                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      margin: EdgeInsets.symmetric(horizontal: 3),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: _selectedHaircutIndex == index
@@ -1192,7 +1190,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-                const SizedBox(height: AiSpacing.md),
+                SizedBox(height: AiSpacing.md),
               ],
             ),
           ),
@@ -1337,7 +1335,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           // Draggable area (drag handle + padding makes it easy to grab)
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: EdgeInsets.symmetric(vertical: 12),
             child: Center(
               child: Container(
                 width: 40,
@@ -1424,7 +1422,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         fillColor: AdaptiveThemeColors.backgroundSecondary(
                           context,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(
+                        contentPadding: EdgeInsets.symmetric(
                           horizontal: AiSpacing.md,
                           vertical: AiSpacing.md,
                         ),
@@ -1504,14 +1502,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               size: 64,
               color: AdaptiveThemeColors.textTertiary(context),
             ),
-            const SizedBox(height: AiSpacing.md),
+            SizedBox(height: AiSpacing.md),
             Text(
               'No styles found',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: AdaptiveThemeColors.textPrimary(context),
               ),
             ),
-            const SizedBox(height: AiSpacing.sm),
+            SizedBox(height: AiSpacing.sm),
             Text(
               'Try a different search term',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -1585,14 +1583,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               size: 64,
               color: AdaptiveThemeColors.textTertiary(context),
             ),
-            const SizedBox(height: AiSpacing.md),
+            SizedBox(height: AiSpacing.md),
             Text(
               'No styles found',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: AdaptiveThemeColors.textPrimary(context),
               ),
             ),
-            const SizedBox(height: AiSpacing.sm),
+            SizedBox(height: AiSpacing.sm),
             Text(
               'Try a different search term',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(

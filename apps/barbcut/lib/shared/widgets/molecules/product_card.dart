@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../theme/adaptive_theme_colors.dart';
-import '../../../theme/ai_spacing.dart';
+import '../../../theme/theme.dart';
 import '../atoms/ai_buttons.dart';
 
 class ProductCard extends StatelessWidget {
@@ -49,7 +48,7 @@ class ProductCard extends StatelessWidget {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(AiSpacing.md),
+          padding: EdgeInsets.all(AiSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -57,7 +56,7 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(AiSpacing.md),
+                    padding: EdgeInsets.all(AiSpacing.md),
                     decoration: BoxDecoration(
                       color: accentColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(
@@ -74,7 +73,7 @@ class ProductCard extends StatelessWidget {
                       size: 32,
                     ),
                   ),
-                  const SizedBox(width: AiSpacing.md),
+                  SizedBox(width: AiSpacing.md),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +88,7 @@ class ProductCard extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                               ),
                         ),
-                        const SizedBox(height: AiSpacing.xs),
+                        SizedBox(height: AiSpacing.xs),
                         Text(
                           product['description'],
                           maxLines: 1,
@@ -104,9 +103,9 @@ class ProductCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(width: AiSpacing.md),
+                  SizedBox(width: AiSpacing.md),
                   Container(
-                    padding: const EdgeInsets.symmetric(
+                    padding: EdgeInsets.symmetric(
                       horizontal: AiSpacing.sm,
                       vertical: AiSpacing.xs,
                     ),
@@ -130,10 +129,10 @@ class ProductCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: AiSpacing.md),
+              SizedBox(height: AiSpacing.md),
               if (!isSelected)
                 Container(
-                  padding: const EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: AiSpacing.sm,
                     vertical: AiSpacing.xs,
                   ),
@@ -153,7 +152,7 @@ class ProductCard extends StatelessWidget {
                         size: 16,
                         color: AdaptiveThemeColors.neonCyan(context),
                       ),
-                      const SizedBox(width: AiSpacing.xs),
+                      SizedBox(width: AiSpacing.xs),
                       Text(
                         product['rating'].toString(),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -177,14 +176,11 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: AiSpacing.sm),
+                    SizedBox(width: AiSpacing.sm),
                     Expanded(
                       child: SizedBox(
                         height: 40,
-                        child: AiPrimaryButton(
-                          label: 'Add',
-                          onPressed: onAdd,
-                        ),
+                        child: AiPrimaryButton(label: 'Add', onPressed: onAdd),
                       ),
                     ),
                   ],

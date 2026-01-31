@@ -68,7 +68,11 @@ class _AiPrimaryButtonState extends State<AiPrimaryButton>
             height: widget.height,
             width: widget.fullWidth ? double.infinity : null,
             decoration: BoxDecoration(
-              gradient: AiGradients.buttonPrimary,
+              gradient: LinearGradient(
+                colors: [AiColors.neonCyan, AiColors.neonPurple],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
@@ -280,7 +284,7 @@ class _AiTextFieldState extends State<AiTextField> {
       children: [
         // Label
         Padding(
-          padding: const EdgeInsets.only(bottom: 8),
+          padding: EdgeInsets.only(bottom: 8),
           child: Text(
             widget.label,
             style: TextStyle(
