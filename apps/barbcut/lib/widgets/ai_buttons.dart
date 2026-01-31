@@ -12,14 +12,14 @@ class AiPrimaryButton extends StatefulWidget {
   final bool fullWidth;
 
   const AiPrimaryButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.icon,
     this.isLoading = false,
     this.height = 56,
     this.fullWidth = true,
-  }) : super(key: key);
+  });
 
   @override
   State<AiPrimaryButton> createState() => _AiPrimaryButtonState();
@@ -72,12 +72,12 @@ class _AiPrimaryButtonState extends State<AiPrimaryButton>
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: AiColors.neonCyan.withOpacity(glowOpacity * 0.6),
+                  color: AiColors.neonCyan.withValues(alpha: glowOpacity * 0.6),
                   blurRadius: 20 + (_animController.value * 10),
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
-                  color: AiColors.sunsetCoral.withOpacity(glowOpacity * 0.4),
+                  color: AiColors.sunsetCoral.withValues(alpha: glowOpacity * 0.4),
                   blurRadius: 15 + (_animController.value * 8),
                   offset: const Offset(0, 4),
                 ),
@@ -146,14 +146,14 @@ class AiSecondaryButton extends StatefulWidget {
   final Color accentColor;
 
   const AiSecondaryButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.icon,
     this.height = 48,
     this.fullWidth = true,
     this.accentColor = AiColors.neonCyan,
-  }) : super(key: key);
+  });
 
   @override
   State<AiSecondaryButton> createState() => _AiSecondaryButtonState();
@@ -171,16 +171,16 @@ class _AiSecondaryButtonState extends State<AiSecondaryButton> {
         height: widget.height,
         width: widget.fullWidth ? double.infinity : null,
         decoration: BoxDecoration(
-          color: AiColors.surface.withOpacity(_isHovered ? 0.8 : 0.6),
+          color: AiColors.surface.withValues(alpha: _isHovered ? 0.8 : 0.6),
           border: Border.all(
-            color: widget.accentColor.withOpacity(_isHovered ? 1.0 : 0.5),
+            color: widget.accentColor.withValues(alpha: _isHovered ? 1.0 : 0.5),
             width: 2,
           ),
           borderRadius: BorderRadius.circular(14),
           boxShadow: _isHovered
               ? [
                   BoxShadow(
-                    color: widget.accentColor.withOpacity(0.3),
+                    color: widget.accentColor.withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -233,7 +233,7 @@ class AiTextField extends StatefulWidget {
   final Function(String)? onChanged;
 
   const AiTextField({
-    Key? key,
+    super.key,
     required this.label,
     this.hintText,
     this.controller,
@@ -243,7 +243,7 @@ class AiTextField extends StatefulWidget {
     this.prefixIcon,
     this.suffixWidget,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<AiTextField> createState() => _AiTextFieldState();
@@ -301,7 +301,7 @@ class _AiTextFieldState extends State<AiTextField> {
             boxShadow: _isFocused
                 ? [
                     BoxShadow(
-                      color: widget.accentColor.withOpacity(0.4),
+                      color: widget.accentColor.withValues(alpha: 0.4),
                       blurRadius: 16,
                       offset: const Offset(0, 0),
                     ),

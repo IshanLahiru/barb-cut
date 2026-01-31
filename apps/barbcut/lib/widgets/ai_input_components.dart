@@ -10,11 +10,11 @@ class AiPromptChip extends StatefulWidget {
   final Color? accentColor;
 
   const AiPromptChip({
-    Key? key,
+    super.key,
     required this.prompt,
     required this.onTap,
     this.accentColor,
-  }) : super(key: key);
+  });
 
   @override
   State<AiPromptChip> createState() => _AiPromptChipState();
@@ -36,16 +36,16 @@ class _AiPromptChipState extends State<AiPromptChip> {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: AiColors.surface.withOpacity(_isHovered ? 1.0 : 0.7),
+            color: AiColors.surface.withValues(alpha: _isHovered ? 1.0 : 0.7),
             border: Border.all(
-              color: accent.withOpacity(_isHovered ? 1.0 : 0.4),
+              color: accent.withValues(alpha: _isHovered ? 1.0 : 0.4),
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(20),
             boxShadow: _isHovered
                 ? [
                     BoxShadow(
-                      color: accent.withOpacity(0.3),
+                      color: accent.withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -75,10 +75,10 @@ class AiAspectRatioSelector extends StatefulWidget {
   final Function(String) onRatioChanged;
 
   const AiAspectRatioSelector({
-    Key? key,
+    super.key,
     required this.selectedRatio,
     required this.onRatioChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<AiAspectRatioSelector> createState() => _AiAspectRatioSelectorState();
@@ -144,34 +144,31 @@ class _AiAspectRatioButton extends StatefulWidget {
 class _AiAspectRatioButtonState extends State<_AiAspectRatioButton> {
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Container(
-          decoration: BoxDecoration(
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: widget.isSelected
+              ? AiColors.surface
+              : AiColors.surface.withValues(alpha: 0.5),
+          border: Border.all(
             color: widget.isSelected
-                ? AiColors.surface
-                : AiColors.surface.withOpacity(0.5),
-            border: Border.all(
-              color: widget.isSelected
-                  ? AiColors.neonCyan
-                  : AiColors.borderLight,
-              width: widget.isSelected ? 2.0 : 1.5,
-            ),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: widget.isSelected
-                ? [
-                    BoxShadow(
-                      color: AiColors.neonCyan.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : [],
+                ? AiColors.neonCyan
+                : AiColors.borderLight,
+            width: widget.isSelected ? 2.0 : 1.5,
           ),
-          child: Column(
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: widget.isSelected
+              ? [
+                  BoxShadow(
+                    color: AiColors.neonCyan.withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [],
+        ),
+        child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Aspect ratio preview
@@ -208,10 +205,9 @@ class _AiAspectRatioButtonState extends State<_AiAspectRatioButton> {
             ],
           ),
         ),
-      ),
-    );
+      );
+    }
   }
-}
 
 /// Glassmorphic Card - For dashboard sections
 class AiGlassCard extends StatelessWidget {
@@ -220,11 +216,11 @@ class AiGlassCard extends StatelessWidget {
   final Color? accentBorder;
 
   const AiGlassCard({
-    Key? key,
+    super.key,
     required this.child,
     this.padding = const EdgeInsets.all(16),
     this.accentBorder,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -243,7 +239,7 @@ class AiGlassCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: AiColors.neonCyan.withOpacity(0.1),
+                color: AiColors.neonCyan.withValues(alpha: 0.1),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),

@@ -7,8 +7,7 @@ import '../theme/ai_colors.dart';
 class AiLoadingState extends StatefulWidget {
   final String message;
 
-  const AiLoadingState({Key? key, this.message = 'Dreaming up your image...'})
-    : super(key: key);
+  const AiLoadingState({super.key, this.message = 'Dreaming up your image...'});
 
   @override
   State<AiLoadingState> createState() => _AiLoadingStateState();
@@ -86,8 +85,8 @@ class _AiLoadingStateState extends State<AiLoadingState>
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
                             colors: [
-                              AiColors.neonCyan.withOpacity(0.5),
-                              AiColors.neonCyan.withOpacity(0),
+                              AiColors.neonCyan.withValues(alpha: 0.5),
+                              AiColors.neonCyan.withValues(alpha: 0),
                             ],
                           ),
                         ),
@@ -158,11 +157,11 @@ class _ShimmerGridCell extends StatelessWidget {
 
           return Container(
             decoration: BoxDecoration(
-              color: AiColors.shimmerLight.withOpacity(opacity),
+              color: AiColors.shimmerLight.withValues(alpha: opacity),
               borderRadius: BorderRadius.circular(6),
               boxShadow: [
                 BoxShadow(
-                  color: AiColors.neonCyan.withOpacity(opacity * 0.3),
+                  color: AiColors.neonCyan.withValues(alpha: opacity * 0.3),
                   blurRadius: 8,
                 ),
               ],
@@ -219,7 +218,7 @@ class _DotProgress extends StatelessWidget {
 class AiSuccessState extends StatefulWidget {
   final VoidCallback onContinue;
 
-  const AiSuccessState({Key? key, required this.onContinue}) : super(key: key);
+  const AiSuccessState({super.key, required this.onContinue});
 
   @override
   State<AiSuccessState> createState() => _AiSuccessStateState();
@@ -263,7 +262,7 @@ class _AiSuccessStateState extends State<AiSuccessState>
                 gradient: AiGradients.buttonPrimary,
                 boxShadow: [
                   BoxShadow(
-                    color: AiColors.neonCyan.withOpacity(0.4),
+                    color: AiColors.neonCyan.withValues(alpha: 0.4),
                     blurRadius: 24,
                     offset: const Offset(0, 8),
                   ),

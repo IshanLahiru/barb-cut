@@ -8,7 +8,7 @@ import '../shared/widgets/organisms/ai_loading_states.dart';
 /// Example AI Image Generation Screen
 /// Demonstrates all custom widgets in a real-world scenario
 class AiGenerationScreen extends StatefulWidget {
-  const AiGenerationScreen({Key? key}) : super(key: key);
+  const AiGenerationScreen({super.key});
 
   @override
   State<AiGenerationScreen> createState() => _AiGenerationScreenState();
@@ -238,7 +238,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
               decoration: BoxDecoration(
                 color: AiColors.surface,
                 border: Border.all(
-                  color: colors[index].withOpacity(0.3),
+                  color: colors[index].withValues(alpha: 0.3),
                   width: 1.5,
                 ),
                 borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
@@ -246,7 +246,7 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
               child: Center(
                 child: Icon(
                   Icons.image_outlined,
-                  color: AiColors.textTertiary.withOpacity(0.5),
+                  color: AiColors.textTertiary.withValues(alpha: 0.5),
                   size: 40,
                 ),
               ),

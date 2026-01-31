@@ -22,12 +22,10 @@ class AppTheme {
         secondaryContainer: AppColors.accentBlue,
         tertiary: AppColors.accentOrange,
         surface: AppColors.surface,
-        background: AppColors.background,
         error: AppColors.error,
         onPrimary: AppColors.surface,
         onSecondary: AppColors.textPrimary,
         onSurface: AppColors.textPrimary,
-        onBackground: AppColors.textPrimary,
         onError: AppColors.surface,
         outline: AppColors.border,
         shadow: AppColors.shadow,
@@ -166,7 +164,7 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.backgroundSecondary,
         selectedColor: AppColors.primary,
-        disabledColor: AppColors.backgroundSecondary.withOpacity(0.5),
+        disabledColor: AppColors.backgroundSecondary.withValues(alpha: 0.5),
         labelStyle: AppTextStyles.labelMedium,
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
@@ -243,14 +241,14 @@ class AppTheme {
 
       // === Switch Theme ===
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AppColors.primary;
           }
           return AppColors.textTertiary;
         }),
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AppColors.primaryLight;
           }
           return AppColors.borderLight;
@@ -259,20 +257,20 @@ class AppTheme {
 
       // === Checkbox Theme ===
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AppColors.primary;
           }
           return AppColors.surface;
         }),
-        checkColor: MaterialStateProperty.all(AppColors.surface),
+        checkColor: WidgetStateProperty.all(AppColors.surface),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       ),
 
       // === Radio Theme ===
       radioTheme: RadioThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AppColors.primary;
           }
           return AppColors.textTertiary;
@@ -284,7 +282,7 @@ class AppTheme {
         activeTrackColor: AppColors.primary,
         inactiveTrackColor: AppColors.borderLight,
         thumbColor: AppColors.primary,
-        overlayColor: AppColors.primary.withOpacity(0.12),
+        overlayColor: AppColors.primary.withValues(alpha: 0.12),
         trackHeight: 4.0,
       ),
     );
@@ -301,12 +299,10 @@ class AppTheme {
         secondaryContainer: AppColorsDark.accentBlue,
         tertiary: AppColorsDark.accentOrange,
         surface: AppColorsDark.surface,
-        background: AppColorsDark.background,
         error: AppColorsDark.error,
         onPrimary: AppColorsDark.background,
         onSecondary: AppColorsDark.background,
         onSurface: AppColorsDark.textPrimary,
-        onBackground: AppColorsDark.textPrimary,
         onError: AppColorsDark.background,
         outline: AppColorsDark.border,
         shadow: AppColorsDark.shadow,
@@ -472,7 +468,7 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: AppColorsDark.backgroundSecondary,
         selectedColor: AppColorsDark.primary,
-        disabledColor: AppColorsDark.backgroundSecondary.withOpacity(0.5),
+        disabledColor: AppColorsDark.backgroundSecondary.withValues(alpha: 0.5),
         labelStyle: AppTextStyles.labelMedium.copyWith(
           color: AppColorsDark.textPrimary,
         ),
@@ -540,32 +536,32 @@ class AppTheme {
         linearTrackColor: AppColorsDark.borderLight,
       ),
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AppColorsDark.primary;
           }
           return AppColorsDark.textTertiary;
         }),
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AppColorsDark.primaryDark;
           }
           return AppColorsDark.borderLight;
         }),
       ),
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AppColorsDark.primary;
           }
           return AppColorsDark.surface;
         }),
-        checkColor: MaterialStateProperty.all(AppColorsDark.background),
+        checkColor: WidgetStateProperty.all(AppColorsDark.background),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       ),
       radioTheme: RadioThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AppColorsDark.primary;
           }
           return AppColorsDark.textTertiary;
@@ -575,7 +571,7 @@ class AppTheme {
         activeTrackColor: AppColorsDark.primary,
         inactiveTrackColor: AppColorsDark.borderLight,
         thumbColor: AppColorsDark.primary,
-        overlayColor: AppColorsDark.primary.withOpacity(0.12),
+        overlayColor: AppColorsDark.primary.withValues(alpha: 0.12),
         trackHeight: 4.0,
       ),
     );

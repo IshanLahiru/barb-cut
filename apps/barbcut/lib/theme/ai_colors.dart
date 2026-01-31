@@ -114,7 +114,7 @@ class AiGradients {
     radius: 1.5,
     colors: [
       Color(0x2D90CAF9), // Blue glow
-      Color(0x0090CAF900), // Transparent
+      Color(0x90caf900), // Transparent
     ],
   );
 

@@ -18,7 +18,7 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key, required this.themeController});
 
   @override
-  _MyAppState createState() => _MyAppState();
+  MyAppState createState() => MyAppState();
 }
 
 Future<ThemeController> _initializeThemeController() async {
@@ -45,7 +45,7 @@ void main() async {
   runApp(MyApp(themeController: themeController));
 }
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
   bool showLogin = true;
 
   @override

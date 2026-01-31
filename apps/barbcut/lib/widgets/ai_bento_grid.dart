@@ -7,8 +7,7 @@ class AiBentoGrid extends StatelessWidget {
   final List<AiBentoItem> items;
   final int crossAxisCount;
 
-  const AiBentoGrid({Key? key, required this.items, this.crossAxisCount = 2})
-    : super(key: key);
+  const AiBentoGrid({super.key, required this.items, this.crossAxisCount = 2});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +74,7 @@ class _BentoItemWidgetState extends State<_BentoItemWidget> {
           decoration: BoxDecoration(
             color: widget.item.isHighlight
                 ? AiColors.surface
-                : AiColors.surface.withOpacity(0.6),
+                : AiColors.surface.withValues(alpha: 0.6),
             border: Border.all(
               color: _isHovered
                   ? (widget.item.accentColor ?? AiColors.neonCyan)
@@ -87,14 +86,14 @@ class _BentoItemWidgetState extends State<_BentoItemWidget> {
                 ? [
                     BoxShadow(
                       color: (widget.item.accentColor ?? AiColors.neonCyan)
-                          .withOpacity(0.3),
+                          .withValues(alpha: 0.3),
                       blurRadius: 16,
                       offset: const Offset(0, 8),
                     ),
                   ]
                 : [
                     BoxShadow(
-                      color: AiColors.neonCyan.withOpacity(0.1),
+                      color: AiColors.neonCyan.withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -162,10 +161,10 @@ class AiBentoImageGallery extends StatelessWidget {
   final Function(int) onImageTap;
 
   const AiBentoImageGallery({
-    Key? key,
+    super.key,
     required this.imagePaths,
     required this.onImageTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -232,7 +231,7 @@ class _BentoImageTileState extends State<_BentoImageTile> {
             boxShadow: _isHovered
                 ? [
                     BoxShadow(
-                      color: accent.withOpacity(0.3),
+                      color: accent.withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -247,7 +246,7 @@ class _BentoImageTileState extends State<_BentoImageTile> {
                 child: Center(
                   child: Icon(
                     Icons.image_outlined,
-                    color: AiColors.textTertiary.withOpacity(0.5),
+                    color: AiColors.textTertiary.withValues(alpha: 0.5),
                     size: 36,
                   ),
                 ),
@@ -256,7 +255,7 @@ class _BentoImageTileState extends State<_BentoImageTile> {
               if (_isHovered)
                 Container(
                   decoration: BoxDecoration(
-                    color: AiColors.backgroundDark.withOpacity(0.5),
+                    color: AiColors.backgroundDark.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(11),
                   ),
                   child: Center(

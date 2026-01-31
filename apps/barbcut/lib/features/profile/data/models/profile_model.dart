@@ -2,22 +2,14 @@ import '../../domain/entities/profile_entity.dart';
 
 class ProfileModel extends ProfileEntity {
   const ProfileModel({
-    required String userId,
-    required String username,
-    required String email,
-    required String bio,
-    required int appointmentsCount,
-    required int favoritesCount,
-    required double averageRating,
-  }) : super(
-         userId: userId,
-         username: username,
-         email: email,
-         bio: bio,
-         appointmentsCount: appointmentsCount,
-         favoritesCount: favoritesCount,
-         averageRating: averageRating,
-       );
+    required super.userId,
+    required super.username,
+    required super.email,
+    required super.bio,
+    required super.appointmentsCount,
+    required super.favoritesCount,
+    required super.averageRating,
+  });
 
   factory ProfileModel.fromMap(Map<String, dynamic> map) {
     return ProfileModel(

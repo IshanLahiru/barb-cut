@@ -1,7 +1,7 @@
 /// Base failure class for error handling throughout the app
 ///
-/// Use Either<Failure, SuccessType> for type-safe error handling
-/// Example: Either<Failure, List<User>>
+/// Use Either&lt;Failure, SuccessType&gt; for type-safe error handling
+/// Example: Either&lt;Failure, List&lt;User&gt;&gt;
 abstract class Failure {
   final String message;
 

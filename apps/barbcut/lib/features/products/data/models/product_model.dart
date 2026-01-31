@@ -3,20 +3,13 @@ import '../../domain/entities/product_entity.dart';
 
 class ProductModel extends ProductEntity {
   const ProductModel({
-    required String name,
-    required String price,
-    required double rating,
-    required String description,
-    required IconData icon,
-    required Color accentColor,
-  }) : super(
-         name: name,
-         price: price,
-         rating: rating,
-         description: description,
-         icon: icon,
-         accentColor: accentColor,
-       );
+    required super.name,
+    required super.price,
+    required super.rating,
+    required super.description,
+    required super.icon,
+    required super.accentColor,
+  });
 
   factory ProductModel.fromMap(Map<String, dynamic> map) {
     return ProductModel(

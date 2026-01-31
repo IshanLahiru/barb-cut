@@ -837,7 +837,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     height: 120,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (_, _, _) => Container(
                       height: 120,
                       color: AiColors.backgroundSecondary.withValues(
                         alpha: 0.5,
@@ -1481,10 +1481,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget _buildHaircutGrid(ScrollController scrollController) {
     final width = MediaQuery.of(context).size.width;
     int crossAxisCount = 2;
-    if (width >= 1100)
+    if (width >= 1100) {
       crossAxisCount = 4;
-    else if (width >= 820)
+    } else if (width >= 820) {
       crossAxisCount = 3;
+    }
 
     final filteredIndices = _haircuts
         .asMap()
@@ -1561,10 +1562,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget _buildBeardGrid(ScrollController scrollController) {
     final width = MediaQuery.of(context).size.width;
     int crossAxisCount = 2;
-    if (width >= 1100)
+    if (width >= 1100) {
       crossAxisCount = 4;
-    else if (width >= 820)
+    } else if (width >= 820) {
       crossAxisCount = 3;
+    }
 
     final filteredIndices = _beardStyles
         .asMap()

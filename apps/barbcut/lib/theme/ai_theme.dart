@@ -21,12 +21,10 @@ class AiTheme {
         tertiary: AiColors.info,
         tertiaryContainer: AiColors.infoDark,
         surface: AiColors.surface,
-        background: AiColors.backgroundDeep,
         error: AiColors.danger,
         onPrimary: AiColors.backgroundDeep,
         onSecondary: AiColors.backgroundDeep,
         onSurface: AiColors.textPrimary,
-        onBackground: AiColors.textPrimary,
         onError: AiColors.textPrimary,
         outline: AiColors.borderLight,
         shadow: AiColors.backgroundSecondary,
@@ -37,7 +35,7 @@ class AiTheme {
 
       // === App Bar (Glassmorphic) ===
       appBarTheme: AppBarTheme(
-        backgroundColor: AiColors.surface.withOpacity(0.7),
+        backgroundColor: AiColors.surface.withValues(alpha: 0.7),
         foregroundColor: AiColors.textPrimary,
         elevation: 0,
         centerTitle: true,
@@ -294,8 +292,8 @@ class AiTheme {
 
       // === Checkbox & Radio Theme ===
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AiColors.primary;
           }
           return AiColors.surface;
@@ -304,8 +302,8 @@ class AiTheme {
       ),
 
       radioTheme: RadioThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AiColors.primary;
           }
           return AiColors.surface;

@@ -13,14 +13,14 @@ class AiImageCard extends StatefulWidget {
   final Duration generationTime;
 
   const AiImageCard({
-    Key? key,
+    super.key,
     required this.imagePath,
     required this.prompt,
     required this.onDownload,
     required this.onUpscale,
     required this.onRemix,
     this.generationTime = const Duration(seconds: 5),
-  }) : super(key: key);
+  });
 
   @override
   State<AiImageCard> createState() => _AiImageCardState();
@@ -38,7 +38,7 @@ class _AiImageCardState extends State<AiImageCard> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AiColors.neonCyan.withOpacity(0.2),
+              color: AiColors.neonCyan.withValues(alpha: 0.2),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -67,8 +67,8 @@ class _AiImageCardState extends State<AiImageCard> {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      AiColors.backgroundDark.withOpacity(0.4),
-                      AiColors.backgroundDark.withOpacity(0.7),
+                      AiColors.backgroundDark.withValues(alpha: 0.4),
+                      AiColors.backgroundDark.withValues(alpha: 0.7),
                     ],
                     stops: const [0.0, 0.6, 1.0],
                   ),
@@ -89,7 +89,7 @@ class _AiImageCardState extends State<AiImageCard> {
               if (_showOverlay)
                 Positioned.fill(
                   child: Container(
-                    color: AiColors.backgroundDark.withOpacity(0.7),
+                    color: AiColors.backgroundDark.withValues(alpha: 0.7),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
                       child: Center(
@@ -261,16 +261,16 @@ class _AiActionButtonState extends State<_AiActionButton>
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: widget.accentColor.withOpacity(0.15),
+                color: widget.accentColor.withValues(alpha: 0.15),
                 border: Border.all(
-                  color: widget.accentColor.withOpacity(0.6),
+                  color: widget.accentColor.withValues(alpha: 0.6),
                   width: 1.5,
                 ),
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: _isPressed
                     ? [
                         BoxShadow(
-                          color: widget.accentColor.withOpacity(0.4),
+                          color: widget.accentColor.withValues(alpha: 0.4),
                           blurRadius: 12,
                           offset: const Offset(0, 2),
                         ),
