@@ -17,7 +17,6 @@ class AiGenerationScreen extends StatefulWidget {
 class _AiGenerationScreenState extends State<AiGenerationScreen> {
   final TextEditingController _promptController = TextEditingController();
   String _selectedAspectRatio = '1:1';
-  bool _isGenerating = false;
   int _generationStep = 0; // 0: idle, 1: loading, 2: success
 
   final List<String> suggestedPrompts = [
@@ -37,7 +36,6 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
 
   void _startGeneration() {
     setState(() {
-      _isGenerating = true;
       _generationStep = 1; // Loading state
     });
 
@@ -50,7 +48,6 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
         Future.delayed(const Duration(seconds: 2), () {
           if (mounted) {
             setState(() {
-              _isGenerating = false;
               _generationStep = 0;
               _promptController.clear();
             });
@@ -293,7 +290,6 @@ class _AiGenerationScreenState extends State<AiGenerationScreen> {
     return AiSuccessState(
       onContinue: () {
         setState(() {
-          _isGenerating = false;
           _generationStep = 0;
           _promptController.clear();
         });

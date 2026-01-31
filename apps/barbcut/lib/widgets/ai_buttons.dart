@@ -5,7 +5,7 @@ import '../theme/ai_colors.dart';
 /// Used for main CTAs like "Generate", "Create", "Submit"
 class AiPrimaryButton extends StatefulWidget {
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final IconData? icon;
   final bool isLoading;
   final double height;
@@ -53,7 +53,7 @@ class _AiPrimaryButtonState extends State<AiPrimaryButton>
   void _onPressUp(PointerUpEvent event) {
     _animController.reverse();
     setState(() => _isPressed = false);
-    widget.onPressed();
+    widget.onPressed?.call();
   }
 
   @override
