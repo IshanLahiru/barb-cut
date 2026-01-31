@@ -62,7 +62,8 @@ void _setupHistoryFeature() {
   );
 
   getIt.registerLazySingleton<HistoryRepository>(
-    () => HistoryRepositoryImpl(localDataSource: getIt<HistoryLocalDataSource>()),
+    () =>
+        HistoryRepositoryImpl(localDataSource: getIt<HistoryLocalDataSource>()),
   );
 
   getIt.registerLazySingleton<GetHistoryUseCase>(
@@ -76,7 +77,9 @@ void _setupProductsFeature() {
   );
 
   getIt.registerLazySingleton<ProductsRepository>(
-    () => ProductsRepositoryImpl(localDataSource: getIt<ProductsLocalDataSource>()),
+    () => ProductsRepositoryImpl(
+      localDataSource: getIt<ProductsLocalDataSource>(),
+    ),
   );
 
   getIt.registerLazySingleton<GetProductsUseCase>(
@@ -90,7 +93,8 @@ void _setupProfileFeature() {
   );
 
   getIt.registerLazySingleton<ProfileRepository>(
-    () => ProfileRepositoryImpl(localDataSource: getIt<ProfileLocalDataSource>()),
+    () =>
+        ProfileRepositoryImpl(localDataSource: getIt<ProfileLocalDataSource>()),
   );
 
   getIt.registerLazySingleton<GetProfileUseCase>(

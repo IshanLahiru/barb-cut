@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
-import '../theme/ai_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../theme/ai_spacing.dart';
 import '../theme/adaptive_theme_colors.dart';
+import '../core/di/service_locator.dart';
+import '../features/history/domain/entities/history_entity.dart';
+import '../features/history/domain/usecases/get_history_usecase.dart';
+import '../features/history/presentation/bloc/history_bloc.dart';
+import '../features/history/presentation/bloc/history_event.dart';
+import '../features/history/presentation/bloc/history_state.dart';
 
 class HistoryView extends StatefulWidget {
   const HistoryView({super.key});
@@ -11,63 +17,28 @@ class HistoryView extends StatefulWidget {
 }
 
 class _HistoryViewState extends State<HistoryView> {
-  // Sample history data with generated images
-  final List<Map<String, dynamic>> _generationHistory = [
-    {
-      'id': '1',
-      'image':
-          'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
-      'haircut': 'Classic Fade',
-      'beard': 'Full Beard',
-      'timestamp': DateTime.now().subtract(const Duration(hours: 2)),
-      'accentColor': AiColors.neonCyan,
-    },
-    {
-      'id': '2',
-      'image':
-          'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop',
-      'haircut': 'Buzz Cut',
-      'beard': 'Stubble',
-      'timestamp': DateTime.now().subtract(const Duration(hours: 5)),
-      'accentColor': AiColors.sunsetCoral,
-    },
-    {
-      'id': '3',
-      'image':
-          'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop',
-      'haircut': 'Pompadour',
-      'beard': 'Goatee',
-      'timestamp': DateTime.now().subtract(const Duration(hours: 12)),
-      'accentColor': AiColors.neonPurple,
-    },
-    {
-      'id': '4',
-      'image':
-          'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
-      'haircut': 'Undercut',
-      'beard': 'Full Beard',
-      'timestamp': DateTime.now().subtract(const Duration(days: 1)),
-      'accentColor': AiColors.neonCyan,
-    },
-    {
-      'id': '5',
-      'image':
-          'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
-      'haircut': 'Crew Cut',
-      'beard': 'Clean Shaven',
-      'timestamp': DateTime.now().subtract(const Duration(days: 2)),
-      'accentColor': AiColors.sunsetCoral,
-    },
-    {
-      'id': '6',
-      'image':
-          'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
-      'haircut': 'Textured Top',
-      'beard': 'Stubble',
-      'timestamp': DateTime.now().subtract(const Duration(days: 3)),
-      'accentColor': AiColors.neonPurple,
-    },
-  ];
+  late List<Map<String, dynamic>> _generationHistory;
+
+  @override
+  void initState() {
+    super.initState();
+    _generationHistory = [];
+  }
+
+  List<Map<String, dynamic>> _mapHistory(List<HistoryEntity> history) {
+    return history
+        .map(
+          (item) => {
+            'id': item.id,
+            'image': item.imageUrl,
+            'haircut': item.haircut,
+            'beard': item.beard,
+            'timestamp': item.timestamp,
+            'accentColor': item.accentColor,
+          },
+        )
+        .toList();
+  }
 
   String _formatTimestamp(DateTime timestamp) {
     final now = DateTime.now();
@@ -145,70 +116,91 @@ class _HistoryViewState extends State<HistoryView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
-      appBar: AppBar(
-        backgroundColor: AdaptiveThemeColors.backgroundDark(context),
-        elevation: 0,
-        toolbarHeight: 48,
-        title: Text(
-          'History',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AdaptiveThemeColors.textPrimary(context),
-            fontWeight: FontWeight.w800,
+    return BlocProvider(
+      create: (_) =>
+          HistoryBloc(getHistoryUseCase: getIt<GetHistoryUseCase>())
+            ..add(const HistoryLoadRequested()),
+      child: BlocListener<HistoryBloc, HistoryState>(
+        listener: (context, state) {
+          if (state is HistoryLoaded) {
+            setState(() {
+              _generationHistory = _mapHistory(state.history);
+            });
+          }
+        },
+        child: Scaffold(
+          backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
+          appBar: AppBar(
+            backgroundColor: AdaptiveThemeColors.backgroundDark(context),
+            elevation: 0,
+            toolbarHeight: 48,
+            title: Text(
+              'History',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: AdaptiveThemeColors.textPrimary(context),
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            centerTitle: true,
+            surfaceTintColor: Colors.transparent,
+          ),
+          body: SafeArea(
+            child: _generationHistory.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.history,
+                          size: 64,
+                          color: AdaptiveThemeColors.textTertiary(context),
+                        ),
+                        const SizedBox(height: AiSpacing.md),
+                        Text(
+                          'No generation history yet',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: AdaptiveThemeColors.textPrimary(context),
+                              ),
+                        ),
+                        const SizedBox(height: AiSpacing.sm),
+                        Text(
+                          'Generate your first style to see it here',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: AdaptiveThemeColors.textTertiary(
+                                  context,
+                                ),
+                              ),
+                        ),
+                      ],
+                    ),
+                  )
+                : CustomScrollView(
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.all(AiSpacing.lg),
+                        sliver: SliverGrid(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: AiSpacing.md,
+                                mainAxisSpacing: AiSpacing.lg,
+                                childAspectRatio: 0.8,
+                              ),
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            final item = _generationHistory[index];
+                            return _buildHistoryCard(context, item);
+                          }, childCount: _generationHistory.length),
+                        ),
+                      ),
+                    ],
+                  ),
           ),
         ),
-        centerTitle: true,
-        surfaceTintColor: Colors.transparent,
-      ),
-      body: SafeArea(
-        child: _generationHistory.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.history,
-                      size: 64,
-                      color: AdaptiveThemeColors.textTertiary(context),
-                    ),
-                    const SizedBox(height: AiSpacing.md),
-                    Text(
-                      'No generation history yet',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AdaptiveThemeColors.textPrimary(context),
-                      ),
-                    ),
-                    const SizedBox(height: AiSpacing.sm),
-                    Text(
-                      'Generate your first style to see it here',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AdaptiveThemeColors.textTertiary(context),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : CustomScrollView(
-                slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.all(AiSpacing.lg),
-                    sliver: SliverGrid(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: AiSpacing.md,
-                            mainAxisSpacing: AiSpacing.lg,
-                            childAspectRatio: 0.8,
-                          ),
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final item = _generationHistory[index];
-                        return _buildHistoryCard(context, item);
-                      }, childCount: _generationHistory.length),
-                    ),
-                  ),
-                ],
-              ),
       ),
     );
   }

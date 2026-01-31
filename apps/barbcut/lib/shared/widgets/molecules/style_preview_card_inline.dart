@@ -5,10 +5,7 @@ import '../../../theme/ai_spacing.dart';
 class StylePreviewCardInline extends StatelessWidget {
   final Map<String, dynamic> style;
 
-  const StylePreviewCardInline({
-    super.key,
-    required this.style,
-  });
+  const StylePreviewCardInline({super.key, required this.style});
 
   @override
   Widget build(BuildContext context) {

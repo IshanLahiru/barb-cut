@@ -6,7 +6,8 @@ import 'profile_state.dart';
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final GetProfileUseCase getProfileUseCase;
 
-  ProfileBloc({required this.getProfileUseCase}) : super(const ProfileInitial()) {
+  ProfileBloc({required this.getProfileUseCase})
+    : super(const ProfileInitial()) {
     on<ProfileLoadRequested>(_onLoadRequested);
   }
 
@@ -19,12 +20,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final result = await getProfileUseCase();
 
     result.fold(
-      (failure) => emit(
-        ProfileFailure(message: failure.toString()),
-      ),
-      (profile) => emit(
-        ProfileLoaded(profile: profile),
-      ),
+      (failure) => emit(ProfileFailure(message: failure.toString())),
+      (profile) => emit(ProfileLoaded(profile: profile)),
     );
   }
 }

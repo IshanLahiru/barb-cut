@@ -6,7 +6,8 @@ import 'products_state.dart';
 class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   final GetProductsUseCase getProductsUseCase;
 
-  ProductsBloc({required this.getProductsUseCase}) : super(const ProductsInitial()) {
+  ProductsBloc({required this.getProductsUseCase})
+    : super(const ProductsInitial()) {
     on<ProductsLoadRequested>(_onLoadRequested);
   }
 
@@ -19,12 +20,8 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     final result = await getProductsUseCase();
 
     result.fold(
-      (failure) => emit(
-        ProductsFailure(message: failure.toString()),
-      ),
-      (products) => emit(
-        ProductsLoaded(products: products),
-      ),
+      (failure) => emit(ProductsFailure(message: failure.toString())),
+      (products) => emit(ProductsLoaded(products: products)),
     );
   }
 }

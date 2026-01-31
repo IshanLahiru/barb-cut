@@ -17,7 +17,9 @@ class StyleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accentColor = (style['accentColor'] as Color?) ?? AdaptiveThemeColors.neonCyan(context);
+    final accentColor =
+        (style['accentColor'] as Color?) ??
+        AdaptiveThemeColors.neonCyan(context);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
@@ -104,7 +106,10 @@ class StyleCard extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4),
                           color: accentColor.withValues(alpha: 0.15),

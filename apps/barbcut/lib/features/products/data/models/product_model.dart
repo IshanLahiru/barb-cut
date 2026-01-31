@@ -10,13 +10,13 @@ class ProductModel extends ProductEntity {
     required IconData icon,
     required Color accentColor,
   }) : super(
-    name: name,
-    price: price,
-    rating: rating,
-    description: description,
-    icon: icon,
-    accentColor: accentColor,
-  );
+         name: name,
+         price: price,
+         rating: rating,
+         description: description,
+         icon: icon,
+         accentColor: accentColor,
+       );
 
   factory ProductModel.fromMap(Map<String, dynamic> map) {
     return ProductModel(

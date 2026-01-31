@@ -1,54 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import '../../domain/usecases/get_beard_styles_usecase.dart';
 import '../../domain/usecases/get_haircuts_usecase.dart';
 import 'home_event.dart';
@@ -74,14 +25,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final haircutsResult = await getHaircutsUseCase();
     final beardsResult = await getBeardStylesUseCase();
 
-    final haircuts = haircutsResult.fold(
-      (failure) => null,
-      (data) => data,
-    );
-    final beards = beardsResult.fold(
-      (failure) => null,
-      (data) => data,
-    );
+    final haircuts = haircutsResult.fold((failure) => null, (data) => data);
+    final beards = beardsResult.fold((failure) => null, (data) => data);
 
     if (haircuts == null || beards == null) {
       final message = haircutsResult.fold(

@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
-import '../theme/ai_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../theme/adaptive_theme_colors.dart';
 import '../theme/ai_spacing.dart';
 import '../shared/widgets/atoms/category_chip.dart';
 import '../shared/widgets/molecules/product_card.dart';
+import '../core/di/service_locator.dart';
+import '../features/products/domain/entities/product_entity.dart';
+import '../features/products/domain/usecases/get_products_usecase.dart';
+import '../features/products/presentation/bloc/products_bloc.dart';
+import '../features/products/presentation/bloc/products_event.dart';
+import '../features/products/presentation/bloc/products_state.dart';
 
 class ProductsView extends StatefulWidget {
   const ProductsView({super.key});
@@ -17,56 +23,28 @@ class _ProductsViewState extends State<ProductsView> {
   String _searchQuery = '';
   int? _selectedProductIndex;
 
-  final List<Map<String, dynamic>> _products = [
-    {
-      'name': 'Hair Gel Premium',
-      'price': '\$15.99',
-      'rating': 4.5,
-      'description': 'Premium styling gel for powerful hold',
-      'icon': Icons.palette,
-      'accentColor': AiColors.neonCyan,
-    },
-    {
-      'name': 'Beard Oil Deluxe',
-      'price': '\$12.99',
-      'rating': 4.7,
-      'description': 'Natural beard conditioning oil',
-      'icon': Icons.face_retouching_natural,
-      'accentColor': AiColors.sunsetCoral,
-    },
-    {
-      'name': 'Pro Clippers',
-      'price': '\$89.99',
-      'rating': 4.9,
-      'description': 'Professional hair clippers',
-      'icon': Icons.content_cut,
-      'accentColor': AiColors.neonPurple,
-    },
-    {
-      'name': 'Premium Shampoo',
-      'price': '\$9.99',
-      'rating': 4.4,
-      'description': 'Gentle hair shampoo',
-      'icon': Icons.water_drop,
-      'accentColor': AiColors.neonCyan,
-    },
-    {
-      'name': 'Straight Razor',
-      'price': '\$24.99',
-      'rating': 4.8,
-      'description': 'Precision straight razor',
-      'icon': Icons.content_cut,
-      'accentColor': AiColors.sunsetCoral,
-    },
-    {
-      'name': 'Styling Wax',
-      'price': '\$11.99',
-      'rating': 4.6,
-      'description': 'Professional hair styling wax',
-      'icon': Icons.brush,
-      'accentColor': AiColors.neonPurple,
-    },
-  ];
+  late List<Map<String, dynamic>> _products;
+
+  @override
+  void initState() {
+    super.initState();
+    _products = [];
+  }
+
+  List<Map<String, dynamic>> _mapProducts(List<ProductEntity> products) {
+    return products
+        .map(
+          (product) => {
+            'name': product.name,
+            'price': product.price,
+            'rating': product.rating,
+            'description': product.description,
+            'icon': product.icon,
+            'accentColor': product.accentColor,
+          },
+        )
+        .toList();
+  }
 
   @override
   void dispose() {
@@ -84,51 +62,63 @@ class _ProductsViewState extends State<ProductsView> {
         )
         .toList();
 
-    return Scaffold(
-      backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
-      appBar: AppBar(
-        backgroundColor: AdaptiveThemeColors.backgroundDark(context),
-        elevation: 0,
-        toolbarHeight: 48,
-        title: Text(
-          'Shop',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AdaptiveThemeColors.textPrimary(context),
-            fontWeight: FontWeight.w800,
+    return BlocProvider(
+      create: (_) => ProductsBloc(
+        getProductsUseCase: getIt<GetProductsUseCase>(),
+      )..add(const ProductsLoadRequested()),
+      child: BlocListener<ProductsBloc, ProductsState>(
+        listener: (context, state) {
+          if (state is ProductsLoaded) {
+            setState(() {
+              _products = _mapProducts(state.products);
+            });
+          }
+        },
+        child: Scaffold(
+          backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
+          appBar: AppBar(
+            backgroundColor: AdaptiveThemeColors.backgroundDark(context),
+            elevation: 0,
+            toolbarHeight: 48,
+            title: Text(
+              'Shop',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: AdaptiveThemeColors.textPrimary(context),
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            centerTitle: true,
+            surfaceTintColor: Colors.transparent,
           ),
-        ),
-        centerTitle: true,
-        surfaceTintColor: Colors.transparent,
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header with gradient
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AiSpacing.lg,
-                vertical: AiSpacing.md,
-              ),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AdaptiveThemeColors.backgroundDark(context),
-                    AdaptiveThemeColors.backgroundSecondary(context),
-                  ],
-                ),
-                border: Border(
-                  bottom: BorderSide(
-                    color: AdaptiveThemeColors.borderLight(context),
-                    width: 1,
+          body: SafeArea(
+            child: Column(
+              children: [
+                // Header with gradient
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AiSpacing.lg,
+                    vertical: AiSpacing.md,
                   ),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        AdaptiveThemeColors.backgroundDark(context),
+                        AdaptiveThemeColors.backgroundSecondary(context),
+                      ],
+                    ),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: AdaptiveThemeColors.borderLight(context),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
                     'Find Premium Products',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: AdaptiveThemeColors.textSecondary(context),
@@ -318,11 +308,12 @@ class _ProductsViewState extends State<ProductsView> {
                         );
                       },
                     ),
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
-      ),
     );
   }
-
 }

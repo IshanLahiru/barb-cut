@@ -6,12 +6,7 @@ import '../../../../theme/ai_colors.dart';
 class HistoryLocalDataSource {
   List<HistoryEntity> getHistory() {
     return _buildHistoryData()
-        .map(
-          (item) => HistoryModel.fromMap(
-            item,
-            item['accentColor'] as Color,
-          ),
-        )
+        .map((item) => HistoryModel.fromMap(item, item['accentColor'] as Color))
         .toList();
   }
 

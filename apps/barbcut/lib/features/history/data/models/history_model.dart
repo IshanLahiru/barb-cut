@@ -10,13 +10,13 @@ class HistoryModel extends HistoryEntity {
     required DateTime timestamp,
     required Color accentColor,
   }) : super(
-    id: id,
-    imageUrl: imageUrl,
-    haircut: haircut,
-    beard: beard,
-    timestamp: timestamp,
-    accentColor: accentColor,
-  );
+         id: id,
+         imageUrl: imageUrl,
+         haircut: haircut,
+         beard: beard,
+         timestamp: timestamp,
+         accentColor: accentColor,
+       );
 
   factory HistoryModel.fromMap(Map<String, dynamic> map, Color accentColor) {
     return HistoryModel(

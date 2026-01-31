@@ -10,14 +10,14 @@ class ProfileModel extends ProfileEntity {
     required int favoritesCount,
     required double averageRating,
   }) : super(
-    userId: userId,
-    username: username,
-    email: email,
-    bio: bio,
-    appointmentsCount: appointmentsCount,
-    favoritesCount: favoritesCount,
-    averageRating: averageRating,
-  );
+         userId: userId,
+         username: username,
+         email: email,
+         bio: bio,
+         appointmentsCount: appointmentsCount,
+         favoritesCount: favoritesCount,
+         averageRating: averageRating,
+       );
 
   factory ProfileModel.fromMap(Map<String, dynamic> map) {
     return ProfileModel(

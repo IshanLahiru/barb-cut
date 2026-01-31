@@ -6,7 +6,8 @@ import 'history_state.dart';
 class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   final GetHistoryUseCase getHistoryUseCase;
 
-  HistoryBloc({required this.getHistoryUseCase}) : super(const HistoryInitial()) {
+  HistoryBloc({required this.getHistoryUseCase})
+    : super(const HistoryInitial()) {
     on<HistoryLoadRequested>(_onLoadRequested);
   }
 
@@ -19,12 +20,8 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     final result = await getHistoryUseCase();
 
     result.fold(
-      (failure) => emit(
-        HistoryFailure(message: failure.toString()),
-      ),
-      (history) => emit(
-        HistoryLoaded(history: history),
-      ),
+      (failure) => emit(HistoryFailure(message: failure.toString())),
+      (history) => emit(HistoryLoaded(history: history)),
     );
   }
 }
