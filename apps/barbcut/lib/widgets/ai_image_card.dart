@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../theme/ai_colors.dart';
 
 /// AI Image Card - Display generated images with overlay actions
@@ -299,6 +300,3 @@ class _AiActionButtonState extends State<_AiActionButton>
     );
   }
 }
-
-// Import dart:ui for ImageFilter
-import 'dart:ui';

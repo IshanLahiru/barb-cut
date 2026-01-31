@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import '../theme/ai_colors.dart';
 
 /// AI Loading State - Shimmer/Pulse effect instead of spinner
@@ -189,7 +190,7 @@ class _DotProgress extends StatelessWidget {
           builder: (context, child) {
             final delay = index * 0.15;
             final animValue = (controller.value + delay) % 1.0;
-            final scale = 0.6 + (sin(animValue * 3.14) * 0.4);
+            final scale = 0.6 + (math.sin(animValue * 3.14) * 0.4);
 
             return ScaleTransition(
               scale: AlwaysStoppedAnimation(scale),
@@ -213,8 +214,6 @@ class _DotProgress extends StatelessWidget {
     );
   }
 }
-
-double sin(double x) => (x - (x.toStringAsFixed(0).length) * 3.14159 / 2).sin();
 
 /// AI Success State - Celebrate successful generation
 class AiSuccessState extends StatefulWidget {

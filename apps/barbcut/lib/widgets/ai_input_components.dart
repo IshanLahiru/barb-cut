@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../theme/ai_colors.dart';
 
 /// Suggested Prompts Chips - Beautiful idle state suggestions
@@ -256,6 +257,3 @@ class AiGlassCard extends StatelessWidget {
     );
   }
 }
-
-// Import dart:ui for ImageFilter
-import 'dart:ui';
