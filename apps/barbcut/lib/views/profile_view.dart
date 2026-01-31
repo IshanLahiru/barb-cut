@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../controllers/auth_controller.dart';
-import '../theme/ai_colors.dart';
-import '../theme/adaptive_theme_colors.dart';
-import '../theme/ai_spacing.dart';
+import '../theme/theme.dart';
 import '../shared/widgets/molecules/stat_item.dart';
 import '../core/di/service_locator.dart';
 import '../features/profile/domain/entities/profile_entity.dart';

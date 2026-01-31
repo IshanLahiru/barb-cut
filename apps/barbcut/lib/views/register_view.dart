@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
-import '../theme/ai_colors.dart';
-import '../theme/ai_spacing.dart';
+import '../theme/theme.dart';
 import '../shared/widgets/atoms/ai_buttons.dart';
 import '../shared/widgets/atoms/auth_text_field.dart';
 import '../shared/widgets/molecules/auth_error_banner.dart';

@@ -3,7 +3,7 @@ import 'package:barbcut/features/home/presentation/pages/home_page.dart';
 import 'package:barbcut/features/history/presentation/pages/history_page.dart';
 import 'package:barbcut/features/products/presentation/pages/products_page.dart';
 import 'package:barbcut/features/profile/presentation/pages/profile_page.dart';
-import '../theme/adaptive_theme_colors.dart';
+import '../theme/theme.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

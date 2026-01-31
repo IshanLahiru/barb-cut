@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import '../theme/ai_colors.dart';
+import '../theme/theme.dart';
 
 /// AI Loading State - Shimmer/Pulse effect instead of spinner
 /// Creates a dreamy "image being generated" effect

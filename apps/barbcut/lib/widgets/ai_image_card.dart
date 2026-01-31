@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import '../theme/ai_colors.dart';
+import '../theme/theme.dart';
 
 /// AI Image Card - Display generated images with overlay actions
 /// One-handed use: Actions positioned at bottom with thumb-friendly spacing

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/ai_colors.dart';
+import '../theme/theme.dart';
 
 /// AI Primary Button - Tactile "Squishy" 3D feel with gradient
 /// Used for main CTAs like "Generate", "Create", "Submit"

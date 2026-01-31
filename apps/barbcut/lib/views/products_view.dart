@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../theme/adaptive_theme_colors.dart';
-import '../theme/ai_spacing.dart';
+import '../theme/theme.dart';
 import '../shared/widgets/atoms/category_chip.dart';
 import '../shared/widgets/molecules/product_card.dart';
 import '../core/di/service_locator.dart';

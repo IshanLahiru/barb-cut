@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/ai_colors.dart';
-import '../theme/ai_spacing.dart';
+import '../theme/theme.dart';
 import '../shared/widgets/atoms/ai_buttons.dart';
 import '../shared/widgets/atoms/ai_input_components.dart';
 import '../shared/widgets/organisms/ai_loading_states.dart';

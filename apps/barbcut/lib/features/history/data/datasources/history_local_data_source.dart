@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/history_entity.dart';
 import '../models/history_model.dart';
-import '../../../../theme/ai_colors.dart';
+import '../../../../theme/theme.dart';
 
 class HistoryLocalDataSource {
   List<HistoryEntity> getHistory() {

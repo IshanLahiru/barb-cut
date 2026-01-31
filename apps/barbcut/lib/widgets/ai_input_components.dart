@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import '../theme/ai_colors.dart';
+import '../theme/theme.dart';
 
 /// Suggested Prompts Chips - Beautiful idle state suggestions
 /// Tap to populate the prompt field

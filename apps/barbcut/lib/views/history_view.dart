@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../theme/ai_spacing.dart';
-import '../theme/adaptive_theme_colors.dart';
+import '../theme/theme.dart';
 import '../core/di/service_locator.dart';
 import '../features/history/domain/entities/history_entity.dart';
 import '../features/history/domain/usecases/get_history_usecase.dart';

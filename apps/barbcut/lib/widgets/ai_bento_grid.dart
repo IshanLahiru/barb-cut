@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/ai_colors.dart';
+import '../theme/theme.dart';
 
 /// Bento Grid Layout - Modern dashboard pattern
 /// Scannable, visual hierarchy with varied sizes

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/theme_controller.dart';
-import '../theme/ai_spacing.dart';
-import '../theme/adaptive_theme_colors.dart';
+import '../theme/theme.dart';
 
 class AppearanceView extends StatelessWidget {
   const AppearanceView({super.key});
