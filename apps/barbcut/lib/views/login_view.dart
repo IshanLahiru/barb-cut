@@ -5,6 +5,7 @@ import '../theme/ai_colors.dart';
 import '../theme/ai_spacing.dart';
 import '../shared/widgets/atoms/ai_buttons.dart';
 import '../shared/widgets/atoms/auth_text_field.dart';
+import '../shared/widgets/molecules/auth_error_banner.dart';
 
 class LoginView extends StatefulWidget {
   final VoidCallback onSwitchToRegister;
@@ -106,24 +107,7 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     const SizedBox(height: AiSpacing.lg),
                     if (_localError != null) ...[
-                      Container(
-                        padding: const EdgeInsets.all(AiSpacing.md),
-                        decoration: BoxDecoration(
-                          color: AiColors.danger.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(
-                            AiSpacing.radiusMedium,
-                          ),
-                          border: Border.all(
-                            color: AiColors.danger.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          _localError!,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: AiColors.danger),
-                        ),
-                      ),
+                      AuthErrorBanner(message: _localError!),
                       const SizedBox(height: AiSpacing.md),
                     ],
                     if (controller.isLoading)

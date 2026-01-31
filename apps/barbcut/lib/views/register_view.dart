@@ -5,6 +5,7 @@ import '../theme/ai_colors.dart';
 import '../theme/ai_spacing.dart';
 import '../shared/widgets/atoms/ai_buttons.dart';
 import '../shared/widgets/atoms/auth_text_field.dart';
+import '../shared/widgets/molecules/auth_error_banner.dart';
 
 class RegisterView extends StatefulWidget {
   final VoidCallback onSwitchToLogin;
@@ -146,27 +147,7 @@ class _RegisterViewState extends State<RegisterView> {
                     SizedBox(height: AiSpacing.lg),
                     // Error message
                     if (_localError != null) ...[
-                      Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: AiColors.danger.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(
-                            AiSpacing.radiusMedium,
-                          ),
-                          border: Border.all(
-                            color: AiColors.danger.withValues(alpha: 0.4),
-                            width: 1.0,
-                          ),
-                        ),
-                        padding: EdgeInsets.all(AiSpacing.md),
-                        child: Text(
-                          _localError!,
-                          style: TextStyle(
-                            color: AiColors.danger,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
+                      AuthErrorBanner(message: _localError!),
                       SizedBox(height: AiSpacing.md),
                     ],
                     // Submit button
