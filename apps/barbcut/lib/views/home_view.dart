@@ -2,12 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
 import 'dart:async';
 import 'dart:ui';
 import '../theme/ai_colors.dart';
 import '../theme/ai_spacing.dart';
 import '../theme/adaptive_theme_colors.dart';
+import '../core/di/service_locator.dart';
+import '../features/home/domain/entities/style_entity.dart';
+import '../features/home/domain/usecases/get_beard_styles_usecase.dart';
+import '../features/home/domain/usecases/get_haircuts_usecase.dart';
+import '../features/home/presentation/bloc/home_bloc.dart';
+import '../features/home/presentation/bloc/home_event.dart';
+import '../features/home/presentation/bloc/home_state.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -32,7 +40,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   int? _confirmedBeardIndex;
   Timer? _carouselTimer;
 
-  final List<Map<String, dynamic>> _haircuts = [
+  final List<Map<String, dynamic>> _defaultHaircuts = [
     {
       'name': 'Classic Fade',
       'price': '\$25',
@@ -260,7 +268,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     },
   ];
 
-  final List<Map<String, dynamic>> _beardStyles = [
+  final List<Map<String, dynamic>> _defaultBeardStyles = [
     {
       'name': 'Full Beard',
       'price': '\$20',
@@ -470,20 +478,42 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     },
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    // Generate random heights once for all haircuts
+  late List<Map<String, dynamic>> _haircuts;
+  late List<Map<String, dynamic>> _beardStyles;
+
+  List<Map<String, dynamic>> _mapStyles(List<StyleEntity> styles) {
+    return styles
+        .map(
+          (style) => {
+            'name': style.name,
+            'price': style.price,
+            'duration': style.duration,
+            'description': style.description,
+            'image': style.imageUrl,
+            'accentColor': style.accentColor,
+          },
+        )
+        .toList();
+  }
+
+  void _regenerateHeights() {
     _haircutHeights = List.generate(
       _haircuts.length,
       (_) => 200.0 + _random.nextDouble() * 80,
     );
-    // Generate random heights once for all beard styles
     _beardHeights = List.generate(
       _beardStyles.length,
       (_) => 200.0 + _random.nextDouble() * 80,
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _haircuts = List<Map<String, dynamic>>.from(_defaultHaircuts);
+    _beardStyles = List<Map<String, dynamic>>.from(_defaultBeardStyles);
+    _regenerateHeights();
   }
 
   void _onTryThisPressed() async {
@@ -1552,38 +1582,92 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final minPanelHeight = availableHeight * 0.28;
     final maxPanelHeight = availableHeight * 0.9;
 
-    return Scaffold(
-      backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
-      appBar: AppBar(
-        backgroundColor: AdaptiveThemeColors.backgroundDark(context),
-        elevation: 0,
-        toolbarHeight: 48,
-        title: Text(
-          'Barbcut',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AdaptiveThemeColors.textPrimary(context),
-            fontWeight: FontWeight.w800,
+    return BlocProvider(
+      create: (_) => HomeBloc(
+        getHaircutsUseCase: getIt<GetHaircutsUseCase>(),
+        getBeardStylesUseCase: getIt<GetBeardStylesUseCase>(),
+      )..add(const HomeLoadRequested()),
+      child: BlocListener<HomeBloc, HomeState>(
+        listener: (context, state) {
+          if (state is HomeLoaded) {
+            setState(() {
+              _haircuts = _mapStyles(state.haircuts);
+              _beardStyles = _mapStyles(state.beardStyles);
+
+              if (_haircuts.isNotEmpty) {
+                _selectedHaircutIndex = _selectedHaircutIndex.clamp(
+                  0,
+                  _haircuts.length - 1,
+                );
+              } else {
+                _selectedHaircutIndex = 0;
+              }
+
+              if (_beardStyles.isNotEmpty) {
+                _selectedBeardIndex = _selectedBeardIndex.clamp(
+                  0,
+                  _beardStyles.length - 1,
+                );
+              } else {
+                _selectedBeardIndex = 0;
+              }
+
+              if (_confirmedHaircutIndex != null &&
+                  _confirmedHaircutIndex! >= _haircuts.length) {
+                _confirmedHaircutIndex = null;
+              }
+              if (_confirmedBeardIndex != null &&
+                  _confirmedBeardIndex! >= _beardStyles.length) {
+                _confirmedBeardIndex = null;
+              }
+
+              _regenerateHeights();
+            });
+          }
+
+          if (state is HomeFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AdaptiveThemeColors.error(context),
+              ),
+            );
+          }
+        },
+        child: Scaffold(
+          backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
+          appBar: AppBar(
+            backgroundColor: AdaptiveThemeColors.backgroundDark(context),
+            elevation: 0,
+            toolbarHeight: 48,
+            title: Text(
+              'Barbcut',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: AdaptiveThemeColors.textPrimary(context),
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            centerTitle: true,
+            surfaceTintColor: Colors.transparent,
+          ),
+          body: SlidingUpPanel(
+            controller: _panelController,
+            minHeight: minPanelHeight,
+            maxHeight: maxPanelHeight,
+            borderRadius: BorderRadius.zero,
+            backdropEnabled: false,
+            isDraggable: true,
+            parallaxEnabled: true,
+            parallaxOffset: 0.5,
+            onPanelSlide: (position) {
+              setState(() {
+                _panelSlidePosition = position;
+              });
+            },
+            panelBuilder: (scrollController) => _buildPanel(scrollController),
+            body: _buildMainContent(),
           ),
         ),
-        centerTitle: true,
-        surfaceTintColor: Colors.transparent,
-      ),
-      body: SlidingUpPanel(
-        controller: _panelController,
-        minHeight: minPanelHeight,
-        maxHeight: maxPanelHeight,
-        borderRadius: BorderRadius.zero,
-        backdropEnabled: false,
-        isDraggable: true,
-        parallaxEnabled: true,
-        parallaxOffset: 0.5,
-        onPanelSlide: (position) {
-          setState(() {
-            _panelSlidePosition = position;
-          });
-        },
-        panelBuilder: (scrollController) => _buildPanel(scrollController),
-        body: _buildMainContent(),
       ),
     );
   }
