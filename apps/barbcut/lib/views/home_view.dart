@@ -1575,12 +1575,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         borderRadius: BorderRadius.zero,
         backdropEnabled: false,
         isDraggable: true,
+        parallaxEnabled: true,
+        parallaxOffset: 0.5,
         onPanelSlide: (position) {
           setState(() {
             _panelSlidePosition = position;
           });
         },
-        panelBuilder: (scrollController) => _buildPanel(),
+        panelBuilder: (scrollController) => _buildPanel(scrollController),
         body: _buildMainContent(),
       ),
     );
@@ -1595,104 +1597,92 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         );
         final double iconSize = (carouselHeight * 0.55).clamp(140, 260);
 
-        return GestureDetector(
-          onVerticalDragUpdate: (details) {
-            if (details.delta.dy < -5) {
-              _panelController.open();
-            }
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: AdaptiveThemeColors.backgroundDeep(context),
-            ),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(
-                  AiSpacing.lg,
-                  0,
-                  AiSpacing.lg,
-                  AiSpacing.lg,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: AiSpacing.xs),
-                    SizedBox(
-                      height: carouselHeight,
-                      child: Stack(
-                        children: [
-                          FlutterCarousel(
-                            options: CarouselOptions(
-                              height: carouselHeight,
-                              viewportFraction: (constraints.maxWidth < 360)
-                                  ? 0.88
-                                  : (constraints.maxWidth < 600 ? 0.8 : 0.7),
-                              enlargeCenterPage: true,
-                              enableInfiniteScroll: true,
-                              autoPlay: _isGenerating,
-                              autoPlayInterval: Duration(milliseconds: 1500),
-                              autoPlayAnimationDuration: Duration(
-                                milliseconds: 800,
-                              ),
-                              showIndicator: false,
-                              onPageChanged: (index, reason) {
-                                setState(() {
-                                  _selectedHaircutIndex = index;
-                                });
-                              },
+        return Container(
+          decoration: BoxDecoration(
+            color: AdaptiveThemeColors.backgroundDeep(context),
+          ),
+          child: SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(
+                AiSpacing.lg,
+                0,
+                AiSpacing.lg,
+                AiSpacing.lg,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: AiSpacing.xs),
+                  SizedBox(
+                    height: carouselHeight,
+                    child: Stack(
+                      children: [
+                        FlutterCarousel(
+                          options: CarouselOptions(
+                            height: carouselHeight,
+                            viewportFraction: (constraints.maxWidth < 360)
+                                ? 0.88
+                                : (constraints.maxWidth < 600 ? 0.8 : 0.7),
+                            enlargeCenterPage: true,
+                            enableInfiniteScroll: true,
+                            autoPlay: _isGenerating,
+                            autoPlayInterval: Duration(milliseconds: 1500),
+                            autoPlayAnimationDuration: Duration(
+                              milliseconds: 800,
                             ),
-                            items: _haircuts
-                                .take(4)
-                                .toList()
-                                .asMap()
-                                .entries
-                                .map((entry) {
-                                  final int itemIndex = entry.key;
-                                  final Map<String, dynamic> haircut =
-                                      entry.value;
-                                  final Color accentColor =
-                                      (haircut['accentColor'] as Color?) ??
-                                      AdaptiveThemeColors.neonCyan(context);
+                            showIndicator: false,
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                _selectedHaircutIndex = index;
+                              });
+                            },
+                          ),
+                          items: _haircuts.take(4).toList().asMap().entries.map(
+                            (entry) {
+                              final int itemIndex = entry.key;
+                              final Map<String, dynamic> haircut = entry.value;
+                              final Color accentColor =
+                                  (haircut['accentColor'] as Color?) ??
+                                  AdaptiveThemeColors.neonCyan(context);
 
-                                  return Align(
-                                    alignment: Alignment.center,
-                                    child: _buildCarouselCard(
-                                      haircut: haircut,
-                                      accentColor: accentColor,
-                                      itemIndex: itemIndex,
-                                      iconSize: iconSize,
-                                      isGenerating: _isGenerating,
-                                    ),
-                                  );
-                                })
-                                .toList(),
-                          ),
-                        ],
-                      ),
+                              return Align(
+                                alignment: Alignment.center,
+                                child: _buildCarouselCard(
+                                  haircut: haircut,
+                                  accentColor: accentColor,
+                                  itemIndex: itemIndex,
+                                  iconSize: iconSize,
+                                  isGenerating: _isGenerating,
+                                ),
+                              );
+                            },
+                          ).toList(),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: AiSpacing.none),
-                    // Carousel indicators
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        4,
-                        (index) => Container(
-                          width: 6,
-                          height: 6,
-                          margin: const EdgeInsets.symmetric(horizontal: 3),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: _selectedHaircutIndex == index
-                                ? AdaptiveThemeColors.neonCyan(context)
-                                : AiColors.borderLight.withValues(alpha: 0.5),
-                          ),
+                  ),
+                  const SizedBox(height: AiSpacing.none),
+                  // Carousel indicators
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      4,
+                      (index) => Container(
+                        width: 6,
+                        height: 6,
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _selectedHaircutIndex == index
+                              ? AdaptiveThemeColors.neonCyan(context)
+                              : AiColors.borderLight.withValues(alpha: 0.5),
                         ),
                       ),
                     ),
-                    const SizedBox(height: AiSpacing.md),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: AiSpacing.md),
+                ],
               ),
             ),
           ),
@@ -1828,7 +1818,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     return cardContent;
   }
 
-  Widget _buildPanel() {
+  Widget _buildPanel(ScrollController scrollController) {
     return Container(
       color: AdaptiveThemeColors.backgroundDark(context),
       child: Column(
@@ -1949,7 +1939,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [_buildHaircutGrid(), _buildBeardGrid()],
+              physics: const BouncingScrollPhysics(),
+              children: [
+                _buildHaircutGrid(scrollController),
+                _buildBeardGrid(scrollController),
+              ],
             ),
           ),
         ],
@@ -1957,7 +1951,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildHaircutGrid() {
+  Widget _buildHaircutGrid(ScrollController scrollController) {
     final width = MediaQuery.of(context).size.width;
     int crossAxisCount = 2;
     if (width >= 1100)
@@ -2009,6 +2003,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         AiSpacing.md,
       ),
       child: MasonryGridView.builder(
+        controller: scrollController,
+        physics: const BouncingScrollPhysics(),
         gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
         ),
@@ -2035,7 +2031,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildBeardGrid() {
+  Widget _buildBeardGrid(ScrollController scrollController) {
     final width = MediaQuery.of(context).size.width;
     int crossAxisCount = 2;
     if (width >= 1100)
@@ -2087,6 +2083,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         AiSpacing.md,
       ),
       child: MasonryGridView.builder(
+        controller: scrollController,
+        physics: const BouncingScrollPhysics(),
         gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
         ),
