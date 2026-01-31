@@ -77,7 +77,9 @@ class _AiPrimaryButtonState extends State<AiPrimaryButton>
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
-                  color: AiColors.sunsetCoral.withValues(alpha: glowOpacity * 0.4),
+                  color: AiColors.sunsetCoral.withValues(
+                    alpha: glowOpacity * 0.4,
+                  ),
                   blurRadius: 15 + (_animController.value * 8),
                   offset: const Offset(0, 4),
                 ),

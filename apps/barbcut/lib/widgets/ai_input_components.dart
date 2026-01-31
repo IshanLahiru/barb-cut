@@ -152,9 +152,7 @@ class _AiAspectRatioButtonState extends State<_AiAspectRatioButton> {
               ? AiColors.surface
               : AiColors.surface.withValues(alpha: 0.5),
           border: Border.all(
-            color: widget.isSelected
-                ? AiColors.neonCyan
-                : AiColors.borderLight,
+            color: widget.isSelected ? AiColors.neonCyan : AiColors.borderLight,
             width: widget.isSelected ? 2.0 : 1.5,
           ),
           borderRadius: BorderRadius.circular(12),
@@ -169,45 +167,45 @@ class _AiAspectRatioButtonState extends State<_AiAspectRatioButton> {
               : [],
         ),
         child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Aspect ratio preview
-              Container(
-                width: 40,
-                height: widget.ratio == '1:1'
-                    ? 40
-                    : widget.ratio == '16:9'
-                    ? 22
-                    : widget.ratio == '9:16'
-                    ? 60
-                    : 30,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: widget.isSelected
-                        ? AiColors.neonCyan
-                        : AiColors.textTertiary,
-                    width: 1.5,
-                  ),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                widget.ratio,
-                style: TextStyle(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Aspect ratio preview
+            Container(
+              width: 40,
+              height: widget.ratio == '1:1'
+                  ? 40
+                  : widget.ratio == '16:9'
+                  ? 22
+                  : widget.ratio == '9:16'
+                  ? 60
+                  : 30,
+              decoration: BoxDecoration(
+                border: Border.all(
                   color: widget.isSelected
                       ? AiColors.neonCyan
-                      : AiColors.textSecondary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                      : AiColors.textTertiary,
+                  width: 1.5,
                 ),
+                borderRadius: BorderRadius.circular(6),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.ratio,
+              style: TextStyle(
+                color: widget.isSelected
+                    ? AiColors.neonCyan
+                    : AiColors.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
   }
+}
 
 /// Glassmorphic Card - For dashboard sections
 class AiGlassCard extends StatelessWidget {

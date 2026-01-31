@@ -62,9 +62,9 @@ class _ProductsViewState extends State<ProductsView> {
         .toList();
 
     return BlocProvider(
-      create: (_) => ProductsBloc(
-        getProductsUseCase: getIt<GetProductsUseCase>(),
-      )..add(const ProductsLoadRequested()),
+      create: (_) =>
+          ProductsBloc(getProductsUseCase: getIt<GetProductsUseCase>())
+            ..add(const ProductsLoadRequested()),
       child: BlocListener<ProductsBloc, ProductsState>(
         listener: (context, state) {
           if (state is ProductsLoaded) {
@@ -118,201 +118,210 @@ class _ProductsViewState extends State<ProductsView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                    'Find Premium Products',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AdaptiveThemeColors.textSecondary(context),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: AiSpacing.sm),
-                  // Search field with neon cyan focus
-                  TextField(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      setState(() {
-                        _searchQuery = value;
-                      });
-                    },
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AdaptiveThemeColors.textPrimary(context),
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Hair gel, clippers, shampoo...',
-                      hintStyle: Theme.of(context).textTheme.bodyMedium
-                          ?.copyWith(
-                            color: AdaptiveThemeColors.textTertiary(context),
-                          ),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: AdaptiveThemeColors.textTertiary(context),
-                        size: 20,
+                        'Find Premium Products',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: AdaptiveThemeColors.textSecondary(context),
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: Icon(
-                                Icons.clear,
+                      const SizedBox(height: AiSpacing.sm),
+                      // Search field with neon cyan focus
+                      TextField(
+                        controller: _searchController,
+                        onChanged: (value) {
+                          setState(() {
+                            _searchQuery = value;
+                          });
+                        },
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AdaptiveThemeColors.textPrimary(context),
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Hair gel, clippers, shampoo...',
+                          hintStyle: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
                                 color: AdaptiveThemeColors.textTertiary(
                                   context,
                                 ),
-                                size: 20,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _searchController.clear();
-                                  _searchQuery = '';
-                                });
-                              },
-                            )
-                          : null,
-                      filled: true,
-                      fillColor: AdaptiveThemeColors.backgroundSecondary(
-                        context,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: AiSpacing.md,
-                        vertical: AiSpacing.md,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AiSpacing.radiusLarge,
-                        ),
-                        borderSide: BorderSide(
-                          color: AdaptiveThemeColors.borderLight(context),
-                          width: 1.5,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AiSpacing.radiusLarge,
-                        ),
-                        borderSide: BorderSide(
-                          color: AdaptiveThemeColors.borderLight(context),
-                          width: 1.5,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AiSpacing.radiusLarge,
-                        ),
-                        borderSide: BorderSide(
-                          color: AdaptiveThemeColors.neonCyan(context),
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                    cursorColor: AdaptiveThemeColors.neonCyan(context),
-                  ),
-                  const SizedBox(height: AiSpacing.md),
-                  Wrap(
-                    spacing: AiSpacing.sm,
-                    runSpacing: AiSpacing.sm,
-                    children: [
-                      CategoryChip(
-                        label: 'Hair Care',
-                        color: AdaptiveThemeColors.neonCyan(context),
-                      ),
-                      CategoryChip(
-                        label: 'Beard Care',
-                        color: AdaptiveThemeColors.sunsetCoral(context),
-                      ),
-                      CategoryChip(
-                        label: 'Tools',
-                        color: AdaptiveThemeColors.neonPurple(context),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            // Products Grid
-            Expanded(
-              child: filteredProducts.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.shopping_bag_outlined,
-                            size: 64,
+                          prefixIcon: Icon(
+                            Icons.search,
                             color: AdaptiveThemeColors.textTertiary(context),
+                            size: 20,
                           ),
-                          const SizedBox(height: AiSpacing.md),
-                          Text(
-                            'No products found',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  color: AdaptiveThemeColors.textPrimary(
-                                    context,
+                          suffixIcon: _searchQuery.isNotEmpty
+                              ? IconButton(
+                                  icon: Icon(
+                                    Icons.clear,
+                                    color: AdaptiveThemeColors.textTertiary(
+                                      context,
+                                    ),
+                                    size: 20,
                                   ),
-                                ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _searchController.clear();
+                                      _searchQuery = '';
+                                    });
+                                  },
+                                )
+                              : null,
+                          filled: true,
+                          fillColor: AdaptiveThemeColors.backgroundSecondary(
+                            context,
                           ),
-                          const SizedBox(height: AiSpacing.sm),
-                          Text(
-                            'Try a different search term',
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: AdaptiveThemeColors.textTertiary(
-                                    context,
-                                  ),
-                                ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: AiSpacing.md,
+                            vertical: AiSpacing.md,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              AiSpacing.radiusLarge,
+                            ),
+                            borderSide: BorderSide(
+                              color: AdaptiveThemeColors.borderLight(context),
+                              width: 1.5,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              AiSpacing.radiusLarge,
+                            ),
+                            borderSide: BorderSide(
+                              color: AdaptiveThemeColors.borderLight(context),
+                              width: 1.5,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              AiSpacing.radiusLarge,
+                            ),
+                            borderSide: BorderSide(
+                              color: AdaptiveThemeColors.neonCyan(context),
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        cursorColor: AdaptiveThemeColors.neonCyan(context),
+                      ),
+                      const SizedBox(height: AiSpacing.md),
+                      Wrap(
+                        spacing: AiSpacing.sm,
+                        runSpacing: AiSpacing.sm,
+                        children: [
+                          CategoryChip(
+                            label: 'Hair Care',
+                            color: AdaptiveThemeColors.neonCyan(context),
+                          ),
+                          CategoryChip(
+                            label: 'Beard Care',
+                            color: AdaptiveThemeColors.sunsetCoral(context),
+                          ),
+                          CategoryChip(
+                            label: 'Tools',
+                            color: AdaptiveThemeColors.neonPurple(context),
                           ),
                         ],
                       ),
-                    )
-                  : ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AiSpacing.lg,
-                        vertical: AiSpacing.md,
-                      ),
-                      itemCount: filteredProducts.length,
-                      itemBuilder: (context, index) {
-                        final product = filteredProducts[index];
-                        final isSelected = _selectedProductIndex == index;
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: AiSpacing.md),
-                          child: ProductCard(
-                            product: product,
-                            isSelected: isSelected,
-                            onTap: () {
-                              setState(() {
-                                _selectedProductIndex = isSelected
-                                    ? null
-                                    : index;
-                              });
-                            },
-                            onView: () {},
-                            onAdd: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    '${product['name']} added to cart!',
-                                    style: TextStyle(
+                    ],
+                  ),
+                ),
+                // Products Grid
+                Expanded(
+                  child: filteredProducts.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.shopping_bag_outlined,
+                                size: 64,
+                                color: AdaptiveThemeColors.textTertiary(
+                                  context,
+                                ),
+                              ),
+                              const SizedBox(height: AiSpacing.md),
+                              Text(
+                                'No products found',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
                                       color: AdaptiveThemeColors.textPrimary(
                                         context,
                                       ),
                                     ),
-                                  ),
-                                  backgroundColor: AdaptiveThemeColors.success(
-                                    context,
-                                  ),
-                                  duration: const Duration(milliseconds: 1500),
-                                ),
-                              );
-                              setState(() {
-                                _selectedProductIndex = null;
-                              });
-                            },
+                              ),
+                              const SizedBox(height: AiSpacing.sm),
+                              Text(
+                                'Try a different search term',
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: AdaptiveThemeColors.textTertiary(
+                                        context,
+                                      ),
+                                    ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
+                        )
+                      : ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AiSpacing.lg,
+                            vertical: AiSpacing.md,
+                          ),
+                          itemCount: filteredProducts.length,
+                          itemBuilder: (context, index) {
+                            final product = filteredProducts[index];
+                            final isSelected = _selectedProductIndex == index;
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: AiSpacing.md,
+                              ),
+                              child: ProductCard(
+                                product: product,
+                                isSelected: isSelected,
+                                onTap: () {
+                                  setState(() {
+                                    _selectedProductIndex = isSelected
+                                        ? null
+                                        : index;
+                                  });
+                                },
+                                onView: () {},
+                                onAdd: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        '${product['name']} added to cart!',
+                                        style: TextStyle(
+                                          color:
+                                              AdaptiveThemeColors.textPrimary(
+                                                context,
+                                              ),
+                                        ),
+                                      ),
+                                      backgroundColor:
+                                          AdaptiveThemeColors.success(context),
+                                      duration: const Duration(
+                                        milliseconds: 1500,
+                                      ),
+                                    ),
+                                  );
+                                  setState(() {
+                                    _selectedProductIndex = null;
+                                  });
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 }
