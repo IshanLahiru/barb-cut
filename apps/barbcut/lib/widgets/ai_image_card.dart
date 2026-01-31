@@ -132,9 +132,7 @@ class _AnimatedMetadata extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  prompt.length > 60
-                      ? '${prompt.substring(0, 60)}...'
-                      : prompt,
+                  prompt.length > 60 ? '${prompt.substring(0, 60)}...' : prompt,
                   style: const TextStyle(
                     color: AiColors.textPrimary,
                     fontSize: 12,
@@ -252,9 +250,10 @@ class _AiActionButtonState extends State<_AiActionButton>
         setState(() => _isPressed = false);
       },
       child: ScaleTransition(
-        scale: Tween<double>(begin: 1.0, end: 0.9).animate(
-          CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-        ),
+        scale: Tween<double>(
+          begin: 1.0,
+          end: 0.9,
+        ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -278,11 +277,7 @@ class _AiActionButtonState extends State<_AiActionButton>
                       ]
                     : null,
               ),
-              child: Icon(
-                widget.icon,
-                color: widget.accentColor,
-                size: 22,
-              ),
+              child: Icon(widget.icon, color: widget.accentColor, size: 22),
             ),
             const SizedBox(height: 6),
             Text(

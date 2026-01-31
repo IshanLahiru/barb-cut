@@ -27,7 +27,6 @@ class AiPrimaryButton extends StatefulWidget {
 
 class _AiPrimaryButtonState extends State<AiPrimaryButton>
     with SingleTickerProviderStateMixin {
-  bool _isPressed = false;
   late AnimationController _animController;
 
   @override
@@ -47,12 +46,10 @@ class _AiPrimaryButtonState extends State<AiPrimaryButton>
 
   void _onPressDown(PointerDownEvent event) {
     _animController.forward();
-    setState(() => _isPressed = true);
   }
 
   void _onPressUp(PointerUpEvent event) {
     _animController.reverse();
-    setState(() => _isPressed = false);
     widget.onPressed?.call();
   }
 

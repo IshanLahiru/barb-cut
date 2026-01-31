@@ -389,29 +389,4 @@ class _ExploreViewState extends State<ExploreView> {
       ),
     );
   }
-
-  Widget _chip(String text, Color accentColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AiSpacing.sm,
-        vertical: AiSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: accentColor.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
-        border: Border.all(
-          color: accentColor.withValues(alpha: 0.3),
-          width: 0.5,
-        ),
-      ),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontSize: 10,
-          color: accentColor,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
 }

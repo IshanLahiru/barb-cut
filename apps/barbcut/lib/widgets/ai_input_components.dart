@@ -142,8 +142,6 @@ class _AiAspectRatioButton extends StatefulWidget {
 }
 
 class _AiAspectRatioButtonState extends State<_AiAspectRatioButton> {
-  bool _isHovered = false;
-
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
@@ -182,10 +180,10 @@ class _AiAspectRatioButtonState extends State<_AiAspectRatioButton> {
                 height: widget.ratio == '1:1'
                     ? 40
                     : widget.ratio == '16:9'
-                        ? 22
-                        : widget.ratio == '9:16'
-                            ? 60
-                            : 30,
+                    ? 22
+                    : widget.ratio == '9:16'
+                    ? 60
+                    : 30,
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: widget.isSelected
