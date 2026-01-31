@@ -10,6 +10,7 @@ import 'controllers/theme_controller.dart';
 import 'services/auth_service.dart';
 import 'auth_screen.dart';
 import 'theme/app_theme.dart';
+import 'core/di/service_locator.dart';
 
 class MyApp extends StatefulWidget {
   final ThemeController themeController;
@@ -34,6 +35,9 @@ void main() async {
     debugPrint('Failed to load .env: $e');
   }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Initialize service locator (core DI setup)
+  await setupServiceLocator();
 
   // Initialize ThemeController
   final themeController = await _initializeThemeController();
