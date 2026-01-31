@@ -5,143 +5,52 @@ import 'package:flutter/services.dart';
 // COLORS - AI Design System
 // ============================================================================
 
-/// AI Image Generation Color Palette - 2026 Material Design 3 Inspired
-/// Updated with softer blues and improved contrast
-/// Dark Mode First with Refined Aesthetics
+/// AI Color Palette - Dark Mode First Design System (2026)
+/// Optimized for readability and visual hierarchy
 class AiColors {
   AiColors._();
 
-  // === Surface Backgrounds (Material Design 3) ===
+  // === Surface Backgrounds ===
   static const Color backgroundDeep = Color(0xFF121212); // Darkest surface
   static const Color backgroundDark = Color(0xFF1E1E1E); // Primary dark bg
   static const Color backgroundSecondary = Color(0xFF282828); // Secondary layer
   static const Color surface = Color(0xFF1F1F1F); // Cards & elevated surfaces
-  static const Color surfaceLight = Color(0xFF3F3F3F); // Hover state surface
 
-  // === Surface Tonal Colors ===
-  static const Color surfaceTonal = Color(0xFF1E2225);
-  static const Color surfaceTonaL10 = Color(0xFF333739);
-  static const Color surfaceTonalL20 = Color(0xFF494C4F);
-
-  // === Primary Blue (Softer, Material Design 3) ===
+  // === Primary Colors ===
   static const Color primary = Color(0xFF90CAF9); // Primary blue
   static const Color primaryA10 = Color(0xFF9ED0FA); // Lighter variant
-  static const Color primaryA20 = Color(0xFFABD6FB); // Even lighter variant
 
-  // === Success Green ===
-  static const Color successDark = Color(0xFF22946E); // Dark variant
-  static const Color success = Color(0xFF47D5A6); // Primary success
-  static const Color successLight = Color(0xFF9AE8CE); // Light variant
+  // === Accent Colors ===
+  static const Color warning = Color(0xFFD7AC61); // Orange accent
+  static const Color info = Color(0xFF4077D1); // Secondary blue
+  static const Color danger = Color(0xFFD94A4A); // Error red
 
-  // === Warning/Accent Orange ===
-  static const Color warningDark = Color(0xFFA87A2A); // Dark variant
-  static const Color warning = Color(0xFFD7AC61); // Primary warning
-  static const Color warningLight = Color(0xFFECD7B2); // Light variant
-
-  // === Danger/Error Red ===
-  static const Color dangerDark = Color(0xFF9C2121); // Dark variant
-  static const Color danger = Color(0xFFD94A4A); // Primary danger
-  static const Color dangerLight = Color(0xFFEB9E9E); // Light variant
-
-  // === Info/Secondary Blue ===
-  static const Color infoDark = Color(0xFF21498A); // Dark variant
-  static const Color info = Color(0xFF4077D1); // Primary info
-  static const Color infoLight = Color(0xFF92B2E5); // Light variant
-
-  // === Neutral Whites (Text) ===
+  // === Text Colors ===
   static const Color textPrimary = Color(0xFFFFFFFF); // Pure white
   static const Color textSecondary = Color(0xFFB0B8CC); // Muted blue-gray
   static const Color textTertiary = Color(0xFF7C8599); // Darker gray
-  static const Color textDisabled = Color(0xFF4A5568); // Disabled gray
 
-  // === Border & Divider ===
-  static const Color borderLight = Color(0x1FFFFFFF); // 12% white
-  static const Color borderGlass = Color(0x1AFFFFFF); // 10% white
+  // === Neutral Colors ===
+  static const Color borderLight = Color(0x1FFFFFFF); // 12% white overlay
+  static const Color borderGlass = Color(0x1AFFFFFF); // 10% white overlay
   static const Color divider = Color(0x0A90CAF9); // Subtle blue divider
 
-  // === Status Colors (Aliases for consistency) ===
-  static const Color successColor = success;
+  // === Success State ===
+  static const Color success = Color(0xFF47D5A6); // Green
+
+  // === Accent Aliases (for legacy compatibility) ===
+  static const Color neonCyan = primary;
+  static const Color neonPurple = info;
+  static const Color sunsetCoral = warning;
+
+  // === Status Colors (Aliases) ===
   static const Color errorColor = danger;
   static const Color warningColor = warning;
   static const Color infoColor = info;
-
-  // === Legacy Neon Colors (for backwards compatibility) ===
-  static const Color neonCyan = primary; // Maps to new primary blue
-  static const Color neonPurple = info; // Maps to new info blue
-  static const Color sunsetCoral = warning; // Maps to new warning
-
-  // === Gradient Colors ===
-  static const LinearGradient gradientPrimaryWarning = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [primary, warning],
-  );
-
-  static const LinearGradient gradientPrimaryInfo = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [primary, info],
-  );
-
-  static const LinearGradient gradientInfoToBlack = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [info, backgroundDeep],
-  );
-
-  // === Glass Morphism Colors ===
-  static const Color glassLight = Color(0x1EFFFFFF); // 12% white overlay
-  static const Color glassMedium = Color(0x2DFFFFFF); // 18% white overlay
-  static const Color glassDark = Color(0x3DFFFFFF); // 24% white overlay
-
-  // === Shimmer Colors (Loading State) ===
-  static const Color shimmerLight = Color(0x1A90CAF9); // Blue shimmer
-  static const Color shimmerDark = Color(0x0A90CAF9); // Subtle blue shimmer
+  static const Color successColor = success;
 }
 
-/// Gradient utilities for AI components
-class AiGradients {
-  AiGradients._();
-
-  static const LinearGradient buttonPrimary = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [AiColors.primary, AiColors.warning],
-  );
-
-  static const LinearGradient buttonSecondary = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [AiColors.info, AiColors.primary],
-  );
-
-  static const RadialGradient cardGlow = RadialGradient(
-    center: Alignment.topRight,
-    radius: 1.5,
-    colors: [
-      Color(0x2D90CAF9), // Blue glow
-      Color(0x90caf900), // Transparent
-    ],
-  );
-
-  static LinearGradient backgroundGradient({
-    AlignmentGeometry begin = Alignment.topLeft,
-    AlignmentGeometry end = Alignment.bottomRight,
-  }) {
-    return LinearGradient(
-      begin: begin,
-      end: end,
-      colors: const [
-        AiColors.backgroundDeep,
-        AiColors.backgroundSecondary,
-        AiColors.backgroundDark,
-      ],
-      stops: const [0.0, 0.5, 1.0],
-    );
-  }
-}
-
-/// Light mode color palette
+/// Light mode color palette (for light theme support)
 class AppColors {
   AppColors._();
 
@@ -150,25 +59,18 @@ class AppColors {
   static const Color backgroundSecondary = Color(0xFFF2F2F2);
   static const Color surface = Color(0xFFFFFFFF);
 
-  // === Primary Brand Colors ===
-  static const Color primary = Color(0xFF2C3E50);
-  static const Color primaryDark = Color(0xFF1A252F);
-  static const Color primaryLight = Color(0xFF34495E);
-
-  // === Accent Colors ===
-  static const Color accent = Color(0xFFB8860B);
-  static const Color accentOrange = Color(0xFFD35400);
-  static const Color accentBlue = Color(0xFF5D6D7E);
-
   // === Text Colors ===
   static const Color textPrimary = Color(0xFF000000);
   static const Color textSecondary = Color(0xFF4A4A4A);
   static const Color textTertiary = Color(0xFF7D7D7D);
   static const Color textDisabled = Color(0xFFB3B3B3);
 
-  // === Border & Divider Colors ===
-  static const Color border = Color(0xFFDCDCDC);
+  // === Primary Colors ===
+  static const Color primary = Color(0xFF2C3E50);
+
+  // === Border Colors ===
   static const Color borderLight = Color(0xFFE8E8E8);
+  static const Color border = Color(0xFFDCDCDC);
   static const Color divider = Color(0xFFEEEEEE);
 
   // === Status Colors ===
@@ -177,7 +79,7 @@ class AppColors {
   static const Color warning = Color(0xFFF39C12);
   static const Color info = Color(0xFF3498DB);
 
-  // === Shadow & Overlay ===
+  // === Overlay & Shadow ===
   static const Color shadow = Color(0x0F000000);
   static const Color overlay = Color(0x66000000);
   static const Color hover = Color(0x0A000000);
@@ -187,8 +89,7 @@ class AppColors {
 // SPACING - 8pt Grid System
 // ============================================================================
 
-/// AI Spacing System - Strict 8pt Grid for 2026 Standards
-/// All spacing values are multiples of 8 for consistency
+/// AI Spacing System - Consistent 8pt Grid
 class AiSpacing {
   AiSpacing._();
 
@@ -197,13 +98,13 @@ class AiSpacing {
 
   // === Spacing Tokens ===
   static const double none = 0.0;
-  static const double xs = 4.0; // Half unit for tight spacing
-  static const double sm = 8.0; // 1x unit
-  static const double md = 16.0; // 2x units
-  static const double lg = 24.0; // 3x units
-  static const double xl = 32.0; // 4x units
-  static const double xxl = 48.0; // 6x units
-  static const double xxxl = 64.0; // 8x units
+  static const double xs = 4.0;
+  static const double sm = 8.0;
+  static const double md = 16.0;
+  static const double lg = 24.0;
+  static const double xl = 32.0;
+  static const double xxl = 48.0;
+  static const double xxxl = 64.0;
 
   // === Padding Presets ===
   static const EdgeInsets p0 = EdgeInsets.all(none);
@@ -234,7 +135,7 @@ class AiSpacing {
   static const double radiusXL = 24.0;
   static const double radiusCircle = 999.0;
 
-  // === Borders ===
+  // === Border Radius Objects ===
   static const BorderRadius borderSmall = BorderRadius.all(
     Radius.circular(radiusSmall),
   );
@@ -248,7 +149,7 @@ class AiSpacing {
     Radius.circular(radiusXL),
   );
 
-  // === Elevations / Shadow ===
+  // === Elevations ===
   static const double elevationNone = 0.0;
   static const double elevationLow = 4.0;
   static const double elevationMedium = 8.0;
@@ -302,11 +203,11 @@ class AiSpacing {
 // ADAPTIVE COLORS - Context-aware Color Selection
 // ============================================================================
 
-/// Adaptive color palette that responds to the current theme mode
+/// Adaptive colors that respond to light/dark theme
 class AdaptiveThemeColors {
   AdaptiveThemeColors._();
 
-  /// Get color based on current brightness
+  /// Get color based on current theme brightness
   static Color _adaptiveColor(
     BuildContext context, {
     required Color lightColor,
@@ -348,6 +249,7 @@ class AdaptiveThemeColors {
     darkColor: AiColors.primary,
   );
 
+  // === Accent Colors ===
   static Color neonCyan(BuildContext context) => AiColors.neonCyan;
   static Color neonPurple(BuildContext context) => AiColors.neonPurple;
   static Color sunsetCoral(BuildContext context) => AiColors.sunsetCoral;
@@ -374,10 +276,10 @@ class AdaptiveThemeColors {
   static Color textDisabled(BuildContext context) => _adaptiveColor(
     context,
     lightColor: AppColors.textDisabled,
-    darkColor: AiColors.textDisabled,
+    darkColor: AiColors.textPrimary,
   );
 
-  // === Border & Divider Colors ===
+  // === Border & Divider ===
   static Color border(BuildContext context) => _adaptiveColor(
     context,
     lightColor: AppColors.border,
@@ -445,7 +347,7 @@ class AdaptiveThemeColors {
 // THEME CONFIGURATION - Material Design 3
 // ============================================================================
 
-/// Comprehensive theme configuration
+/// Material Design 3 theme configuration
 class AppTheme {
   AppTheme._();
 
@@ -455,8 +357,7 @@ class AppTheme {
       brightness: Brightness.light,
       colorScheme: ColorScheme.light(
         primary: AppColors.primary,
-        primaryContainer: AppColors.primaryLight,
-        secondary: AppColors.accent,
+        secondary: AppColors.warning,
         surface: AppColors.surface,
         error: AppColors.error,
       ),
