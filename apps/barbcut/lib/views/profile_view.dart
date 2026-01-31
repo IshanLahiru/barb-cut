@@ -15,14 +15,15 @@ class ProfileView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AiColors.backgroundDark,
         elevation: 0,
+        toolbarHeight: 48,
         title: Text(
           'Profile',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             color: AiColors.textPrimary,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
           ),
         ),
-        centerTitle: false,
+        centerTitle: true,
         surfaceTintColor: Colors.transparent,
       ),
       body: ListView(

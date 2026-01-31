@@ -37,7 +37,9 @@ class _MainScreenState extends State<MainScreen> {
           color: AdaptiveThemeColors.backgroundSecondary(context),
           boxShadow: [
             BoxShadow(
-              color: AdaptiveThemeColors.neonCyan(context).withValues(alpha: 0.1),
+              color: AdaptiveThemeColors.neonCyan(
+                context,
+              ).withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, -2),
             ),
@@ -58,7 +60,9 @@ class _MainScreenState extends State<MainScreen> {
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: AdaptiveThemeColors.neonCyan(context),
-          unselectedItemColor: AdaptiveThemeColors.textSecondary(context).withValues(alpha: 0.6),
+          unselectedItemColor: AdaptiveThemeColors.textSecondary(
+            context,
+          ).withValues(alpha: 0.6),
           backgroundColor: AdaptiveThemeColors.backgroundSecondary(context),
           onTap: _onItemTapped,
           showSelectedLabels: false,

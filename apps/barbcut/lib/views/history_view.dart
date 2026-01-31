@@ -15,7 +15,8 @@ class _HistoryViewState extends State<HistoryView> {
   final List<Map<String, dynamic>> _generationHistory = [
     {
       'id': '1',
-      'image': 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop',
       'haircut': 'Classic Fade',
       'beard': 'Full Beard',
       'timestamp': DateTime.now().subtract(const Duration(hours: 2)),
@@ -23,7 +24,8 @@ class _HistoryViewState extends State<HistoryView> {
     },
     {
       'id': '2',
-      'image': 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop',
       'haircut': 'Buzz Cut',
       'beard': 'Stubble',
       'timestamp': DateTime.now().subtract(const Duration(hours: 5)),
@@ -31,7 +33,8 @@ class _HistoryViewState extends State<HistoryView> {
     },
     {
       'id': '3',
-      'image': 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop',
       'haircut': 'Pompadour',
       'beard': 'Goatee',
       'timestamp': DateTime.now().subtract(const Duration(hours: 12)),
@@ -39,7 +42,8 @@ class _HistoryViewState extends State<HistoryView> {
     },
     {
       'id': '4',
-      'image': 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
       'haircut': 'Undercut',
       'beard': 'Full Beard',
       'timestamp': DateTime.now().subtract(const Duration(days: 1)),
@@ -47,7 +51,8 @@ class _HistoryViewState extends State<HistoryView> {
     },
     {
       'id': '5',
-      'image': 'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
       'haircut': 'Crew Cut',
       'beard': 'Clean Shaven',
       'timestamp': DateTime.now().subtract(const Duration(days: 2)),
@@ -55,7 +60,8 @@ class _HistoryViewState extends State<HistoryView> {
     },
     {
       'id': '6',
-      'image': 'https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop',
       'haircut': 'Textured Top',
       'beard': 'Stubble',
       'timestamp': DateTime.now().subtract(const Duration(days: 3)),
@@ -79,19 +85,58 @@ class _HistoryViewState extends State<HistoryView> {
   }
 
   String _formatDate(DateTime date) {
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 
   String _formatDateTime(DateTime date) {
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     final hour = date.hour.toString().padLeft(2, '0');
     final minute = date.minute.toString().padLeft(2, '0');
     return '${months[date.month - 1]} ${date.day}, ${date.year} · $hour:$minute';
   }
 
   String _formatDateTimeWithSeconds(DateTime date) {
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     final hour = date.hour.toString().padLeft(2, '0');
     final minute = date.minute.toString().padLeft(2, '0');
     final second = date.second.toString().padLeft(2, '0');
@@ -105,14 +150,15 @@ class _HistoryViewState extends State<HistoryView> {
       appBar: AppBar(
         backgroundColor: AdaptiveThemeColors.backgroundDark(context),
         elevation: 0,
+        toolbarHeight: 48,
         title: Text(
           'History',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             color: AdaptiveThemeColors.textPrimary(context),
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
           ),
         ),
-        centerTitle: false,
+        centerTitle: true,
         surfaceTintColor: Colors.transparent,
       ),
       body: SafeArea(
@@ -148,19 +194,17 @@ class _HistoryViewState extends State<HistoryView> {
                   SliverPadding(
                     padding: const EdgeInsets.all(AiSpacing.lg),
                     sliver: SliverGrid(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: AiSpacing.md,
-                        mainAxisSpacing: AiSpacing.lg,
-                        childAspectRatio: 0.8,
-                      ),
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final item = _generationHistory[index];
-                          return _buildHistoryCard(context, item);
-                        },
-                        childCount: _generationHistory.length,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: AiSpacing.md,
+                            mainAxisSpacing: AiSpacing.lg,
+                            childAspectRatio: 0.8,
+                          ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final item = _generationHistory[index];
+                        return _buildHistoryCard(context, item);
+                      }, childCount: _generationHistory.length),
                     ),
                   ),
                 ],
@@ -265,22 +309,6 @@ class _HistoryViewState extends State<HistoryView> {
                 ],
               ),
             ),
-            // Accent color accent line
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: 3,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(AiSpacing.radiusLarge),
-                    topRight: Radius.circular(AiSpacing.radiusLarge),
-                  ),
-                  color: item['accentColor'] as Color,
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -368,7 +396,11 @@ class _HistoryViewState extends State<HistoryView> {
                     ),
                   ),
                   const SizedBox(height: AiSpacing.md),
-                  _buildDetailRow(context, 'Haircut', item['haircut'] as String),
+                  _buildDetailRow(
+                    context,
+                    'Haircut',
+                    item['haircut'] as String,
+                  ),
                   const SizedBox(height: AiSpacing.sm),
                   _buildDetailRow(context, 'Beard', item['beard'] as String),
                   const SizedBox(height: AiSpacing.sm),
@@ -384,9 +416,13 @@ class _HistoryViewState extends State<HistoryView> {
                       onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AdaptiveThemeColors.neonCyan(context),
-                        padding: const EdgeInsets.symmetric(vertical: AiSpacing.md),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AiSpacing.md,
+                        ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+                          borderRadius: BorderRadius.circular(
+                            AiSpacing.radiusLarge,
+                          ),
                         ),
                       ),
                       child: Text(
