@@ -9,7 +9,7 @@ import 'controllers/auth_controller.dart';
 import 'controllers/theme_controller.dart';
 import 'services/auth_service.dart';
 import 'auth_screen.dart';
-import 'theme/app_theme.dart';
+import 'theme/theme.dart';
 import 'core/di/service_locator.dart';
 
 class MyApp extends StatefulWidget {
