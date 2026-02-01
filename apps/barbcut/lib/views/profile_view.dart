@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import '../controllers/auth_controller.dart';
 import '../theme/theme.dart';
 import '../shared/widgets/molecules/stat_item.dart';
@@ -10,6 +13,7 @@ import '../features/profile/presentation/bloc/profile_bloc.dart';
 import '../features/profile/presentation/bloc/profile_event.dart';
 import '../features/profile/presentation/bloc/profile_state.dart';
 import 'appearance_view.dart';
+import 'questionnaire_view.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -209,6 +213,19 @@ class _ProfileViewState extends State<ProfileView> {
               ),
               _buildTile(
                 context,
+                icon: Icons.quiz_outlined,
+                title: 'My Profile & Photos',
+                accentColor: AdaptiveThemeColors.neonPurple(context),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const QuestionnaireView(),
+                    ),
+                  );
+                },
+              ),
+              _buildTile(
+                context,
                 icon: Icons.payment,
                 title: 'Payment Methods',
                 accentColor: AdaptiveThemeColors.sunsetCoral(context),
@@ -263,6 +280,13 @@ class _ProfileViewState extends State<ProfileView> {
                 title: 'Help & Support',
                 accentColor: AdaptiveThemeColors.neonCyan(context),
               ),
+              _buildTile(
+                context,
+                icon: Icons.person_outline,
+                title: 'User Details',
+                accentColor: AdaptiveThemeColors.neonPurple(context),
+                onTap: () => _showUserDetailsDialog(context),
+              ),
               SizedBox(height: AiSpacing.lg),
               _buildTile(
                 context,
@@ -276,6 +300,146 @@ class _ProfileViewState extends State<ProfileView> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showUserDetailsDialog(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: AdaptiveThemeColors.surface(context),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+            side: BorderSide(
+              color: AdaptiveThemeColors.borderLight(context),
+              width: 1.5,
+            ),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(AiSpacing.lg),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'User Details',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: AdaptiveThemeColors.textPrimary(context),
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: AiSpacing.md),
+                  Divider(color: AdaptiveThemeColors.borderLight(context)),
+                  SizedBox(height: AiSpacing.md),
+                  _buildDetailRow(
+                    context,
+                    'Display Name:',
+                    user?.displayName ?? 'N/A',
+                  ),
+                  SizedBox(height: AiSpacing.md),
+                  _buildDetailRow(context, 'Email:', user?.email ?? 'N/A'),
+                  SizedBox(height: AiSpacing.md),
+                  _buildDetailRow(context, 'User ID:', user?.uid ?? 'N/A'),
+                  SizedBox(height: AiSpacing.md),
+                  _buildDetailRow(
+                    context,
+                    'Email Verified:',
+                    user?.emailVerified == true ? 'Yes' : 'No',
+                  ),
+                  SizedBox(height: AiSpacing.md),
+                  _buildDetailRow(
+                    context,
+                    'Phone:',
+                    user?.phoneNumber ?? 'Not set',
+                  ),
+                  SizedBox(height: AiSpacing.md),
+                  _buildDetailRow(
+                    context,
+                    'Account Created:',
+                    user?.metadata?.creationTime?.toString().split('.').first ??
+                        'N/A',
+                  ),
+                  SizedBox(height: AiSpacing.lg),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AdaptiveThemeColors.neonCyan(context),
+                        foregroundColor: AdaptiveThemeColors.surface(context),
+                        padding: EdgeInsets.symmetric(vertical: AiSpacing.md),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AiSpacing.radiusMedium,
+                          ),
+                        ),
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Close',
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: AdaptiveThemeColors.surface(context),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDetailRow(BuildContext context, String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+            color: AdaptiveThemeColors.textTertiary(context),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(height: AiSpacing.xs),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(AiSpacing.sm),
+          decoration: BoxDecoration(
+            color: AdaptiveThemeColors.backgroundSecondary(context),
+            borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
+            border: Border.all(
+              color: AdaptiveThemeColors.borderLight(context),
+              width: 0.5,
+            ),
+          ),
+          child: Text(
+            value,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AdaptiveThemeColors.textPrimary(context),
+              fontFamily: 'monospace',
+            ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 
