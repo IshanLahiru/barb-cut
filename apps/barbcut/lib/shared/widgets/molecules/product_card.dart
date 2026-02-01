@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../theme/theme.dart';
 import '../atoms/ai_buttons.dart';
 
 class ProductCard extends StatelessWidget {
@@ -29,13 +28,13 @@ class ProductCard extends StatelessWidget {
         curve: Curves.easeOut,
         decoration: BoxDecoration(
           color: isSelected
-              ? AdaptiveThemeColors.surface(context)
-              : AdaptiveThemeColors.backgroundSecondary(context),
-          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+              ? Theme.of(context).colorScheme.surface
+              : Theme.of(context).colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(16.0),
           border: Border.all(
             color: isSelected
                 ? accentColor
-                : AdaptiveThemeColors.borderLight(context),
+                : Theme.of(context).colorScheme.outlineVariant,
             width: isSelected ? 2 : 1.5,
           ),
           boxShadow: [
@@ -48,7 +47,7 @@ class ProductCard extends StatelessWidget {
           ],
         ),
         child: Padding(
-          padding: EdgeInsets.all(AiSpacing.md),
+          padding: EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -56,12 +55,10 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(AiSpacing.md),
+                    padding: EdgeInsets.all(12.0),
                     decoration: BoxDecoration(
                       color: accentColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(
-                        AiSpacing.radiusLarge,
-                      ),
+                      borderRadius: BorderRadius.circular(16.0),
                       border: Border.all(
                         color: accentColor.withValues(alpha: 0.3),
                         width: 1,
@@ -73,7 +70,7 @@ class ProductCard extends StatelessWidget {
                       size: 32,
                     ),
                   ),
-                  SizedBox(width: AiSpacing.md),
+                  SizedBox(width: 12.0),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,36 +81,32 @@ class ProductCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
-                                color: AdaptiveThemeColors.textPrimary(context),
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontWeight: FontWeight.w600,
                               ),
                         ),
-                        SizedBox(height: AiSpacing.xs),
+                        SizedBox(height: 4.0),
                         Text(
                           product['description'],
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
-                                color: AdaptiveThemeColors.textTertiary(
-                                  context,
-                                ),
+                                color: Theme.of(context).colorScheme.outline,
                               ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(width: AiSpacing.md),
+                  SizedBox(width: 12.0),
                   Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal: AiSpacing.sm,
-                      vertical: AiSpacing.xs,
+                      horizontal: 8.0,
+                      vertical: 4.0,
                     ),
                     decoration: BoxDecoration(
                       color: accentColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(
-                        AiSpacing.radiusSmall,
-                      ),
+                      borderRadius: BorderRadius.circular(6.0),
                       border: Border.all(
                         color: accentColor.withValues(alpha: 0.3),
                         width: 1,
@@ -129,18 +122,15 @@ class ProductCard extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: AiSpacing.md),
+              SizedBox(height: 12.0),
               if (!isSelected)
                 Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AiSpacing.sm,
-                    vertical: AiSpacing.xs,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                   decoration: BoxDecoration(
-                    color: AdaptiveThemeColors.backgroundDeep(context),
-                    borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(6.0),
                     border: Border.all(
-                      color: AdaptiveThemeColors.borderLight(context),
+                      color: Theme.of(context).colorScheme.outlineVariant,
                       width: 1,
                     ),
                   ),
@@ -150,13 +140,13 @@ class ProductCard extends StatelessWidget {
                       Icon(
                         Icons.star_rounded,
                         size: 16,
-                        color: AdaptiveThemeColors.neonCyan(context),
+                        color: const Color(0xFF00BCD4),
                       ),
-                      SizedBox(width: AiSpacing.xs),
+                      SizedBox(width: 4.0),
                       Text(
                         product['rating'].toString(),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: AdaptiveThemeColors.textSecondary(context),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -172,11 +162,11 @@ class ProductCard extends StatelessWidget {
                         child: AiSecondaryButton(
                           label: 'View',
                           onPressed: onView,
-                          accentColor: AdaptiveThemeColors.neonCyan(context),
+                          accentColor: const Color(0xFF00BCD4),
                         ),
                       ),
                     ),
-                    SizedBox(width: AiSpacing.sm),
+                    SizedBox(width: 8.0),
                     Expanded(
                       child: SizedBox(
                         height: 40,

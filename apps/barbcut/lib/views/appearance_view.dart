@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/theme_controller.dart';
-import '../theme/theme.dart';
 
 class AppearanceView extends StatelessWidget {
   const AppearanceView({super.key});
@@ -9,37 +8,35 @@ class AppearanceView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AdaptiveThemeColors.backgroundDark(context),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         title: Text(
           'Appearance',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: AdaptiveThemeColors.textPrimary(context),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         centerTitle: false,
       ),
       body: ListView(
-        padding: EdgeInsets.all(AiSpacing.lg),
+        padding: EdgeInsets.all(16.0),
         children: [
           Text(
             'Theme',
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: AdaptiveThemeColors.textSecondary(context),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               letterSpacing: 0.5,
             ),
           ),
-          SizedBox(height: AiSpacing.md),
+          SizedBox(height: 12.0),
           Container(
             decoration: BoxDecoration(
-              color: AdaptiveThemeColors.backgroundSecondary(context),
-              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+              color: Theme.of(context).colorScheme.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(16.0),
               border: Border.all(
-                color: AdaptiveThemeColors.neonCyan(
-                  context,
-                ).withValues(alpha: 0.2),
+                color: const Color(0xFF00BCD4).withValues(alpha: 0.2),
                 width: 1.5,
               ),
             ),
@@ -47,17 +44,17 @@ class AppearanceView extends StatelessWidget {
               title: Text(
                 'Dark mode',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AdaptiveThemeColors.textPrimary(context),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               subtitle: Text(
                 'Use dark appearance across the app',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AdaptiveThemeColors.textSecondary(context),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               value: context.watch<ThemeController>().isDarkMode,
-              activeThumbColor: AdaptiveThemeColors.neonCyan(context),
+              activeThumbColor: const Color(0xFF00BCD4),
               onChanged: (value) {
                 context.read<ThemeController>().toggleDarkMode(value);
               },

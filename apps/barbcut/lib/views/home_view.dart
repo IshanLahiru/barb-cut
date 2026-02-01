@@ -32,6 +32,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   String _panelSearchQuery = '';
   double _panelSlidePosition = 0.0;
   late TabController _tabController;
+  late AnimationController _arrowAnimationController;
   final Random _random = Random();
   late List<double> _haircutHeights;
   late List<double> _beardHeights;
@@ -77,6 +78,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _arrowAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
     _haircuts = List<Map<String, dynamic>>.from(_defaultHaircuts);
     _beardStyles = List<Map<String, dynamic>>.from(_defaultBeardStyles);
     _regenerateHeights();
@@ -88,7 +93,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Styles are still loading. Please try again.'),
-          backgroundColor: AdaptiveThemeColors.error(context),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -299,7 +304,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Beard styles are still loading.'),
-          backgroundColor: AdaptiveThemeColors.error(context),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -824,46 +829,48 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           ),
 
           // Image
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: Stack(
-                children: [
-                  Image.network(
-                    style['image'] as String,
-                    height: 120,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => Container(
-                      height: 120,
-                      color: AiColors.backgroundSecondary.withValues(
-                        alpha: 0.5,
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.image_not_supported,
-                          color: AiColors.textTertiary,
-                          size: 32,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            child: AspectRatio(
+              aspectRatio: 2 / 3,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Stack(
+                  children: [
+                    Image.network(
+                      style['image'] as String,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => Container(
+                        color: AiColors.backgroundSecondary.withValues(
+                          alpha: 0.5,
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.image_not_supported,
+                            color: AiColors.textTertiary,
+                            size: 32,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            accentColor.withValues(alpha: 0.15),
-                          ],
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              accentColor.withValues(alpha: 0.15),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -986,6 +993,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   @override
   void dispose() {
     _tabController.dispose();
+    _arrowAnimationController.dispose();
     _carouselTimer?.cancel();
     _panelSearchController.dispose();
     super.dispose();
@@ -1090,6 +1098,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               setState(() {
                 _panelSlidePosition = position;
               });
+              // Animate arrow: 0 = up (0.0), 1 = down (1.0)
+              _arrowAnimationController.animateTo(position);
             },
             panelBuilder: (scrollController) => _buildPanel(scrollController),
             body: _buildMainContent(),
@@ -1222,73 +1232,76 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           ],
         ),
       ),
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-              child: Image.network(
-                haircut['image'],
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: accentColor.withValues(alpha: 0.2),
-                    child: Icon(
-                      Icons.image_not_supported,
-                      size: iconSize,
-                      color: accentColor.withValues(alpha: 0.6),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-          // Gradient overlay
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
+      child: AspectRatio(
+        aspectRatio: 2 / 3,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.3),
-                    Colors.black.withValues(alpha: 0.7),
-                  ],
-                  stops: const [0.4, 0.7, 1.0],
+                child: Image.network(
+                  haircut['image'],
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: accentColor.withValues(alpha: 0.2),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: iconSize,
+                        color: accentColor.withValues(alpha: 0.6),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
-          ),
-          // Minimal text overlay
-          Positioned(
-            left: AiSpacing.md,
-            right: AiSpacing.md,
-            bottom: AiSpacing.sm,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  haircut['name'],
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        offset: const Offset(0, 2),
-                        blurRadius: 4,
-                      ),
+            // Gradient overlay
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.3),
+                      Colors.black.withValues(alpha: 0.7),
                     ],
+                    stops: const [0.4, 0.7, 1.0],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ],
+            // Minimal text overlay
+            Positioned(
+              left: AiSpacing.md,
+              right: AiSpacing.md,
+              bottom: AiSpacing.sm,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    haircut['name'],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          offset: const Offset(0, 2),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
 
@@ -1332,36 +1345,73 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Draggable area (drag handle + padding makes it easy to grab)
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 12),
-            child: Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AdaptiveThemeColors.borderLight(
-                    context,
-                  ).withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(2),
+          // Animated draggable arrow indicator
+          GestureDetector(
+            onTap: () {
+              // Toggle panel state on tap
+              if (_panelController.isAttached) {
+                if (_panelSlidePosition > 0.3) {
+                  _panelController.close();
+                } else {
+                  _panelController.open();
+                }
+              }
+            },
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 2),
+              child: Center(
+                child: AnimatedBuilder(
+                  animation: _arrowAnimationController,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _arrowAnimationController.value * pi,
+                      child: Icon(
+                        Icons.expand_less,
+                        size: 32,
+                        weight: 900,
+                        color: Colors.grey[400],
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
           ),
-          TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(text: 'Hair'),
-              Tab(text: 'Beard'),
-            ],
-            labelColor: AdaptiveThemeColors.neonCyan(context),
-            unselectedLabelColor: AdaptiveThemeColors.textTertiary(context),
-            labelStyle: Theme.of(context).textTheme.titleMedium,
-            unselectedLabelStyle: Theme.of(context).textTheme.titleMedium,
-            indicatorSize: TabBarIndicatorSize.label,
-            indicatorColor: AdaptiveThemeColors.neonCyan(context),
-            dividerColor: AdaptiveThemeColors.borderLight(context),
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: AdaptiveThemeColors.borderLight(context),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'Hair'),
+                Tab(text: 'Beard'),
+              ],
+              labelColor: AdaptiveThemeColors.neonCyan(context),
+              unselectedLabelColor: AdaptiveThemeColors.textSecondary(context),
+              labelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                fontSize: 16,
+              ),
+              unselectedLabelStyle: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
+              indicatorSize: TabBarIndicatorSize.label,
+              indicator: UnderlineTabIndicator(
+                borderSide: BorderSide(
+                  color: AdaptiveThemeColors.neonCyan(context),
+                  width: 4,
+                ),
+                insets: EdgeInsets.symmetric(horizontal: 16),
+              ),
+              dividerColor: Colors.transparent,
+            ),
           ),
           AnimatedSize(
             duration: const Duration(milliseconds: 400),
@@ -1649,80 +1699,120 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         (item['accentColor'] as Color?) ??
         AdaptiveThemeColors.neonCyan(context);
 
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        height: height,
         decoration: BoxDecoration(
           border: isSelected
-              ? Border.all(
-                  color: AdaptiveThemeColors.neonCyan(context),
-                  width: 3,
-                )
-              : null,
+              ? Border.all(color: Colors.white.withValues(alpha: 0.3), width: 3)
+              : Border.all(color: Colors.transparent, width: 3),
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
         ),
-        child: Stack(
-          children: [
-            SizedBox(
-              height: height,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                child: _buildCarouselCard(
-                  haircut: item,
-                  accentColor: accentColor,
-                  itemIndex: itemIndex,
-                  iconSize: 120,
-                ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge - 3),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Image
+              Image.network(
+                item['image'],
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: accentColor.withValues(alpha: 0.2),
+                    child: Icon(
+                      Icons.image_not_supported,
+                      size: 80,
+                      color: accentColor.withValues(alpha: 0.6),
+                    ),
+                  );
+                },
               ),
-            ),
-            if (isSelected)
+              // Bottom gradient with name
               Positioned(
-                bottom: 12,
-                left: 12,
-                right: 12,
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (_tabController.index == 0) {
-                        _confirmedHaircutIndex = itemIndex;
-                        // If beard is already confirmed, go directly to confirmation dialog
-                        if (_confirmedBeardIndex != null) {
-                          _showConfirmationDialog();
-                        } else {
-                          _onTryThisPressed();
-                        }
-                      } else {
-                        _confirmedBeardIndex = itemIndex;
-                        // If haircut is already confirmed, go directly to confirmation dialog
-                        if (_confirmedHaircutIndex != null) {
-                          _showConfirmationDialog();
-                        } else {
-                          _showBeardSelectionPrompt();
-                        }
-                      }
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AdaptiveThemeColors.neonCyan(context),
-                    foregroundColor: AdaptiveThemeColors.backgroundDeep(
-                      context,
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        AiSpacing.radiusMedium,
-                      ),
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.8),
+                      ],
                     ),
                   ),
-                  child: Text(
-                    'Try This',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        item['name'],
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (isSelected) ...[
+                        SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                if (_tabController.index == 0) {
+                                  _confirmedHaircutIndex = itemIndex;
+                                  if (_confirmedBeardIndex != null) {
+                                    _showConfirmationDialog();
+                                  } else {
+                                    _onTryThisPressed();
+                                  }
+                                } else {
+                                  _confirmedBeardIndex = itemIndex;
+                                  if (_confirmedHaircutIndex != null) {
+                                    _showConfirmationDialog();
+                                  } else {
+                                    _showBeardSelectionPrompt();
+                                  }
+                                }
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AdaptiveThemeColors.neonCyan(
+                                context,
+                              ),
+                              foregroundColor: Colors.black,
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              'Try This',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -7,7 +7,11 @@
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "cli": "npm run build && node functions/lib/cli.js",
+    "migrate:up": "npm run cli -- migrate:up",
+    "migrate:down": "npm run cli -- migrate:down",
+    "migrate:status": "npm run cli -- migrate:status"
   },
   "keywords": [],
   "author": "",

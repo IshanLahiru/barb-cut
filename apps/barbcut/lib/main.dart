@@ -59,8 +59,8 @@ class MyAppState extends State<MyApp> {
         builder: (context, themeController, _) {
           return MaterialApp(
             title: 'Barbcut',
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
+            theme: BarbCutTheme.lightTheme,
+            darkTheme: BarbCutTheme.darkTheme,
             themeMode: themeController.themeMode,
             debugShowCheckedModeBanner: false,
             home: StreamBuilder<User?>(

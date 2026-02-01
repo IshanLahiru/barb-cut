@@ -50,7 +50,7 @@ class AddStyleCard extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                color: AiColors.textPrimary,
+                color: ThemeAdapter.getTextPrimary(context),
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
               ),
@@ -60,7 +60,10 @@ class AddStyleCard extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 subtitle,
-                style: TextStyle(color: AiColors.textSecondary, fontSize: 12),
+                style: TextStyle(
+                  color: ThemeAdapter.getTextSecondary(context),
+                  fontSize: 12,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),

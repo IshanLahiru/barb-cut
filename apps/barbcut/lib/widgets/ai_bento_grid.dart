@@ -42,7 +42,7 @@ class AiBentoItem {
     required this.title,
     this.subtitle,
     required this.icon,
-    this.accentColor = AiColors.neonCyan,
+    this.accentColor,
     this.onTap,
     this.widthSpan = 1,
     this.heightSpan = 1,
@@ -73,27 +73,32 @@ class _BentoItemWidgetState extends State<_BentoItemWidget> {
           duration: const Duration(milliseconds: 300),
           decoration: BoxDecoration(
             color: widget.item.isHighlight
-                ? AiColors.surface
-                : AiColors.surface.withValues(alpha: 0.6),
+                ? ThemeAdapter.getSurface(context)
+                : ThemeAdapter.getSurface(context).withValues(alpha: 0.6),
             border: Border.all(
               color: _isHovered
-                  ? (widget.item.accentColor ?? AiColors.neonCyan)
-                  : AiColors.borderLight,
+                  ? (widget.item.accentColor ??
+                        Theme.of(context).colorScheme.primary)
+                  : ThemeAdapter.getBorderLight(context),
               width: _isHovered ? 2.0 : 1.5,
             ),
             borderRadius: BorderRadius.circular(14),
             boxShadow: _isHovered
                 ? [
                     BoxShadow(
-                      color: (widget.item.accentColor ?? AiColors.neonCyan)
-                          .withValues(alpha: 0.3),
+                      color:
+                          (widget.item.accentColor ??
+                                  Theme.of(context).colorScheme.primary)
+                              .withValues(alpha: 0.3),
                       blurRadius: 16,
                       offset: const Offset(0, 8),
                     ),
                   ]
                 : [
                     BoxShadow(
-                      color: AiColors.neonCyan.withValues(alpha: 0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -110,7 +115,9 @@ class _BentoItemWidgetState extends State<_BentoItemWidget> {
                   style: const TextStyle(),
                   child: IconTheme(
                     data: IconThemeData(
-                      color: widget.item.accentColor ?? AiColors.neonCyan,
+                      color:
+                          widget.item.accentColor ??
+                          Theme.of(context).colorScheme.primary,
                       size: widget.item.isHighlight ? 48 : 32,
                     ),
                     child: widget.item.icon,
@@ -122,8 +129,8 @@ class _BentoItemWidgetState extends State<_BentoItemWidget> {
                   children: [
                     Text(
                       widget.item.title,
-                      style: const TextStyle(
-                        color: AiColors.textPrimary,
+                      style: TextStyle(
+                        color: ThemeAdapter.getTextPrimary(context),
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.3,
@@ -135,8 +142,8 @@ class _BentoItemWidgetState extends State<_BentoItemWidget> {
                       const SizedBox(height: 4),
                       Text(
                         widget.item.subtitle!,
-                        style: const TextStyle(
-                          color: AiColors.textTertiary,
+                        style: TextStyle(
+                          color: ThemeAdapter.getTextTertiary(context),
                           fontSize: 11,
                           fontWeight: FontWeight.w400,
                         ),
@@ -208,10 +215,10 @@ class _BentoImageTileState extends State<_BentoImageTile> {
   @override
   Widget build(BuildContext context) {
     final accentColors = [
-      AiColors.neonCyan,
-      AiColors.sunsetCoral,
-      AiColors.neonPurple,
-      AiColors.neonCyan,
+      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.secondary,
+      const Color(0xFFB933FF),
+      Theme.of(context).colorScheme.primary,
     ];
     final accent = accentColors[widget.index % accentColors.length];
 
@@ -222,9 +229,9 @@ class _BentoImageTileState extends State<_BentoImageTile> {
         onTap: widget.onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: AiColors.surface,
+            color: ThemeAdapter.getSurface(context),
             border: Border.all(
-              color: _isHovered ? accent : AiColors.borderLight,
+              color: _isHovered ? accent : ThemeAdapter.getBorderLight(context),
               width: _isHovered ? 2.0 : 1.5,
             ),
             borderRadius: BorderRadius.circular(12),
@@ -242,11 +249,13 @@ class _BentoImageTileState extends State<_BentoImageTile> {
             children: [
               // Image placeholder
               Container(
-                color: AiColors.backgroundSecondary,
+                color: ThemeAdapter.getBackgroundSecondary(context),
                 child: Center(
                   child: Icon(
                     Icons.image_outlined,
-                    color: AiColors.textTertiary.withValues(alpha: 0.5),
+                    color: ThemeAdapter.getTextTertiary(
+                      context,
+                    ).withValues(alpha: 0.5),
                     size: 36,
                   ),
                 ),
@@ -255,7 +264,9 @@ class _BentoImageTileState extends State<_BentoImageTile> {
               if (_isHovered)
                 Container(
                   decoration: BoxDecoration(
-                    color: AiColors.backgroundDark.withValues(alpha: 0.5),
+                    color: ThemeAdapter.getBackgroundDark(
+                      context,
+                    ).withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(11),
                   ),
                   child: Center(

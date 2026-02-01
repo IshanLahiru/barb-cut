@@ -69,21 +69,26 @@ class _AiPrimaryButtonState extends State<AiPrimaryButton>
             width: widget.fullWidth ? double.infinity : null,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AiColors.neonCyan, AiColors.neonPurple],
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.secondary,
+                ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: AiColors.neonCyan.withValues(alpha: glowOpacity * 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: glowOpacity * 0.6),
                   blurRadius: 20 + (_animController.value * 10),
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
-                  color: AiColors.sunsetCoral.withValues(
-                    alpha: glowOpacity * 0.4,
-                  ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.secondary.withValues(alpha: glowOpacity * 0.4),
                   blurRadius: 15 + (_animController.value * 8),
                   offset: const Offset(0, 4),
                 ),
@@ -98,13 +103,13 @@ class _AiPrimaryButtonState extends State<AiPrimaryButton>
                   borderRadius: BorderRadius.circular(16),
                   child: Center(
                     child: widget.isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                AiColors.textPrimary,
+                                ThemeAdapter.getTextPrimary(context),
                               ),
                             ),
                           )
@@ -115,15 +120,15 @@ class _AiPrimaryButtonState extends State<AiPrimaryButton>
                               if (widget.icon != null) ...[
                                 Icon(
                                   widget.icon,
-                                  color: AiColors.textPrimary,
+                                  color: ThemeAdapter.getTextPrimary(context),
                                   size: 20,
                                 ),
                                 const SizedBox(width: 8),
                               ],
                               Text(
                                 widget.label,
-                                style: const TextStyle(
-                                  color: AiColors.textPrimary,
+                                style: TextStyle(
+                                  color: ThemeAdapter.getTextPrimary(context),
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: 0.5,
@@ -158,7 +163,7 @@ class AiSecondaryButton extends StatefulWidget {
     this.icon,
     this.height = 48,
     this.fullWidth = true,
-    this.accentColor = AiColors.neonCyan,
+    this.accentColor = const Color(0xFF000000),
   });
 
   @override
@@ -177,7 +182,9 @@ class _AiSecondaryButtonState extends State<AiSecondaryButton> {
         height: widget.height,
         width: widget.fullWidth ? double.infinity : null,
         decoration: BoxDecoration(
-          color: AiColors.surface.withValues(alpha: _isHovered ? 0.8 : 0.6),
+          color: ThemeAdapter.getSurface(
+            context,
+          ).withValues(alpha: _isHovered ? 0.8 : 0.6),
           border: Border.all(
             color: widget.accentColor.withValues(alpha: _isHovered ? 1.0 : 0.5),
             width: 2,
@@ -245,7 +252,7 @@ class AiTextField extends StatefulWidget {
     this.controller,
     this.isMultiline = false,
     this.maxLines = 1,
-    this.accentColor = AiColors.neonCyan,
+    this.accentColor = const Color(0xFF000000),
     this.prefixIcon,
     this.suffixWidget,
     this.onChanged,
@@ -288,7 +295,7 @@ class _AiTextFieldState extends State<AiTextField> {
           child: Text(
             widget.label,
             style: TextStyle(
-              color: AiColors.textPrimary,
+              color: ThemeAdapter.getTextPrimary(context),
               fontSize: 12,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.0,
@@ -298,9 +305,11 @@ class _AiTextFieldState extends State<AiTextField> {
         // Input Field
         Container(
           decoration: BoxDecoration(
-            color: AiColors.surface,
+            color: ThemeAdapter.getSurface(context),
             border: Border.all(
-              color: _isFocused ? widget.accentColor : AiColors.borderLight,
+              color: _isFocused
+                  ? widget.accentColor
+                  : ThemeAdapter.getBorderLight(context),
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(16),
@@ -320,15 +329,15 @@ class _AiTextFieldState extends State<AiTextField> {
             maxLines: widget.isMultiline ? widget.maxLines : 1,
             minLines: widget.isMultiline ? 3 : 1,
             onChanged: widget.onChanged,
-            style: const TextStyle(
-              color: AiColors.textPrimary,
+            style: TextStyle(
+              color: ThemeAdapter.getTextPrimary(context),
               fontSize: 14,
               height: 1.6,
             ),
             decoration: InputDecoration(
               hintText: widget.hintText ?? 'Enter text...',
-              hintStyle: const TextStyle(
-                color: AiColors.textTertiary,
+              hintStyle: TextStyle(
+                color: ThemeAdapter.getTextTertiary(context),
                 fontSize: 14,
               ),
               border: InputBorder.none,
@@ -338,7 +347,7 @@ class _AiTextFieldState extends State<AiTextField> {
                       widget.prefixIcon,
                       color: _isFocused
                           ? widget.accentColor
-                          : AiColors.textTertiary,
+                          : ThemeAdapter.getTextTertiary(context),
                       size: 18,
                     )
                   : null,
