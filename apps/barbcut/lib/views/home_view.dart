@@ -32,6 +32,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   String _panelSearchQuery = '';
   double _panelSlidePosition = 0.0;
   late TabController _tabController;
+  late AnimationController _arrowAnimationController;
   final Random _random = Random();
   late List<double> _haircutHeights;
   late List<double> _beardHeights;
@@ -77,6 +78,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _arrowAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
     _haircuts = List<Map<String, dynamic>>.from(_defaultHaircuts);
     _beardStyles = List<Map<String, dynamic>>.from(_defaultBeardStyles);
     _regenerateHeights();
@@ -988,6 +993,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   @override
   void dispose() {
     _tabController.dispose();
+    _arrowAnimationController.dispose();
     _carouselTimer?.cancel();
     _panelSearchController.dispose();
     super.dispose();
@@ -1092,6 +1098,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               setState(() {
                 _panelSlidePosition = position;
               });
+              // Animate arrow: 0 = up (0.0), 1 = down (1.0)
+              _arrowAnimationController.animateTo(position);
             },
             panelBuilder: (scrollController) => _buildPanel(scrollController),
             body: _buildMainContent(),
@@ -1337,19 +1345,37 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Draggable area (drag handle + padding makes it easy to grab)
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 12),
-            child: Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AdaptiveThemeColors.borderLight(
-                    context,
-                  ).withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(2),
+          // Animated draggable arrow indicator
+          GestureDetector(
+            onTap: () {
+              // Toggle panel state on tap
+              if (_panelController.isAttached) {
+                if (_panelSlidePosition > 0.3) {
+                  _panelController.close();
+                } else {
+                  _panelController.open();
+                }
+              }
+            },
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 2),
+              child: Center(
+                child: AnimatedBuilder(
+                  animation: _arrowAnimationController,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _arrowAnimationController.value * pi,
+                      child: Icon(
+                        Icons.expand_less,
+                        size: 32,
+                        weight: 900,
+                        color: AdaptiveThemeColors.borderLight(
+                          context,
+                        ).withValues(alpha: 0.6),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
