@@ -20,7 +20,9 @@ class StylePreviewCardInline extends StatelessWidget {
             errorBuilder: (context, error, stackTrace) => Container(
               width: 100,
               height: 100,
-              color: ThemeAdapter.getBackgroundSecondary(context).withValues(alpha: 0.5),
+              color: ThemeAdapter.getBackgroundSecondary(
+                context,
+              ).withValues(alpha: 0.5),
               child: Center(
                 child: Icon(
                   Icons.image_not_supported,
@@ -58,7 +60,10 @@ class StylePreviewCardInline extends StatelessWidget {
               SizedBox(height: 2),
               Text(
                 '${style['duration'] ?? 45} mins',
-                style: TextStyle(color: ThemeAdapter.getTextTertiary(context), fontSize: 12),
+                style: TextStyle(
+                  color: ThemeAdapter.getTextTertiary(context),
+                  fontSize: 12,
+                ),
               ),
             ],
           ),

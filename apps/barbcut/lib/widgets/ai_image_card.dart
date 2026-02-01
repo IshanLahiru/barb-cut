@@ -38,7 +38,9 @@ class _AiImageCardState extends State<AiImageCard> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.2),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -67,8 +69,12 @@ class _AiImageCardState extends State<AiImageCard> {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      ThemeAdapter.getBackgroundDark(context).withValues(alpha: 0.4),
-                      ThemeAdapter.getBackgroundDark(context).withValues(alpha: 0.7),
+                      ThemeAdapter.getBackgroundDark(
+                        context,
+                      ).withValues(alpha: 0.4),
+                      ThemeAdapter.getBackgroundDark(
+                        context,
+                      ).withValues(alpha: 0.7),
                     ],
                     stops: const [0.0, 0.6, 1.0],
                   ),
@@ -89,7 +95,9 @@ class _AiImageCardState extends State<AiImageCard> {
               if (_showOverlay)
                 Positioned.fill(
                   child: Container(
-                    color: ThemeAdapter.getBackgroundDark(context).withValues(alpha: 0.7),
+                    color: ThemeAdapter.getBackgroundDark(
+                      context,
+                    ).withValues(alpha: 0.7),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
                       child: Center(

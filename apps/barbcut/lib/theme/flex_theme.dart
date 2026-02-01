@@ -24,16 +24,12 @@ class BarbCutTheme {
       // Status colors - Keep for clarity
       error: const Color(0xFFD94A4A),
       errorContainer: const Color(0xFFFFEBEE),
-      // Neutral colors for light mode
-      outline: const Color(0xFF999999),
-      outlineVariant: const Color(0xFFCCCCCC),
       // Apply surface blend
       appBarStyle: FlexAppBarStyle.primary,
       appBarOpacity: 1.0,
       appBarElevation: 0,
       bottomAppBarElevation: 0,
       tabBarStyle: FlexTabBarStyle.forBackground,
-      navBarStyle: FlexNavBarStyle.material,
       // Text theme adjustments
       textTheme: const TextTheme(
         displayLarge: TextStyle(
@@ -88,13 +84,7 @@ class BarbCutTheme {
           fontWeight: FontWeight.w500,
         ),
       ),
-      // Rounded corners
-      cardRadius: 12.0,
-      dialogRadius: 16.0,
-      dialogElevation: 1,
-      bottomSheetElevation: 1,
-      // Surface blending
-      blendOnColors: false,
+      // Rounded corners configuration handled by app default
     );
   }
 
@@ -113,20 +103,15 @@ class BarbCutTheme {
       // Neutral colors - Grayscale
       surfaceMode: FlexSurfaceMode.level,
       surface: const Color(0xFF1A1A1A),
-      surfaceDim: const Color(0xFF0D0D0D),
       // Status colors
       error: const Color(0xFFFF6B6B),
       errorContainer: const Color(0xFF5A1A1A),
-      // Neutral colors for dark mode
-      outline: const Color(0xFF666666),
-      outlineVariant: const Color(0xFF333333),
       // App bar styling
       appBarStyle: FlexAppBarStyle.background,
       appBarOpacity: 1.0,
       appBarElevation: 0,
       bottomAppBarElevation: 0,
       tabBarStyle: FlexTabBarStyle.forBackground,
-      navBarStyle: FlexNavBarStyle.material,
       // Text theme adjustments
       textTheme: const TextTheme(
         displayLarge: TextStyle(
@@ -181,13 +166,7 @@ class BarbCutTheme {
           fontWeight: FontWeight.w500,
         ),
       ),
-      // Rounded corners
-      cardRadius: 12.0,
-      dialogRadius: 16.0,
-      dialogElevation: 0,
-      bottomSheetElevation: 0,
-      // Surface blending
-      blendOnColors: false,
+      // Rounded corners configuration handled by app default
     );
   }
 }
