@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
 import 'dart:async';
 import 'dart:ui';
-import '../theme/theme.dart';
 import '../core/di/service_locator.dart';
 import '../features/home/domain/entities/style_entity.dart';
 import '../features/home/domain/usecases/get_beard_styles_usecase.dart';
@@ -93,7 +92,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Styles are still loading. Please try again.'),
-          backgroundColor: AdaptiveThemeColors.error(context),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -304,7 +303,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Beard styles are still loading.'),
-          backgroundColor: AdaptiveThemeColors.error(context),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;

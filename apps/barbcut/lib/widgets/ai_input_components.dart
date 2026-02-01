@@ -25,7 +25,7 @@ class _AiPromptChipState extends State<AiPromptChip> {
 
   @override
   Widget build(BuildContext context) {
-    final accent = widget.accentColor ?? AiColors.neonCyan;
+    final accent = widget.accentColor ?? Theme.of(context).colorScheme.primary;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
@@ -36,7 +36,7 @@ class _AiPromptChipState extends State<AiPromptChip> {
           duration: const Duration(milliseconds: 200),
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: AiColors.surface.withValues(alpha: _isHovered ? 1.0 : 0.7),
+            color: ThemeAdapter.getSurface(context).withValues(alpha: _isHovered ? 1.0 : 0.7),
             border: Border.all(
               color: accent.withValues(alpha: _isHovered ? 1.0 : 0.4),
               width: 1.5,
@@ -55,7 +55,7 @@ class _AiPromptChipState extends State<AiPromptChip> {
           child: Text(
             widget.prompt,
             style: TextStyle(
-              color: _isHovered ? accent : AiColors.textSecondary,
+              color: _isHovered ? accent : ThemeAdapter.getTextSecondary(context),
               fontSize: 12,
               fontWeight: FontWeight.w500,
               letterSpacing: 0.3,
@@ -149,17 +149,17 @@ class _AiAspectRatioButtonState extends State<_AiAspectRatioButton> {
       child: Container(
         decoration: BoxDecoration(
           color: widget.isSelected
-              ? AiColors.surface
-              : AiColors.surface.withValues(alpha: 0.5),
+              ? ThemeAdapter.getSurface(context)
+              : ThemeAdapter.getSurface(context).withValues(alpha: 0.5),
           border: Border.all(
-            color: widget.isSelected ? AiColors.neonCyan : AiColors.borderLight,
+            color: widget.isSelected ? Theme.of(context).colorScheme.primary : ThemeAdapter.getBorderLight(context),
             width: widget.isSelected ? 2.0 : 1.5,
           ),
           borderRadius: BorderRadius.circular(12),
           boxShadow: widget.isSelected
               ? [
                   BoxShadow(
-                    color: AiColors.neonCyan.withValues(alpha: 0.3),
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -182,8 +182,8 @@ class _AiAspectRatioButtonState extends State<_AiAspectRatioButton> {
               decoration: BoxDecoration(
                 border: Border.all(
                   color: widget.isSelected
-                      ? AiColors.neonCyan
-                      : AiColors.textTertiary,
+                      ? Theme.of(context).colorScheme.primary
+                      : ThemeAdapter.getTextTertiary(context),
                   width: 1.5,
                 ),
                 borderRadius: BorderRadius.circular(6),
@@ -194,8 +194,8 @@ class _AiAspectRatioButtonState extends State<_AiAspectRatioButton> {
               widget.ratio,
               style: TextStyle(
                 color: widget.isSelected
-                    ? AiColors.neonCyan
-                    : AiColors.textSecondary,
+                    ? Theme.of(context).colorScheme.primary
+                    : ThemeAdapter.getTextSecondary(context),
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),
@@ -229,15 +229,15 @@ class AiGlassCard extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: AiColors.glassLight,
+            color: ThemeAdapter.getSurface(context).withValues(alpha: 0.7),
             border: Border.all(
-              color: accentBorder ?? AiColors.borderGlass,
+              color: accentBorder ?? ThemeAdapter.getBorderColor(context),
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: AiColors.neonCyan.withValues(alpha: 0.1),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),
