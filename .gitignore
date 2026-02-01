@@ -3,6 +3,18 @@ node_modules/
 .pnp
 .pnp.js
 
+# Dart/Flutter
+.dart_tool/
+.packages
+.pub-cache/
+.flutter-plugins
+.flutter-plugins-dependencies
+.fvm/
+lib/generated_plugin_registrant.dart
+
+# Flutter build outputs
+**/build/
+
 # Environment variables
 .env
 .env.local
@@ -15,11 +27,11 @@ coverage/
 
 # Production
 dist/
-build/
 
 # Misc
 .DS_Store
 *.pem
+*.log
 
 # Debug
 npm-debug.log*
@@ -43,4 +55,30 @@ firebase-debug.log
 *.swp
 *.swo
 *~
-.DS_Store
+
+# Android
+**/android/.gradle/
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/**/flutter_export_environment.sh
+
+# iOS
+**/ios/Pods/
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/Flutter.podspec
+**/ios/Runner.xcworkspace/xcuserdata/
+**/ios/Runner.xcodeproj/xcuserdata/
+
+# macOS
+**/macos/Pods/
+**/macos/Flutter/ephemeral/
+**/macos/Flutter/Generated.xcconfig
+**/macos/Flutter/flutter_export_environment.sh
+**/macos/Runner.xcworkspace/xcuserdata/
+**/macos/Runner.xcodeproj/xcuserdata/
+
+# Linux/Windows
+**/linux/flutter/ephemeral/
+**/windows/flutter/ephemeral/

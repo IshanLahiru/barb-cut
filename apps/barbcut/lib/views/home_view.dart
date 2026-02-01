@@ -824,46 +824,48 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           ),
 
           // Image
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: Stack(
-                children: [
-                  Image.network(
-                    style['image'] as String,
-                    height: 120,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => Container(
-                      height: 120,
-                      color: AiColors.backgroundSecondary.withValues(
-                        alpha: 0.5,
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.image_not_supported,
-                          color: AiColors.textTertiary,
-                          size: 32,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            child: AspectRatio(
+              aspectRatio: 2 / 3,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Stack(
+                  children: [
+                    Image.network(
+                      style['image'] as String,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => Container(
+                        color: AiColors.backgroundSecondary.withValues(
+                          alpha: 0.5,
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.image_not_supported,
+                            color: AiColors.textTertiary,
+                            size: 32,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            accentColor.withValues(alpha: 0.15),
-                          ],
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              accentColor.withValues(alpha: 0.15),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -1222,73 +1224,76 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           ],
         ),
       ),
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-              child: Image.network(
-                haircut['image'],
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: accentColor.withValues(alpha: 0.2),
-                    child: Icon(
-                      Icons.image_not_supported,
-                      size: iconSize,
-                      color: accentColor.withValues(alpha: 0.6),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-          // Gradient overlay
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
+      child: AspectRatio(
+        aspectRatio: 2 / 3,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.3),
-                    Colors.black.withValues(alpha: 0.7),
-                  ],
-                  stops: const [0.4, 0.7, 1.0],
+                child: Image.network(
+                  haircut['image'],
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: accentColor.withValues(alpha: 0.2),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: iconSize,
+                        color: accentColor.withValues(alpha: 0.6),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
-          ),
-          // Minimal text overlay
-          Positioned(
-            left: AiSpacing.md,
-            right: AiSpacing.md,
-            bottom: AiSpacing.sm,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  haircut['name'],
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        offset: const Offset(0, 2),
-                        blurRadius: 4,
-                      ),
+            // Gradient overlay
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.3),
+                      Colors.black.withValues(alpha: 0.7),
                     ],
+                    stops: const [0.4, 0.7, 1.0],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ],
+            // Minimal text overlay
+            Positioned(
+              left: AiSpacing.md,
+              right: AiSpacing.md,
+              bottom: AiSpacing.sm,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    haircut['name'],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          offset: const Offset(0, 2),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
 
