@@ -4,39 +4,40 @@ import 'package:flutter/material.dart';
 class CoreColors {
   CoreColors._();
 
-  // Primary palette
-  static const Color primary = Color(0xFF90CAF9);
-  static const Color primaryLight = Color(0xFFBBDEFB);
-  static const Color primaryDark = Color(0xFF42A5F5);
+  // Primary palette - Dark gray
+  static const Color primary = Color(0xFF2D2D2D);
+  static const Color primaryLight = Color(0xFFE0E0E0);
+  static const Color primaryDark = Color(0xFF1A1A1A);
 
   // Accent colors
-  static const Color accent = Color(0xFFD7AC61);
-  static const Color accentBlue = Color(0xFF4A90E2);
-  static const Color accentOrange = Color(0xFFFF6B6B);
+  static const Color accent = Color(0xFF424242);
+  static const Color accentBlue = Color(0xFF616161);
+  static const Color accentOrange = Color(0xFF757575);
+  static const Color accentPurple = Color(0xFF616161);
 
-  // Neutral palette
+  // Neutral palette - Gray
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);
-  static const Color grey50 = Color(0xFFF9FAFB);
-  static const Color grey100 = Color(0xFFF3F4F6);
-  static const Color grey200 = Color(0xFFE5E7EB);
-  static const Color grey300 = Color(0xFFD1D5DB);
-  static const Color grey400 = Color(0xFF9CA3AF);
-  static const Color grey500 = Color(0xFF6B7280);
-  static const Color grey600 = Color(0xFF4B5563);
-  static const Color grey700 = Color(0xFF374151);
-  static const Color grey800 = Color(0xFF1F2937);
-  static const Color grey900 = Color(0xFF111827);
+  static const Color grey50 = Color(0xFFFAFAFA);
+  static const Color grey100 = Color(0xFFF5F5F5);
+  static const Color grey200 = Color(0xFFEEEEEE);
+  static const Color grey300 = Color(0xFFE0E0E0);
+  static const Color grey400 = Color(0xFFBDBDBD);
+  static const Color grey500 = Color(0xFF9E9E9E);
+  static const Color grey600 = Color(0xFF757575);
+  static const Color grey700 = Color(0xFF616161);
+  static const Color grey800 = Color(0xFF424242);
+  static const Color grey900 = Color(0xFF212121);
 
   // Semantic colors
-  static const Color success = Color(0xFF10B981);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color error = Color(0xFFEF4444);
-  static const Color info = Color(0xFF3B82F6);
+  static const Color success = Color(0xFF388E3C);
+  static const Color warning = Color(0xFFF57C00);
+  static const Color error = Color(0xFFD32F2F);
+  static const Color info = Color(0xFF1976D2);
 
   // Light theme colors
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightBackground = Color(0xFFF5F5F5);
+  static const Color lightBackground = Color(0xFFFAFAFA);
   static const Color lightBorder = Color(0xFFE0E0E0);
   static const Color lightShadow = Color(0x1F000000);
   static const Color lightTextPrimary = Color(0xFF212121);
@@ -44,13 +45,13 @@ class CoreColors {
   static const Color lightTextTertiary = Color(0xFF9E9E9E);
 
   // Dark theme colors
-  static const Color darkSurface = Color(0xFF1E1E1E);
+  static const Color darkSurface = Color(0xFF1A1A1A);
   static const Color darkBackground = Color(0xFF121212);
-  static const Color darkBorder = Color(0xFF2C2C2C);
+  static const Color darkBorder = Color(0xFF2D2D2D);
   static const Color darkShadow = Color(0x3F000000);
-  static const Color darkTextPrimary = Color(0xFFFFFFFF);
+  static const Color darkTextPrimary = Color(0xFFE0E0E0);
   static const Color darkTextSecondary = Color(0xFFBDBDBD);
-  static const Color darkTextTertiary = Color(0xFF757575);
+  static const Color darkTextTertiary = Color(0xFF9E9E9E);
 }
 
 /// Get theme-aware colors based on brightness

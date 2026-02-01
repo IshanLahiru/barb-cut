@@ -28,6 +28,10 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  Widget _buildNavIcon(IconData icon, int index) {
+    return Icon(icon);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,29 +50,35 @@ class _MainScreenState extends State<MainScreen> {
           ],
         ),
         child: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.history),
+              icon: _buildNavIcon(Icons.home, 0),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavIcon(Icons.history, 1),
               label: 'History',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag),
+              icon: _buildNavIcon(Icons.shopping_bag, 2),
               label: 'Products',
             ),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+            BottomNavigationBarItem(
+              icon: _buildNavIcon(Icons.person, 3),
+              label: 'Profile',
+            ),
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: AdaptiveThemeColors.neonCyan(context),
-          unselectedItemColor: AdaptiveThemeColors.textSecondary(
-            context,
-          ).withValues(alpha: 0.6),
+          unselectedItemColor: AdaptiveThemeColors.textSecondary(context),
           backgroundColor: AdaptiveThemeColors.backgroundSecondary(context),
           onTap: _onItemTapped,
           showSelectedLabels: false,
           showUnselectedLabels: false,
           type: BottomNavigationBarType.fixed,
           elevation: 0,
+          selectedIconTheme: IconThemeData(size: 28),
+          unselectedIconTheme: IconThemeData(size: 24),
         ),
       ),
     );

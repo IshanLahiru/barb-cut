@@ -15,13 +15,13 @@ class AdaptiveThemeColors {
   // Background colors
   static Color backgroundDeep(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFFF8F9FA),
+    lightColor: const Color(0xFFFAFAFA),
     darkColor: AiColors.backgroundDeep,
   );
 
   static Color backgroundDark(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFFF2F2F2),
+    lightColor: const Color(0xFFF5F5F5),
     darkColor: AiColors.backgroundDark,
   );
 
@@ -40,51 +40,51 @@ class AdaptiveThemeColors {
   // Text colors
   static Color textPrimary(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFF000000),
-    darkColor: AiColors.textPrimary,
+    lightColor: const Color(0xFF212121),
+    darkColor: const Color(0xFFE0E0E0),
   );
 
   static Color textSecondary(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFF4A4A4A),
-    darkColor: AiColors.textSecondary,
+    lightColor: const Color(0xFF616161),
+    darkColor: const Color(0xFFBDBDBD),
   );
 
   static Color textTertiary(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFF7D7D7D),
-    darkColor: AiColors.textTertiary,
+    lightColor: const Color(0xFF9E9E9E),
+    darkColor: const Color(0xFF9E9E9E),
   );
 
   static Color textColor(BuildContext context) => textPrimary(context);
   static Color textDisabled(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFFB3B3B3),
-    darkColor: AiColors.textPrimary,
+    lightColor: const Color(0xFFBDBDBD),
+    darkColor: const Color(0xFF616161),
   );
 
   // Border & divider colors
   static Color border(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFFDCDCDC),
-    darkColor: AiColors.borderLight,
+    lightColor: const Color(0xFFE0E0E0),
+    darkColor: const Color(0xFF424242),
   );
 
   static Color borderLight(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFFE8E8E8),
-    darkColor: AiColors.borderLight,
+    lightColor: const Color(0xFFF5F5F5),
+    darkColor: const Color(0xFF2D2D2D),
   );
 
   static Color borderGlass(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFFE8E8E8),
+    lightColor: const Color(0xFFE0E0E0),
     darkColor: AiColors.borderGlass,
   );
 
   static Color divider(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFFEEEEEE),
+    lightColor: const Color(0xFFF5F5F5),
     darkColor: AiColors.divider,
   );
 
@@ -94,40 +94,40 @@ class AdaptiveThemeColors {
   static Color sunsetCoral(BuildContext context) => AiColors.sunsetCoral;
   static Color primary(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFF2C3E50),
-    darkColor: AiColors.primary,
+    lightColor: const Color(0xFF2D2D2D),
+    darkColor: const Color(0xFFE0E0E0),
   );
 
   // Status colors
   static Color success(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFF27AE60),
-    darkColor: AiColors.success,
+    lightColor: const Color(0xFF388E3C),
+    darkColor: const Color(0xFF66BB6A),
   );
 
   static Color error(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFFE74C3C),
-    darkColor: AiColors.danger,
+    lightColor: const Color(0xFFD32F2F),
+    darkColor: const Color(0xFFEF5350),
   );
 
   static Color warning(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFFF39C12),
-    darkColor: AiColors.warning,
+    lightColor: const Color(0xFFF57C00),
+    darkColor: const Color(0xFFFFB74D),
   );
 
   static Color info(BuildContext context) => _adaptiveColor(
     context,
-    lightColor: const Color(0xFF3498DB),
-    darkColor: AiColors.info,
+    lightColor: const Color(0xFF1976D2),
+    darkColor: const Color(0xFF42A5F5),
   );
 
   // Special colors
   static Color shadow(BuildContext context) => _adaptiveColor(
     context,
     lightColor: const Color(0x0F000000),
-    darkColor: AiColors.borderGlass,
+    darkColor: const Color(0x33000000),
   );
 
   static Color overlay(BuildContext context) => _adaptiveColor(

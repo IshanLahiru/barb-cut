@@ -12,8 +12,8 @@ class ThemeAdapter {
   static Color getBackgroundDark(BuildContext context) {
     final theme = Theme.of(context);
     return theme.brightness == Brightness.dark
-        ? const Color(0xFF0A0E27)
-        : const Color(0xFF0F1419);
+        ? const Color(0xFF121212)
+        : const Color(0xFFF5F5F5);
   }
 
   /// Get text primary color from theme (replaces AiColors.textPrimary)
@@ -23,7 +23,7 @@ class ThemeAdapter {
 
   /// Get text secondary from theme (replaces AiColors.textSecondary)
   static Color getTextSecondary(BuildContext context) {
-    return Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7);
+    return Theme.of(context).colorScheme.onSurface.withAlpha(178);
   }
 
   /// Get text tertiary from theme (replaces AiColors.textTertiary)
@@ -36,12 +36,12 @@ class ThemeAdapter {
     return Theme.of(context).colorScheme.outlineVariant;
   }
 
-  /// Get neon cyan primary accent (FlexColorScheme primary in light mode)
+  /// Get primary accent (Dark gray in new theme)
   static Color getNeonCyan(BuildContext context) {
     return Theme.of(context).colorScheme.primary;
   }
 
-  /// Get accent color from theme
+  /// Get secondary accent (Gray in new theme)
   static Color getAccent(BuildContext context) {
     return Theme.of(context).colorScheme.secondary;
   }
@@ -54,8 +54,8 @@ class ThemeAdapter {
   /// Get background secondary (slightly lighter surface)
   static Color getBackgroundSecondary(BuildContext context) {
     final theme = Theme.of(context);
-    return theme.colorScheme.surface.withValues(
-      alpha: theme.brightness == Brightness.dark ? 0.9 : 0.95,
+    return theme.colorScheme.surface.withAlpha(
+      theme.brightness == Brightness.dark ? 230 : 242,
     );
   }
 

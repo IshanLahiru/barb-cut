@@ -9,11 +9,11 @@ class AiSpacing {
   static const double xxl = 48.0;
   static const double xxxl = 64.0;
   static const double none = 0.0;
-  
+
   static const double radiusLarge = 16.0;
   static const double radiusMedium = 12.0;
   static const double radiusSmall = 8.0;
-  
+
   static const double paddingLarge = 20.0;
   static const double paddingMedium = 16.0;
   static const double paddingSmall = 8.0;

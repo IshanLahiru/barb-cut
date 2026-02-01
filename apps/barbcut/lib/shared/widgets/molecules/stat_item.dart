@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../theme/theme.dart';
 
 class StatItem extends StatelessWidget {
   final String label;
@@ -10,17 +9,12 @@ class StatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: AiSpacing.sm,
-        vertical: AiSpacing.xs,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
-        color: AdaptiveThemeColors.backgroundDark(
-          context,
-        ).withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
-          color: AdaptiveThemeColors.borderLight(context),
+          color: Theme.of(context).colorScheme.outlineVariant,
           width: 1,
         ),
       ),
@@ -29,7 +23,7 @@ class StatItem extends StatelessWidget {
           Text(
             value,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AdaptiveThemeColors.textPrimary(context),
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -38,7 +32,7 @@ class StatItem extends StatelessWidget {
             label,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: AdaptiveThemeColors.textTertiary(context),
+              color: Theme.of(context).colorScheme.outline,
               fontWeight: FontWeight.w600,
             ),
           ),

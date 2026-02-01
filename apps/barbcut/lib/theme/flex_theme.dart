@@ -1,172 +1,68 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
-/// Black and White theme using FlexColorScheme
-/// Minimalist design system for barb-cut application
+/// Professional dark theme using FlexColorScheme
+/// Sleek gray and black design system for barb-cut application
 class BarbCutTheme {
   BarbCutTheme._();
 
-  /// Light theme (White background)
+  /// Light theme with gray tones
   static ThemeData get lightTheme {
     return FlexThemeData.light(
-      scheme: FlexScheme.material,
+      scheme: FlexScheme.greyLaw,
       useMaterial3: true,
-      // Primary colors - Pure black for light theme
-      primary: const Color(0xFF000000),
-      primaryContainer: const Color(0xFF1A1A1A),
-      secondary: const Color(0xFF333333),
-      secondaryContainer: const Color(0xFFE8E8E8),
-      tertiary: const Color(0xFF666666),
-      tertiaryContainer: const Color(0xFFF2F2F2),
-      // Neutral colors - Grayscale
+      // Primary colors - Dark gray
+      primary: const Color(0xFF2D2D2D),
+      primaryContainer: const Color(0xFFE5E5E5),
+      secondary: const Color(0xFF424242),
+      secondaryContainer: const Color(0xFFF5F5F5),
+      tertiary: const Color(0xFF616161),
+      tertiaryContainer: const Color(0xFFEEEEEE),
+      // Neutral colors
       surfaceMode: FlexSurfaceMode.level,
       surface: const Color(0xFFFFFFFF),
-      // Status colors - Keep for clarity
-      error: const Color(0xFFD94A4A),
+      // Status colors
+      error: const Color(0xFFD32F2F),
       errorContainer: const Color(0xFFFFEBEE),
-      // Apply surface blend
+      // App bar styling
       appBarStyle: FlexAppBarStyle.primary,
       appBarOpacity: 1.0,
       appBarElevation: 0,
       bottomAppBarElevation: 0,
       tabBarStyle: FlexTabBarStyle.forBackground,
-      // Text theme adjustments
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
-          color: Color(0xFF000000),
-          fontWeight: FontWeight.bold,
-        ),
-        displayMedium: TextStyle(
-          color: Color(0xFF000000),
-          fontWeight: FontWeight.bold,
-        ),
-        displaySmall: TextStyle(
-          color: Color(0xFF000000),
-          fontWeight: FontWeight.bold,
-        ),
-        headlineLarge: TextStyle(
-          color: Color(0xFF000000),
-          fontWeight: FontWeight.bold,
-        ),
-        headlineMedium: TextStyle(
-          color: Color(0xFF000000),
-          fontWeight: FontWeight.w600,
-        ),
-        headlineSmall: TextStyle(
-          color: Color(0xFF000000),
-          fontWeight: FontWeight.w600,
-        ),
-        titleLarge: TextStyle(
-          color: Color(0xFF000000),
-          fontWeight: FontWeight.w600,
-        ),
-        titleMedium: TextStyle(
-          color: Color(0xFF000000),
-          fontWeight: FontWeight.w500,
-        ),
-        titleSmall: TextStyle(
-          color: Color(0xFF000000),
-          fontWeight: FontWeight.w500,
-        ),
-        bodyLarge: TextStyle(color: Color(0xFF333333)),
-        bodyMedium: TextStyle(color: Color(0xFF333333)),
-        bodySmall: TextStyle(color: Color(0xFF666666)),
-        labelLarge: TextStyle(
-          color: Color(0xFF000000),
-          fontWeight: FontWeight.w600,
-        ),
-        labelMedium: TextStyle(
-          color: Color(0xFF333333),
-          fontWeight: FontWeight.w500,
-        ),
-        labelSmall: TextStyle(
-          color: Color(0xFF666666),
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      // Rounded corners configuration handled by app default
+      // Minimal surface tint
+      surfaceTint: const Color(0xFF2D2D2D),
+      blendLevel: 8,
     );
   }
 
-  /// Dark theme (Black background)
+  /// Dark theme with deep black and gray
   static ThemeData get darkTheme {
     return FlexThemeData.dark(
-      scheme: FlexScheme.material,
+      scheme: FlexScheme.greyLaw,
       useMaterial3: true,
-      // Primary colors - Pure white for dark theme
-      primary: const Color(0xFFFFFFFF),
-      primaryContainer: const Color(0xFFE8E8E8),
-      secondary: const Color(0xFFCCCCCC),
-      secondaryContainer: const Color(0xFF333333),
-      tertiary: const Color(0xFF999999),
+      // Primary colors - Light gray on dark
+      primary: const Color(0xFFE0E0E0),
+      primaryContainer: const Color(0xFF424242),
+      secondary: const Color(0xFFBDBDBD),
+      secondaryContainer: const Color(0xFF2D2D2D),
+      tertiary: const Color(0xFF9E9E9E),
       tertiaryContainer: const Color(0xFF1A1A1A),
-      // Neutral colors - Grayscale
+      // Neutral colors - Deep black
       surfaceMode: FlexSurfaceMode.level,
-      surface: const Color(0xFF1A1A1A),
+      surface: const Color(0xFF121212),
       // Status colors
-      error: const Color(0xFFFF6B6B),
-      errorContainer: const Color(0xFF5A1A1A),
+      error: const Color(0xFFEF5350),
+      errorContainer: const Color(0xFF5D1F1F),
       // App bar styling
       appBarStyle: FlexAppBarStyle.background,
       appBarOpacity: 1.0,
       appBarElevation: 0,
       bottomAppBarElevation: 0,
       tabBarStyle: FlexTabBarStyle.forBackground,
-      // Text theme adjustments
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
-          color: Color(0xFFFFFFFF),
-          fontWeight: FontWeight.bold,
-        ),
-        displayMedium: TextStyle(
-          color: Color(0xFFFFFFFF),
-          fontWeight: FontWeight.bold,
-        ),
-        displaySmall: TextStyle(
-          color: Color(0xFFFFFFFF),
-          fontWeight: FontWeight.bold,
-        ),
-        headlineLarge: TextStyle(
-          color: Color(0xFFFFFFFF),
-          fontWeight: FontWeight.bold,
-        ),
-        headlineMedium: TextStyle(
-          color: Color(0xFFFFFFFF),
-          fontWeight: FontWeight.w600,
-        ),
-        headlineSmall: TextStyle(
-          color: Color(0xFFFFFFFF),
-          fontWeight: FontWeight.w600,
-        ),
-        titleLarge: TextStyle(
-          color: Color(0xFFFFFFFF),
-          fontWeight: FontWeight.w600,
-        ),
-        titleMedium: TextStyle(
-          color: Color(0xFFFFFFFF),
-          fontWeight: FontWeight.w500,
-        ),
-        titleSmall: TextStyle(
-          color: Color(0xFFCCCCCC),
-          fontWeight: FontWeight.w500,
-        ),
-        bodyLarge: TextStyle(color: Color(0xFFCCCCCC)),
-        bodyMedium: TextStyle(color: Color(0xFFCCCCCC)),
-        bodySmall: TextStyle(color: Color(0xFF999999)),
-        labelLarge: TextStyle(
-          color: Color(0xFF000000),
-          fontWeight: FontWeight.w600,
-        ),
-        labelMedium: TextStyle(
-          color: Color(0xFF1A1A1A),
-          fontWeight: FontWeight.w500,
-        ),
-        labelSmall: TextStyle(
-          color: Color(0xFF333333),
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      // Rounded corners configuration handled by app default
+      // Minimal surface tint
+      surfaceTint: const Color(0xFFE0E0E0),
+      blendLevel: 8,
     );
   }
 }

@@ -1370,9 +1370,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         Icons.expand_less,
                         size: 32,
                         weight: 900,
-                        color: AdaptiveThemeColors.borderLight(
-                          context,
-                        ).withValues(alpha: 0.6),
+                        color: Colors.grey[400],
                       ),
                     );
                   },
@@ -1380,19 +1378,40 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               ),
             ),
           ),
-          TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(text: 'Hair'),
-              Tab(text: 'Beard'),
-            ],
-            labelColor: AdaptiveThemeColors.neonCyan(context),
-            unselectedLabelColor: AdaptiveThemeColors.textTertiary(context),
-            labelStyle: Theme.of(context).textTheme.titleMedium,
-            unselectedLabelStyle: Theme.of(context).textTheme.titleMedium,
-            indicatorSize: TabBarIndicatorSize.label,
-            indicatorColor: AdaptiveThemeColors.neonCyan(context),
-            dividerColor: AdaptiveThemeColors.borderLight(context),
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: AdaptiveThemeColors.borderLight(context),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'Hair'),
+                Tab(text: 'Beard'),
+              ],
+              labelColor: AdaptiveThemeColors.neonCyan(context),
+              unselectedLabelColor: AdaptiveThemeColors.textSecondary(context),
+              labelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                fontSize: 16,
+              ),
+              unselectedLabelStyle: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
+              indicatorSize: TabBarIndicatorSize.label,
+              indicator: UnderlineTabIndicator(
+                borderSide: BorderSide(
+                  color: AdaptiveThemeColors.neonCyan(context),
+                  width: 4,
+                ),
+                insets: EdgeInsets.symmetric(horizontal: 16),
+              ),
+              dividerColor: Colors.transparent,
+            ),
           ),
           AnimatedSize(
             duration: const Duration(milliseconds: 400),
@@ -1680,80 +1699,120 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         (item['accentColor'] as Color?) ??
         AdaptiveThemeColors.neonCyan(context);
 
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        height: height,
         decoration: BoxDecoration(
           border: isSelected
-              ? Border.all(
-                  color: AdaptiveThemeColors.neonCyan(context),
-                  width: 3,
-                )
-              : null,
+              ? Border.all(color: Colors.white.withValues(alpha: 0.3), width: 3)
+              : Border.all(color: Colors.transparent, width: 3),
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
         ),
-        child: Stack(
-          children: [
-            SizedBox(
-              height: height,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                child: _buildCarouselCard(
-                  haircut: item,
-                  accentColor: accentColor,
-                  itemIndex: itemIndex,
-                  iconSize: 120,
-                ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge - 3),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Image
+              Image.network(
+                item['image'],
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: accentColor.withValues(alpha: 0.2),
+                    child: Icon(
+                      Icons.image_not_supported,
+                      size: 80,
+                      color: accentColor.withValues(alpha: 0.6),
+                    ),
+                  );
+                },
               ),
-            ),
-            if (isSelected)
+              // Bottom gradient with name
               Positioned(
-                bottom: 12,
-                left: 12,
-                right: 12,
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (_tabController.index == 0) {
-                        _confirmedHaircutIndex = itemIndex;
-                        // If beard is already confirmed, go directly to confirmation dialog
-                        if (_confirmedBeardIndex != null) {
-                          _showConfirmationDialog();
-                        } else {
-                          _onTryThisPressed();
-                        }
-                      } else {
-                        _confirmedBeardIndex = itemIndex;
-                        // If haircut is already confirmed, go directly to confirmation dialog
-                        if (_confirmedHaircutIndex != null) {
-                          _showConfirmationDialog();
-                        } else {
-                          _showBeardSelectionPrompt();
-                        }
-                      }
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AdaptiveThemeColors.neonCyan(context),
-                    foregroundColor: AdaptiveThemeColors.backgroundDeep(
-                      context,
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        AiSpacing.radiusMedium,
-                      ),
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.8),
+                      ],
                     ),
                   ),
-                  child: Text(
-                    'Try This',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        item['name'],
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (isSelected) ...[
+                        SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                if (_tabController.index == 0) {
+                                  _confirmedHaircutIndex = itemIndex;
+                                  if (_confirmedBeardIndex != null) {
+                                    _showConfirmationDialog();
+                                  } else {
+                                    _onTryThisPressed();
+                                  }
+                                } else {
+                                  _confirmedBeardIndex = itemIndex;
+                                  if (_confirmedHaircutIndex != null) {
+                                    _showConfirmationDialog();
+                                  } else {
+                                    _showBeardSelectionPrompt();
+                                  }
+                                }
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AdaptiveThemeColors.neonCyan(
+                                context,
+                              ),
+                              foregroundColor: Colors.black,
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              'Try This',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );
