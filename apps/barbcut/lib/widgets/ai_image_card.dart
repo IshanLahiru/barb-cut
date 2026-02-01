@@ -38,7 +38,7 @@ class _AiImageCardState extends State<AiImageCard> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AiColors.neonCyan.withValues(alpha: 0.2),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -50,11 +50,11 @@ class _AiImageCardState extends State<AiImageCard> {
             children: [
               // Background Image
               Container(
-                color: AiColors.surface,
+                color: ThemeAdapter.getSurface(context),
                 child: Center(
                   child: Icon(
                     Icons.image_outlined,
-                    color: AiColors.textTertiary,
+                    color: ThemeAdapter.getTextTertiary(context),
                     size: 48,
                   ),
                 ),
@@ -67,8 +67,8 @@ class _AiImageCardState extends State<AiImageCard> {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      AiColors.backgroundDark.withValues(alpha: 0.4),
-                      AiColors.backgroundDark.withValues(alpha: 0.7),
+                      ThemeAdapter.getBackgroundDark(context).withValues(alpha: 0.4),
+                      ThemeAdapter.getBackgroundDark(context).withValues(alpha: 0.7),
                     ],
                     stops: const [0.0, 0.6, 1.0],
                   ),
@@ -89,7 +89,7 @@ class _AiImageCardState extends State<AiImageCard> {
               if (_showOverlay)
                 Positioned.fill(
                   child: Container(
-                    color: AiColors.backgroundDark.withValues(alpha: 0.7),
+                    color: ThemeAdapter.getBackgroundDark(context).withValues(alpha: 0.7),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
                       child: Center(

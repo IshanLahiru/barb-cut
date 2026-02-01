@@ -20,11 +20,11 @@ class StylePreviewCardInline extends StatelessWidget {
             errorBuilder: (context, error, stackTrace) => Container(
               width: 100,
               height: 100,
-              color: AiColors.backgroundSecondary.withValues(alpha: 0.5),
+              color: ThemeAdapter.getBackgroundSecondary(context).withValues(alpha: 0.5),
               child: Center(
                 child: Icon(
                   Icons.image_not_supported,
-                  color: AiColors.textTertiary,
+                  color: ThemeAdapter.getTextTertiary(context),
                   size: 32,
                 ),
               ),
@@ -39,7 +39,7 @@ class StylePreviewCardInline extends StatelessWidget {
               Text(
                 style['name'] as String,
                 style: TextStyle(
-                  color: AiColors.textPrimary,
+                  color: ThemeAdapter.getTextPrimary(context),
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
                 ),
@@ -58,7 +58,7 @@ class StylePreviewCardInline extends StatelessWidget {
               SizedBox(height: 2),
               Text(
                 '${style['duration'] ?? 45} mins',
-                style: TextStyle(color: AiColors.textTertiary, fontSize: 12),
+                style: TextStyle(color: ThemeAdapter.getTextTertiary(context), fontSize: 12),
               ),
             ],
           ),

@@ -36,21 +36,57 @@ class BarbCutTheme {
       navBarStyle: FlexNavBarStyle.material,
       // Text theme adjustments
       textTheme: const TextTheme(
-        displayLarge: TextStyle(color: Color(0xFF000000), fontWeight: FontWeight.bold),
-        displayMedium: TextStyle(color: Color(0xFF000000), fontWeight: FontWeight.bold),
-        displaySmall: TextStyle(color: Color(0xFF000000), fontWeight: FontWeight.bold),
-        headlineLarge: TextStyle(color: Color(0xFF000000), fontWeight: FontWeight.bold),
-        headlineMedium: TextStyle(color: Color(0xFF000000), fontWeight: FontWeight.w600),
-        headlineSmall: TextStyle(color: Color(0xFF000000), fontWeight: FontWeight.w600),
-        titleLarge: TextStyle(color: Color(0xFF000000), fontWeight: FontWeight.w600),
-        titleMedium: TextStyle(color: Color(0xFF000000), fontWeight: FontWeight.w500),
-        titleSmall: TextStyle(color: Color(0xFF000000), fontWeight: FontWeight.w500),
+        displayLarge: TextStyle(
+          color: Color(0xFF000000),
+          fontWeight: FontWeight.bold,
+        ),
+        displayMedium: TextStyle(
+          color: Color(0xFF000000),
+          fontWeight: FontWeight.bold,
+        ),
+        displaySmall: TextStyle(
+          color: Color(0xFF000000),
+          fontWeight: FontWeight.bold,
+        ),
+        headlineLarge: TextStyle(
+          color: Color(0xFF000000),
+          fontWeight: FontWeight.bold,
+        ),
+        headlineMedium: TextStyle(
+          color: Color(0xFF000000),
+          fontWeight: FontWeight.w600,
+        ),
+        headlineSmall: TextStyle(
+          color: Color(0xFF000000),
+          fontWeight: FontWeight.w600,
+        ),
+        titleLarge: TextStyle(
+          color: Color(0xFF000000),
+          fontWeight: FontWeight.w600,
+        ),
+        titleMedium: TextStyle(
+          color: Color(0xFF000000),
+          fontWeight: FontWeight.w500,
+        ),
+        titleSmall: TextStyle(
+          color: Color(0xFF000000),
+          fontWeight: FontWeight.w500,
+        ),
         bodyLarge: TextStyle(color: Color(0xFF333333)),
         bodyMedium: TextStyle(color: Color(0xFF333333)),
         bodySmall: TextStyle(color: Color(0xFF666666)),
-        labelLarge: TextStyle(color: Color(0xFF000000), fontWeight: FontWeight.w600),
-        labelMedium: TextStyle(color: Color(0xFF333333), fontWeight: FontWeight.w500),
-        labelSmall: TextStyle(color: Color(0xFF666666), fontWeight: FontWeight.w500),
+        labelLarge: TextStyle(
+          color: Color(0xFF000000),
+          fontWeight: FontWeight.w600,
+        ),
+        labelMedium: TextStyle(
+          color: Color(0xFF333333),
+          fontWeight: FontWeight.w500,
+        ),
+        labelSmall: TextStyle(
+          color: Color(0xFF666666),
+          fontWeight: FontWeight.w500,
+        ),
       ),
       // Rounded corners
       cardRadius: 12.0,
@@ -93,21 +129,57 @@ class BarbCutTheme {
       navBarStyle: FlexNavBarStyle.material,
       // Text theme adjustments
       textTheme: const TextTheme(
-        displayLarge: TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.bold),
-        displayMedium: TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.bold),
-        displaySmall: TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.bold),
-        headlineLarge: TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.bold),
-        headlineMedium: TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.w600),
-        headlineSmall: TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.w600),
-        titleLarge: TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.w600),
-        titleMedium: TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.w500),
-        titleSmall: TextStyle(color: Color(0xFFCCCCCC), fontWeight: FontWeight.w500),
+        displayLarge: TextStyle(
+          color: Color(0xFFFFFFFF),
+          fontWeight: FontWeight.bold,
+        ),
+        displayMedium: TextStyle(
+          color: Color(0xFFFFFFFF),
+          fontWeight: FontWeight.bold,
+        ),
+        displaySmall: TextStyle(
+          color: Color(0xFFFFFFFF),
+          fontWeight: FontWeight.bold,
+        ),
+        headlineLarge: TextStyle(
+          color: Color(0xFFFFFFFF),
+          fontWeight: FontWeight.bold,
+        ),
+        headlineMedium: TextStyle(
+          color: Color(0xFFFFFFFF),
+          fontWeight: FontWeight.w600,
+        ),
+        headlineSmall: TextStyle(
+          color: Color(0xFFFFFFFF),
+          fontWeight: FontWeight.w600,
+        ),
+        titleLarge: TextStyle(
+          color: Color(0xFFFFFFFF),
+          fontWeight: FontWeight.w600,
+        ),
+        titleMedium: TextStyle(
+          color: Color(0xFFFFFFFF),
+          fontWeight: FontWeight.w500,
+        ),
+        titleSmall: TextStyle(
+          color: Color(0xFFCCCCCC),
+          fontWeight: FontWeight.w500,
+        ),
         bodyLarge: TextStyle(color: Color(0xFFCCCCCC)),
         bodyMedium: TextStyle(color: Color(0xFFCCCCCC)),
         bodySmall: TextStyle(color: Color(0xFF999999)),
-        labelLarge: TextStyle(color: Color(0xFF000000), fontWeight: FontWeight.w600),
-        labelMedium: TextStyle(color: Color(0xFF1A1A1A), fontWeight: FontWeight.w500),
-        labelSmall: TextStyle(color: Color(0xFF333333), fontWeight: FontWeight.w500),
+        labelLarge: TextStyle(
+          color: Color(0xFF000000),
+          fontWeight: FontWeight.w600,
+        ),
+        labelMedium: TextStyle(
+          color: Color(0xFF1A1A1A),
+          fontWeight: FontWeight.w500,
+        ),
+        labelSmall: TextStyle(
+          color: Color(0xFF333333),
+          fontWeight: FontWeight.w500,
+        ),
       ),
       // Rounded corners
       cardRadius: 12.0,

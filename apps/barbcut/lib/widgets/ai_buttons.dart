@@ -79,14 +79,16 @@ class _AiPrimaryButtonState extends State<AiPrimaryButton>
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: glowOpacity * 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: glowOpacity * 0.6),
                   blurRadius: 20 + (_animController.value * 10),
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.secondary.withValues(
-                    alpha: glowOpacity * 0.4,
-                  ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.secondary.withValues(alpha: glowOpacity * 0.4),
                   blurRadius: 15 + (_animController.value * 8),
                   offset: const Offset(0, 4),
                 ),
@@ -180,7 +182,9 @@ class _AiSecondaryButtonState extends State<AiSecondaryButton> {
         height: widget.height,
         width: widget.fullWidth ? double.infinity : null,
         decoration: BoxDecoration(
-          color: ThemeAdapter.getSurface(context).withValues(alpha: _isHovered ? 0.8 : 0.6),
+          color: ThemeAdapter.getSurface(
+            context,
+          ).withValues(alpha: _isHovered ? 0.8 : 0.6),
           border: Border.all(
             color: widget.accentColor.withValues(alpha: _isHovered ? 1.0 : 0.5),
             width: 2,
@@ -303,7 +307,9 @@ class _AiTextFieldState extends State<AiTextField> {
           decoration: BoxDecoration(
             color: ThemeAdapter.getSurface(context),
             border: Border.all(
-              color: _isFocused ? widget.accentColor : ThemeAdapter.getBorderLight(context),
+              color: _isFocused
+                  ? widget.accentColor
+                  : ThemeAdapter.getBorderLight(context),
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(16),

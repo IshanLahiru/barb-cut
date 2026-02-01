@@ -36,7 +36,9 @@ class _AiPromptChipState extends State<AiPromptChip> {
           duration: const Duration(milliseconds: 200),
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: ThemeAdapter.getSurface(context).withValues(alpha: _isHovered ? 1.0 : 0.7),
+            color: ThemeAdapter.getSurface(
+              context,
+            ).withValues(alpha: _isHovered ? 1.0 : 0.7),
             border: Border.all(
               color: accent.withValues(alpha: _isHovered ? 1.0 : 0.4),
               width: 1.5,
@@ -55,7 +57,9 @@ class _AiPromptChipState extends State<AiPromptChip> {
           child: Text(
             widget.prompt,
             style: TextStyle(
-              color: _isHovered ? accent : ThemeAdapter.getTextSecondary(context),
+              color: _isHovered
+                  ? accent
+                  : ThemeAdapter.getTextSecondary(context),
               fontSize: 12,
               fontWeight: FontWeight.w500,
               letterSpacing: 0.3,
@@ -152,14 +156,18 @@ class _AiAspectRatioButtonState extends State<_AiAspectRatioButton> {
               ? ThemeAdapter.getSurface(context)
               : ThemeAdapter.getSurface(context).withValues(alpha: 0.5),
           border: Border.all(
-            color: widget.isSelected ? Theme.of(context).colorScheme.primary : ThemeAdapter.getBorderLight(context),
+            color: widget.isSelected
+                ? Theme.of(context).colorScheme.primary
+                : ThemeAdapter.getBorderLight(context),
             width: widget.isSelected ? 2.0 : 1.5,
           ),
           borderRadius: BorderRadius.circular(12),
           boxShadow: widget.isSelected
               ? [
                   BoxShadow(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -237,7 +245,9 @@ class AiGlassCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),

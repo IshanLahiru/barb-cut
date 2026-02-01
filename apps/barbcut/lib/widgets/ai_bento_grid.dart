@@ -77,7 +77,8 @@ class _BentoItemWidgetState extends State<_BentoItemWidget> {
                 : ThemeAdapter.getSurface(context).withValues(alpha: 0.6),
             border: Border.all(
               color: _isHovered
-                  ? (widget.item.accentColor ?? Theme.of(context).colorScheme.primary)
+                  ? (widget.item.accentColor ??
+                        Theme.of(context).colorScheme.primary)
                   : ThemeAdapter.getBorderLight(context),
               width: _isHovered ? 2.0 : 1.5,
             ),
@@ -85,15 +86,19 @@ class _BentoItemWidgetState extends State<_BentoItemWidget> {
             boxShadow: _isHovered
                 ? [
                     BoxShadow(
-                      color: (widget.item.accentColor ?? Theme.of(context).colorScheme.primary)
-                          .withValues(alpha: 0.3),
+                      color:
+                          (widget.item.accentColor ??
+                                  Theme.of(context).colorScheme.primary)
+                              .withValues(alpha: 0.3),
                       blurRadius: 16,
                       offset: const Offset(0, 8),
                     ),
                   ]
                 : [
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -110,7 +115,9 @@ class _BentoItemWidgetState extends State<_BentoItemWidget> {
                   style: const TextStyle(),
                   child: IconTheme(
                     data: IconThemeData(
-                      color: widget.item.accentColor ?? Theme.of(context).colorScheme.primary,
+                      color:
+                          widget.item.accentColor ??
+                          Theme.of(context).colorScheme.primary,
                       size: widget.item.isHighlight ? 48 : 32,
                     ),
                     child: widget.item.icon,
@@ -246,7 +253,9 @@ class _BentoImageTileState extends State<_BentoImageTile> {
                 child: Center(
                   child: Icon(
                     Icons.image_outlined,
-                    color: ThemeAdapter.getTextTertiary(context).withValues(alpha: 0.5),
+                    color: ThemeAdapter.getTextTertiary(
+                      context,
+                    ).withValues(alpha: 0.5),
                     size: 36,
                   ),
                 ),
@@ -255,7 +264,9 @@ class _BentoImageTileState extends State<_BentoImageTile> {
               if (_isHovered)
                 Container(
                   decoration: BoxDecoration(
-                    color: ThemeAdapter.getBackgroundDark(context).withValues(alpha: 0.5),
+                    color: ThemeAdapter.getBackgroundDark(
+                      context,
+                    ).withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(11),
                   ),
                   child: Center(
