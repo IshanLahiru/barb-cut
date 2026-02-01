@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+export 'flex_theme.dart';
 
 // ============================================================================
 // COLORS - AI Design System
