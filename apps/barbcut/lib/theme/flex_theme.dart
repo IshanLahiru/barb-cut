@@ -44,10 +44,14 @@ class BarbCutTheme {
       // Primary colors - Light gray on dark
       primary: const Color(0xFFE0E0E0),
       primaryContainer: const Color(0xFF424242),
+      // Light mode reference colors for "fixed" colors
+      primaryLightRef: const Color(0xFF2D2D2D),
       secondary: const Color(0xFFBDBDBD),
       secondaryContainer: const Color(0xFF2D2D2D),
+      secondaryLightRef: const Color(0xFF424242),
       tertiary: const Color(0xFF9E9E9E),
       tertiaryContainer: const Color(0xFF1A1A1A),
+      tertiaryLightRef: const Color(0xFF616161),
       // Neutral colors - Deep black
       surfaceMode: FlexSurfaceMode.level,
       surface: const Color(0xFF121212),

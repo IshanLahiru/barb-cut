@@ -46,7 +46,6 @@ class _HistoryViewState extends State<HistoryView> {
             'haircut': item.haircut,
             'beard': item.beard,
             'timestamp': item.timestamp,
-            'accentColor': item.accentColor,
           },
         )
         .toList();
@@ -192,15 +191,6 @@ class _HistoryViewState extends State<HistoryView> {
                   ).withValues(alpha: 0.2),
                   width: 1.5,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AdaptiveThemeColors.neonCyan(
-                      context,
-                    ).withValues(alpha: 0.1),
-                    blurRadius: 30,
-                    spreadRadius: 10,
-                  ),
-                ],
               ),
               child: Icon(
                 Icons.history_rounded,
@@ -252,7 +242,7 @@ class _HistoryViewState extends State<HistoryView> {
     double height,
   ) {
     final accentColor =
-        (item['accentColor'] as Color?) ??
+        // Using general color:
         AdaptiveThemeColors.neonCyan(context);
 
     return GestureDetector(
@@ -264,14 +254,6 @@ class _HistoryViewState extends State<HistoryView> {
           height: height,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-            boxShadow: [
-              BoxShadow(
-                color: accentColor.withValues(alpha: 0.2),
-                blurRadius: 20,
-                spreadRadius: 2,
-                offset: const Offset(0, 8),
-              ),
-            ],
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
@@ -441,7 +423,7 @@ class _HistoryViewState extends State<HistoryView> {
           builder: (context, setState) {
             final Map<String, dynamic> activeItem = previewItems[activeIndex];
             final accentColor =
-                (activeItem['accentColor'] as Color?) ??
+                // Using general color:
                 AdaptiveThemeColors.neonCyan(context);
             final double screenHeight = MediaQuery.of(context).size.height;
             final double screenWidth = MediaQuery.of(context).size.width;
@@ -553,7 +535,7 @@ class _HistoryViewState extends State<HistoryView> {
                                   final Map<String, dynamic> carouselItem =
                                       entry.value;
                                   final Color itemAccentColor =
-                                      (carouselItem['accentColor'] as Color?) ??
+                                      // Using general color:
                                       AdaptiveThemeColors.neonCyan(context);
 
                                   return GestureDetector(
@@ -684,13 +666,6 @@ class _HistoryViewState extends State<HistoryView> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
         border: Border.all(color: accentColor.withValues(alpha: 0.3), width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: accentColor.withValues(alpha: 0.2),
-            blurRadius: 20,
-            spreadRadius: 5,
-          ),
-        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AiSpacing.radiusLarge - 2),
@@ -759,7 +734,7 @@ class _HistoryViewState extends State<HistoryView> {
                 itemBuilder: (context, index) {
                   final Map<String, dynamic> item = items[index];
                   final Color accentColor =
-                      (item['accentColor'] as Color?) ??
+                      // Using general color:
                       AdaptiveThemeColors.neonCyan(context);
 
                   return Center(

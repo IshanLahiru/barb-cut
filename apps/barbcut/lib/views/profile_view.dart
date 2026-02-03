@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../controllers/auth_controller.dart';
+import 'package:provider/provider.dart';
+import '../controllers/theme_controller.dart';
 import '../theme/theme.dart';
-import '../shared/widgets/molecules/stat_item.dart';
 import '../core/di/service_locator.dart';
 import '../features/profile/domain/entities/profile_entity.dart';
 import '../features/profile/domain/usecases/get_profile_usecase.dart';
 import '../features/profile/presentation/bloc/profile_bloc.dart';
 import '../features/profile/presentation/bloc/profile_event.dart';
 import '../features/profile/presentation/bloc/profile_state.dart';
-import 'appearance_view.dart';
+
 import 'questionnaire_view.dart';
 
 class ProfileView extends StatefulWidget {
@@ -23,17 +22,11 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   String _username = 'Loading...';
   String _email = 'Loading...';
-  int _appointmentsCount = 0;
-  int _favoritesCount = 0;
-  double _averageRating = 0.0;
 
   void _updateProfileData(ProfileEntity profile) {
     setState(() {
       _username = profile.username;
       _email = profile.email;
-      _appointmentsCount = profile.appointmentsCount;
-      _favoritesCount = profile.favoritesCount;
-      _averageRating = profile.averageRating;
     });
   }
 
@@ -55,8 +48,24 @@ class _ProfileViewState extends State<ProfileView> {
             backgroundColor: AdaptiveThemeColors.backgroundDark(context),
             elevation: 0,
             toolbarHeight: 48,
+            leading: IconButton(
+              icon: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AdaptiveThemeColors.backgroundSecondary(context),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 16,
+                  color: AdaptiveThemeColors.textPrimary(context),
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
             title: Text(
-              'Profile',
+              'Settings',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: AdaptiveThemeColors.textPrimary(context),
                 fontWeight: FontWeight.w800,
@@ -69,256 +78,71 @@ class _ProfileViewState extends State<ProfileView> {
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.all(AiSpacing.lg),
             children: [
-              // Profile header card
-              Container(
-                padding: EdgeInsets.all(AiSpacing.lg),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      AdaptiveThemeColors.backgroundSecondary(context),
-                      AdaptiveThemeColors.surface(context),
-                    ],
+              _buildProfileCard(context),
+              SizedBox(height: AiSpacing.lg),
+              _buildSectionLabel(context, 'Other settings'),
+              SizedBox(height: AiSpacing.sm),
+              _buildSettingsGroup(
+                context,
+                children: [
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.person_outline_rounded,
+                    title: 'Profile details',
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const QuestionnaireView(),
+                        ),
+                      );
+                    },
                   ),
-                  borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                  border: Border.all(
-                    color: AdaptiveThemeColors.borderLight(
-                      context,
-                    ).withValues(alpha: 0.2),
-                    width: 1.5,
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.lock_rounded,
+                    title: 'Password',
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AdaptiveThemeColors.neonCyan(
-                        context,
-                      ).withValues(alpha: 0.08),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.notifications_rounded,
+                    title: 'Notifications',
+                  ),
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.dark_mode_rounded,
+                    title: 'Dark mode',
+                    trailing: Switch.adaptive(
+                      value: context.watch<ThemeController>().isDarkMode,
+                      onChanged: (value) {
+                        context.read<ThemeController>().toggleDarkMode(value);
+                      },
                     ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    // Avatar and name
-                    Row(
-                      children: [
-                        Container(
-                          width: 64,
-                          height: 64,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AdaptiveThemeColors.neonCyan(
-                                  context,
-                                ).withValues(alpha: 0.3),
-                                AdaptiveThemeColors.neonPurple(
-                                  context,
-                                ).withValues(alpha: 0.3),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(
-                              AiSpacing.radiusLarge,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AdaptiveThemeColors.neonCyan(
-                                  context,
-                                ).withValues(alpha: 0.2),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            Icons.person_rounded,
-                            size: 32,
-                            color: AdaptiveThemeColors.neonCyan(context),
-                          ),
-                        ),
-                        SizedBox(width: AiSpacing.md),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _username,
-                                style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(
-                                      color: AdaptiveThemeColors.textPrimary(
-                                        context,
-                                      ),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(height: AiSpacing.xs),
-                              Text(
-                                _email,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: AdaptiveThemeColors.textTertiary(
-                                        context,
-                                      ),
-                                      fontSize: 12,
-                                    ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: AiSpacing.lg),
-                    Divider(
-                      color: AdaptiveThemeColors.borderLight(
-                        context,
-                      ).withValues(alpha: 0.2),
-                      height: 1,
-                    ),
-                    SizedBox(height: AiSpacing.md),
-                    // Stats
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildStatItem(
-                          context,
-                          'Appointments',
-                          '$_appointmentsCount',
-                          AdaptiveThemeColors.neonCyan(context),
-                        ),
-                        Container(
-                          width: 1,
-                          height: 40,
-                          color: AdaptiveThemeColors.borderLight(
-                            context,
-                          ).withValues(alpha: 0.2),
-                        ),
-                        _buildStatItem(
-                          context,
-                          'Favorites',
-                          '$_favoritesCount',
-                          AdaptiveThemeColors.neonPurple(context),
-                        ),
-                        Container(
-                          width: 1,
-                          height: 40,
-                          color: AdaptiveThemeColors.borderLight(
-                            context,
-                          ).withValues(alpha: 0.2),
-                        ),
-                        _buildStatItem(
-                          context,
-                          'Rating',
-                          _averageRating.toStringAsFixed(1),
-                          AdaptiveThemeColors.sunsetCoral(context),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              SizedBox(height: AiSpacing.xl),
-
-              // Account section
-              _buildSectionHeader(context, 'ACCOUNT'),
-              SizedBox(height: AiSpacing.md),
-              _buildMenuItem(
+              SizedBox(height: AiSpacing.lg),
+              _buildSettingsGroup(
                 context,
-                icon: Icons.edit_rounded,
-                title: 'Edit Profile',
-                accentColor: AdaptiveThemeColors.neonCyan(context),
+                children: [
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.info_outline_rounded,
+                    title: 'About application',
+                  ),
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.help_outline_rounded,
+                    title: 'Help/FAQ',
+                  ),
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.delete_outline_rounded,
+                    title: 'Deactivate my account',
+                    isDestructive: true,
+                  ),
+                ],
               ),
-              SizedBox(height: AiSpacing.sm),
-              _buildMenuItem(
-                context,
-                icon: Icons.quiz_rounded,
-                title: 'My Profile & Photos',
-                accentColor: AdaptiveThemeColors.neonPurple(context),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const QuestionnaireView(),
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: AiSpacing.sm),
-              _buildMenuItem(
-                context,
-                icon: Icons.payment_rounded,
-                title: 'Payment Methods',
-                accentColor: AdaptiveThemeColors.sunsetCoral(context),
-              ),
-              SizedBox(height: AiSpacing.sm),
-              _buildMenuItem(
-                context,
-                icon: Icons.history_rounded,
-                title: 'Appointments',
-                accentColor: AdaptiveThemeColors.neonCyan(context),
-              ),
-
-              SizedBox(height: AiSpacing.xl),
-
-              // Settings section
-              _buildSectionHeader(context, 'SETTINGS'),
-              SizedBox(height: AiSpacing.md),
-              _buildMenuItem(
-                context,
-                icon: Icons.notifications_rounded,
-                title: 'Notifications',
-                accentColor: AdaptiveThemeColors.neonCyan(context),
-              ),
-              SizedBox(height: AiSpacing.sm),
-              _buildMenuItem(
-                context,
-                icon: Icons.lock_rounded,
-                title: 'Privacy & Security',
-                accentColor: AdaptiveThemeColors.sunsetCoral(context),
-              ),
-              SizedBox(height: AiSpacing.sm),
-              _buildMenuItem(
-                context,
-                icon: Icons.palette_rounded,
-                title: 'Appearance',
-                accentColor: AdaptiveThemeColors.neonPurple(context),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const AppearanceView()),
-                  );
-                },
-              ),
-              SizedBox(height: AiSpacing.sm),
-              _buildMenuItem(
-                context,
-                icon: Icons.help_outline_rounded,
-                title: 'Help & Support',
-                accentColor: AdaptiveThemeColors.neonCyan(context),
-              ),
-              SizedBox(height: AiSpacing.sm),
-              _buildMenuItem(
-                context,
-                icon: Icons.person_outline_rounded,
-                title: 'User Details',
-                accentColor: AdaptiveThemeColors.neonPurple(context),
-                onTap: () => _showUserDetailsDialog(context),
-              ),
-
-              SizedBox(height: AiSpacing.xl),
-
-              // Sign out button
-              _buildMenuItem(
-                context,
-                icon: Icons.logout_rounded,
-                title: 'Sign Out',
-                accentColor: AdaptiveThemeColors.error(context),
-                isDestructive: true,
-                onTap: () => context.read<AuthController>().logout(),
-              ),
+              SizedBox(height: AiSpacing.lg),
             ],
           ),
         ),
@@ -326,360 +150,164 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title) {
-    return Padding(
-      padding: EdgeInsets.only(left: AiSpacing.xs),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: AdaptiveThemeColors.textTertiary(context),
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.2,
-          fontSize: 11,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatItem(
-    BuildContext context,
-    String label,
-    String value,
-    Color accentColor,
-  ) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: accentColor,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        SizedBox(height: AiSpacing.xs),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: AdaptiveThemeColors.textTertiary(context),
-            fontSize: 11,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMenuItem(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required Color accentColor,
-    bool isDestructive = false,
-    VoidCallback? onTap,
-  }) {
+  Widget _buildProfileCard(BuildContext context) {
     return Container(
+      padding: EdgeInsets.all(AiSpacing.lg),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AdaptiveThemeColors.backgroundSecondary(context),
-            AdaptiveThemeColors.surface(context).withValues(alpha: 0.5),
-          ],
-        ),
+        color: AdaptiveThemeColors.surface(context),
         borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-        border: Border.all(
-          color: isDestructive
-              ? AdaptiveThemeColors.error(context).withValues(alpha: 0.3)
-              : accentColor.withValues(alpha: 0.15),
-          width: 1,
-        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: AiSpacing.md,
-              vertical: AiSpacing.md,
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: AdaptiveThemeColors.backgroundSecondary(context),
+            child: Icon(
+              Icons.person_rounded,
+              color: AdaptiveThemeColors.textPrimary(context),
             ),
-            child: Row(
+          ),
+          SizedBox(width: AiSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: EdgeInsets.all(AiSpacing.sm),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        accentColor.withValues(alpha: 0.2),
-                        accentColor.withValues(alpha: 0.1),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-                    border: Border.all(
-                      color: accentColor.withValues(alpha: 0.3),
-                      width: 1,
-                    ),
+                Text(
+                  _username,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AdaptiveThemeColors.textPrimary(context),
+                    fontWeight: FontWeight.w700,
                   ),
-                  child: Icon(
-                    icon,
-                    size: 20,
-                    color: isDestructive
-                        ? AdaptiveThemeColors.error(context)
-                        : accentColor,
-                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(width: AiSpacing.md),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: isDestructive
-                          ? AdaptiveThemeColors.error(context)
-                          : AdaptiveThemeColors.textPrimary(context),
-                      fontWeight: FontWeight.w600,
-                    ),
+                SizedBox(height: 2),
+                Text(
+                  _email,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AdaptiveThemeColors.textTertiary(context),
                   ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  size: 20,
-                  color: AdaptiveThemeColors.textTertiary(
-                    context,
-                  ).withValues(alpha: 0.5),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
-        ),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: AdaptiveThemeColors.textTertiary(context),
+          ),
+        ],
       ),
     );
   }
 
-  void _showUserDetailsDialog(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AdaptiveThemeColors.surface(context),
-                  AdaptiveThemeColors.backgroundSecondary(context),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-              border: Border.all(
-                color: AdaptiveThemeColors.borderLight(
-                  context,
-                ).withValues(alpha: 0.3),
-                width: 1.5,
-              ),
-            ),
-            child: Container(
-              padding: EdgeInsets.all(AiSpacing.lg),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    Row(
-                      children: [
-                        Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AdaptiveThemeColors.neonCyan(
-                                  context,
-                                ).withValues(alpha: 0.3),
-                                AdaptiveThemeColors.neonPurple(
-                                  context,
-                                ).withValues(alpha: 0.3),
-                              ],
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.person_rounded,
-                            color: AdaptiveThemeColors.neonCyan(dialogContext),
-                            size: 18,
-                          ),
-                        ),
-                        SizedBox(width: AiSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            'User Details',
-                            style: Theme.of(dialogContext).textTheme.titleLarge
-                                ?.copyWith(
-                                  color: AdaptiveThemeColors.textPrimary(
-                                    dialogContext,
-                                  ),
-                                  fontWeight: FontWeight.w700,
-                                ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.close_rounded,
-                            color: AdaptiveThemeColors.textSecondary(
-                              dialogContext,
-                            ),
-                          ),
-                          onPressed: () => Navigator.pop(dialogContext),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(
-                            minWidth: 40,
-                            minHeight: 40,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: AiSpacing.md),
-                    Divider(
-                      color: AdaptiveThemeColors.borderLight(
-                        dialogContext,
-                      ).withValues(alpha: 0.2),
-                    ),
-                    SizedBox(height: AiSpacing.md),
-
-                    // User details
-                    _buildDetailRow(
-                      dialogContext,
-                      'Display Name',
-                      user?.displayName ?? 'N/A',
-                    ),
-                    SizedBox(height: AiSpacing.md),
-                    _buildDetailRow(
-                      dialogContext,
-                      'Email',
-                      user?.email ?? 'N/A',
-                    ),
-                    SizedBox(height: AiSpacing.md),
-                    _buildDetailRow(
-                      dialogContext,
-                      'User ID',
-                      user?.uid ?? 'N/A',
-                    ),
-                    SizedBox(height: AiSpacing.md),
-                    _buildDetailRow(
-                      dialogContext,
-                      'Email Verified',
-                      user?.emailVerified == true ? 'Yes' : 'No',
-                    ),
-                    SizedBox(height: AiSpacing.md),
-                    _buildDetailRow(
-                      dialogContext,
-                      'Phone',
-                      user?.phoneNumber ?? 'Not set',
-                    ),
-                    SizedBox(height: AiSpacing.md),
-                    _buildDetailRow(
-                      dialogContext,
-                      'Account Created',
-                      user?.metadata?.creationTime
-                              ?.toString()
-                              .split('.')
-                              .first ??
-                          'N/A',
-                    ),
-
-                    SizedBox(height: AiSpacing.xl),
-
-                    // Close button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AdaptiveThemeColors.neonCyan(
-                            dialogContext,
-                          ),
-                          foregroundColor: AdaptiveThemeColors.backgroundDeep(
-                            dialogContext,
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: AiSpacing.md),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              AiSpacing.radiusMedium,
-                            ),
-                          ),
-                          elevation: 0,
-                        ),
-                        onPressed: () => Navigator.pop(dialogContext),
-                        child: Text(
-                          'Close',
-                          style: Theme.of(dialogContext).textTheme.labelLarge
-                              ?.copyWith(
-                                color: AdaptiveThemeColors.backgroundDeep(
-                                  dialogContext,
-                                ),
-                                fontWeight: FontWeight.w700,
-                              ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+  Widget _buildSectionLabel(BuildContext context, String label) {
+    return Text(
+      label,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: AdaptiveThemeColors.textTertiary(context),
+        fontWeight: FontWeight.w600,
+      ),
     );
   }
 
-  Widget _buildDetailRow(BuildContext context, String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: AdaptiveThemeColors.textTertiary(context),
-            fontWeight: FontWeight.w600,
-            fontSize: 11,
+  Widget _buildSettingsGroup(
+    BuildContext context, {
+    required List<Widget> children,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AdaptiveThemeColors.surface(context),
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-        ),
-        SizedBox(height: AiSpacing.xs),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(AiSpacing.sm),
-          decoration: BoxDecoration(
-            color: AdaptiveThemeColors.backgroundSecondary(
+        ],
+      ),
+      child: Column(children: _buildSeparatedTiles(children)),
+    );
+  }
+
+  List<Widget> _buildSeparatedTiles(List<Widget> tiles) {
+    final List<Widget> separated = [];
+    for (int i = 0; i < tiles.length; i++) {
+      separated.add(tiles[i]);
+      if (i < tiles.length - 1) {
+        separated.add(
+          Divider(
+            height: 1,
+            color: AdaptiveThemeColors.borderLight(
               context,
-            ).withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
-            border: Border.all(
-              color: AdaptiveThemeColors.borderLight(
-                context,
-              ).withValues(alpha: 0.2),
-              width: 1,
-            ),
+            ).withValues(alpha: 0.2),
           ),
-          child: Text(
-            value,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AdaptiveThemeColors.textPrimary(context),
-              fontFamily: 'monospace',
-              fontSize: 12,
-            ),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
+        );
+      }
+    }
+    return separated;
+  }
+
+  Widget _buildSettingsTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    Widget? trailing,
+    bool isDestructive = false,
+    VoidCallback? onTap,
+  }) {
+    final Color textColor = isDestructive
+        ? AdaptiveThemeColors.error(context)
+        : AdaptiveThemeColors.textPrimary(context);
+    final Color iconColor = isDestructive
+        ? AdaptiveThemeColors.error(context)
+        : AdaptiveThemeColors.textSecondary(context);
+
+    return InkWell(
+      onTap: trailing == null ? onTap : null,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AiSpacing.lg,
+          vertical: AiSpacing.md,
         ),
-      ],
+        child: Row(
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: AdaptiveThemeColors.backgroundSecondary(context),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 18, color: iconColor),
+            ),
+            SizedBox(width: AiSpacing.md),
+            Expanded(
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: textColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            trailing ??
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: AdaptiveThemeColors.textTertiary(context),
+                ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -57,7 +57,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             'duration': style.duration,
             'description': style.description,
             'image': style.imageUrl,
-            'accentColor': style.accentColor,
           },
         )
         .toList();
@@ -1163,7 +1162,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           final int itemIndex = entry.key;
                           final Map<String, dynamic> haircut = entry.value;
                           final Color accentColor =
-                              (haircut['accentColor'] as Color?) ??
+                              // Using general color:
                               AdaptiveThemeColors.neonCyan(context);
                           final List<Map<String, dynamic>> carouselItems =
                               _haircuts.take(4).toList();
@@ -1709,7 +1708,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required double height,
   }) {
     final Color accentColor =
-        (item['accentColor'] as Color?) ??
+        // Using general color:
         AdaptiveThemeColors.neonCyan(context);
 
     return GestureDetector(
@@ -1854,7 +1853,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 itemBuilder: (context, index) {
                   final Map<String, dynamic> item = items[index];
                   final Color accentColor =
-                      (item['accentColor'] as Color?) ??
+                      // Using general color:
                       AdaptiveThemeColors.neonCyan(context);
 
                   return Center(

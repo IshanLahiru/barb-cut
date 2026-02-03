@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 enum StyleType { haircut, beard }
 
 class StyleEntity {
@@ -8,7 +6,6 @@ class StyleEntity {
   final String duration;
   final String description;
   final String imageUrl;
-  final Color accentColor;
   final StyleType type;
 
   const StyleEntity({
@@ -17,7 +14,6 @@ class StyleEntity {
     required this.duration,
     required this.description,
     required this.imageUrl,
-    required this.accentColor,
     required this.type,
   });
 }

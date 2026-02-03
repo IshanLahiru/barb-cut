@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../theme/theme.dart';
 import '../core/di/service_locator.dart';
 import '../features/products/domain/entities/product_entity.dart';
@@ -18,7 +19,6 @@ class ProductsView extends StatefulWidget {
 class _ProductsViewState extends State<ProductsView> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  int? _selectedProductIndex;
   String _selectedCategory = 'All';
 
   late List<Map<String, dynamic>> _products;
@@ -39,8 +39,8 @@ class _ProductsViewState extends State<ProductsView> {
             'price': product.price,
             'rating': product.rating,
             'description': product.description,
+            'image': product.imageUrl,
             'icon': product.icon,
-            'accentColor': product.accentColor,
           },
         )
         .toList();
@@ -61,6 +61,14 @@ class _ProductsViewState extends State<ProductsView> {
           ),
         )
         .toList();
+
+    final width = MediaQuery.of(context).size.width;
+    int crossAxisCount = 2;
+    if (width >= 1100) {
+      crossAxisCount = 4;
+    } else if (width >= 820) {
+      crossAxisCount = 3;
+    }
 
     return BlocProvider(
       create: (_) =>
@@ -221,23 +229,27 @@ class _ProductsViewState extends State<ProductsView> {
                 Expanded(
                   child: filteredProducts.isEmpty
                       ? _buildEmptyState(context)
-                      : ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          padding: EdgeInsets.all(AiSpacing.lg),
-                          itemCount: filteredProducts.length,
-                          itemBuilder: (context, index) {
-                            final product = filteredProducts[index];
-                            final isSelected = _selectedProductIndex == index;
-                            return Padding(
-                              padding: EdgeInsets.only(bottom: AiSpacing.md),
-                              child: _buildProductCard(
-                                context,
-                                product,
-                                isSelected,
-                                index,
-                              ),
-                            );
-                          },
+                      : Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            AiSpacing.md,
+                            AiSpacing.sm,
+                            AiSpacing.md,
+                            AiSpacing.md,
+                          ),
+                          child: MasonryGridView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            gridDelegate:
+                                SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: crossAxisCount,
+                                ),
+                            itemCount: filteredProducts.length,
+                            mainAxisSpacing: AiSpacing.md,
+                            crossAxisSpacing: AiSpacing.md,
+                            itemBuilder: (context, index) {
+                              final product = filteredProducts[index];
+                              return _buildProductTile(context, product, index);
+                            },
+                          ),
                         ),
                 ),
               ],
@@ -335,226 +347,106 @@ class _ProductsViewState extends State<ProductsView> {
     );
   }
 
-  Widget _buildProductCard(
+  Widget _buildProductTile(
     BuildContext context,
     Map<String, dynamic> product,
-    bool isSelected,
     int index,
   ) {
     final Color accentColor =
-        (product['accentColor'] as Color?) ??
+        // Using general color:
         AdaptiveThemeColors.neonCyan(context);
 
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _selectedProductIndex = isSelected ? null : index;
-        });
+        _showProductDetailsDialog(context, product);
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeInOut,
+      child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AdaptiveThemeColors.backgroundSecondary(context),
-              AdaptiveThemeColors.surface(context),
-            ],
-          ),
           borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-          border: Border.all(
-            color: isSelected
-                ? accentColor.withValues(alpha: 0.5)
-                : AdaptiveThemeColors.borderLight(
-                    context,
-                  ).withValues(alpha: 0.2),
-            width: isSelected ? 2 : 1.5,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isSelected
-                  ? accentColor.withValues(alpha: 0.2)
-                  : Colors.transparent,
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          color: AdaptiveThemeColors.backgroundDark(context),
         ),
-        child: Padding(
-          padding: EdgeInsets.all(AiSpacing.md),
-          child: Row(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Product icon
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      accentColor.withValues(alpha: 0.2),
-                      accentColor.withValues(alpha: 0.1),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-                  border: Border.all(
-                    color: accentColor.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Icon(
-                  product['icon'] as IconData? ?? Icons.shopping_bag,
-                  color: accentColor,
-                  size: 28,
+              AspectRatio(
+                aspectRatio: 2 / 3,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.network(
+                      product['image'] as String,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: accentColor.withValues(alpha: 0.2),
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 48,
+                            color: accentColor.withValues(alpha: 0.6),
+                          ),
+                        );
+                      },
+                    ),
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withValues(alpha: 0.5),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: AiSpacing.md,
+                      right: AiSpacing.md,
+                      bottom: AiSpacing.sm,
+                      child: Text(
+                        product['name'] as String,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(width: AiSpacing.md),
-              // Product details
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              Padding(
+                padding: const EdgeInsets.all(AiSpacing.md),
+                child: Row(
                   children: [
                     Text(
-                      product['name'] as String,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      '₹${product['price']}',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         color: AdaptiveThemeColors.textPrimary(context),
                         fontWeight: FontWeight.w700,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: AiSpacing.xs),
+                    const Spacer(),
+                    Icon(
+                      Icons.star_rounded,
+                      size: 14,
+                      color: AdaptiveThemeColors.sunsetCoral(context),
+                    ),
+                    const SizedBox(width: 2),
                     Text(
-                      product['description'] as String,
+                      '${product['rating']}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AdaptiveThemeColors.textSecondary(context),
+                        fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: AiSpacing.sm),
-                    Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: AiSpacing.sm,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: accentColor.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color: accentColor.withValues(alpha: 0.4),
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            '₹${product['price']}',
-                            style: Theme.of(context).textTheme.labelSmall
-                                ?.copyWith(
-                                  color: accentColor,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 12,
-                                ),
-                          ),
-                        ),
-                        SizedBox(width: AiSpacing.sm),
-                        Icon(
-                          Icons.star_rounded,
-                          size: 14,
-                          color: AdaptiveThemeColors.sunsetCoral(context),
-                        ),
-                        const SizedBox(width: 2),
-                        Text(
-                          '${product['rating']}',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: AdaptiveThemeColors.textSecondary(
-                                  context,
-                                ),
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12,
-                              ),
-                        ),
-                      ],
-                    ),
-                    if (isSelected) ...[
-                      SizedBox(height: AiSpacing.md),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: () {
-                                // View details
-                              },
-                              icon: Icon(Icons.visibility_outlined, size: 16),
-                              label: Text(
-                                'View',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: accentColor,
-                                side: BorderSide(
-                                  color: accentColor.withValues(alpha: 0.5),
-                                  width: 1.5,
-                                ),
-                                padding: EdgeInsets.symmetric(vertical: 8),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    AiSpacing.radiusMedium,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: AiSpacing.sm),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      '${product['name']} added to cart!',
-                                    ),
-                                    backgroundColor:
-                                        AdaptiveThemeColors.success(context),
-                                    duration: const Duration(
-                                      milliseconds: 1500,
-                                    ),
-                                    behavior: SnackBarBehavior.floating,
-                                  ),
-                                );
-                                setState(() {
-                                  _selectedProductIndex = null;
-                                });
-                              },
-                              icon: Icon(Icons.add_shopping_cart, size: 16),
-                              label: Text(
-                                'Add',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: accentColor,
-                                foregroundColor:
-                                    AdaptiveThemeColors.backgroundDeep(context),
-                                padding: EdgeInsets.symmetric(vertical: 8),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    AiSpacing.radiusMedium,
-                                  ),
-                                ),
-                                elevation: 0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                   ],
                 ),
               ),
@@ -562,6 +454,194 @@ class _ProductsViewState extends State<ProductsView> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showProductDetailsDialog(
+    BuildContext context,
+    Map<String, dynamic> product,
+  ) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        final Color accentColor =
+            // Using general color:
+            AdaptiveThemeColors.neonCyan(dialogContext);
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.all(AiSpacing.lg),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 520),
+            decoration: BoxDecoration(
+              color: AdaptiveThemeColors.backgroundDark(
+                dialogContext,
+              ).withValues(alpha: 0.95),
+              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(AiSpacing.radiusLarge),
+                    ),
+                    child: AspectRatio(
+                      aspectRatio: 2 / 3,
+                      child: Image.network(
+                        product['image'] as String,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, error, stackTrace) {
+                          return Container(
+                            color: accentColor.withValues(alpha: 0.2),
+                            child: Icon(
+                              Icons.image_not_supported,
+                              size: 64,
+                              color: accentColor.withValues(alpha: 0.6),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(AiSpacing.lg),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product['name'] as String,
+                          style: Theme.of(dialogContext).textTheme.titleLarge
+                              ?.copyWith(
+                                color: AdaptiveThemeColors.textPrimary(
+                                  dialogContext,
+                                ),
+                                fontWeight: FontWeight.w800,
+                              ),
+                        ),
+                        SizedBox(height: AiSpacing.xs),
+                        Row(
+                          children: [
+                            Text(
+                              '₹${product['price']}',
+                              style: Theme.of(dialogContext)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    color: accentColor,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                            ),
+                            const SizedBox(width: 12),
+                            Icon(
+                              Icons.star_rounded,
+                              size: 16,
+                              color: AdaptiveThemeColors.sunsetCoral(
+                                dialogContext,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${product['rating']}',
+                              style: Theme.of(dialogContext).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: AdaptiveThemeColors.textSecondary(
+                                      dialogContext,
+                                    ),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: AiSpacing.md),
+                        Text(
+                          product['description'] as String,
+                          style: Theme.of(dialogContext).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: AdaptiveThemeColors.textSecondary(
+                                  dialogContext,
+                                ),
+                              ),
+                        ),
+                        SizedBox(height: AiSpacing.lg),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () => Navigator.pop(dialogContext),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor:
+                                      AdaptiveThemeColors.textSecondary(
+                                        dialogContext,
+                                      ),
+                                  side: BorderSide(
+                                    color: AdaptiveThemeColors.borderLight(
+                                      dialogContext,
+                                    ).withValues(alpha: 0.4),
+                                    width: 1.5,
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: AiSpacing.md,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      AiSpacing.radiusMedium,
+                                    ),
+                                  ),
+                                ),
+                                child: Text('Close'),
+                              ),
+                            ),
+                            SizedBox(width: AiSpacing.md),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(dialogContext);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        '${product['name']} ready to buy now!',
+                                      ),
+                                      backgroundColor:
+                                          AdaptiveThemeColors.success(context),
+                                      duration: const Duration(
+                                        milliseconds: 1500,
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: accentColor,
+                                  foregroundColor:
+                                      AdaptiveThemeColors.backgroundDeep(
+                                        dialogContext,
+                                      ),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: AiSpacing.md,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      AiSpacing.radiusMedium,
+                                    ),
+                                  ),
+                                ),
+                                child: Text('Buy Now'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
