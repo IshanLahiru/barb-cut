@@ -1165,6 +1165,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           final Color accentColor =
                               (haircut['accentColor'] as Color?) ??
                               AdaptiveThemeColors.neonCyan(context);
+                          final List<Map<String, dynamic>> carouselItems =
+                              _haircuts.take(4).toList();
 
                           return Align(
                             alignment: Alignment.center,
@@ -1174,6 +1176,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               itemIndex: itemIndex,
                               iconSize: iconSize,
                               isGenerating: _isGenerating,
+                              allItems: carouselItems,
                             ),
                           );
                         }).toList(),
@@ -1215,92 +1218,102 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required int itemIndex,
     required double iconSize,
     bool isGenerating = false,
+    List<Map<String, dynamic>>? allItems,
   }) {
-    Widget cardContent = Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: AiSpacing.sm,
-        vertical: AiSpacing.sm,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            accentColor.withValues(alpha: 0.2),
-            accentColor.withValues(alpha: 0.05),
-          ],
+    Widget cardContent = GestureDetector(
+      onTap: allItems != null
+          ? () => _showFullScreenGallery(
+              context,
+              allItems,
+              initialIndex: itemIndex,
+            )
+          : null,
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: AiSpacing.sm,
+          vertical: AiSpacing.sm,
         ),
-      ),
-      child: AspectRatio(
-        aspectRatio: 2 / 3,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                child: Image.network(
-                  haircut['image'],
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: accentColor.withValues(alpha: 0.2),
-                      child: Icon(
-                        Icons.image_not_supported,
-                        size: iconSize,
-                        color: accentColor.withValues(alpha: 0.6),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            // Gradient overlay
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              accentColor.withValues(alpha: 0.2),
+              accentColor.withValues(alpha: 0.05),
+            ],
+          ),
+        ),
+        child: AspectRatio(
+          aspectRatio: 2 / 3,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: ClipRRect(
                   borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.3),
-                      Colors.black.withValues(alpha: 0.7),
-                    ],
-                    stops: const [0.4, 0.7, 1.0],
+                  child: Image.network(
+                    haircut['image'],
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: accentColor.withValues(alpha: 0.2),
+                        child: Icon(
+                          Icons.image_not_supported,
+                          size: iconSize,
+                          color: accentColor.withValues(alpha: 0.6),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
-            ),
-            // Minimal text overlay
-            Positioned(
-              left: AiSpacing.md,
-              right: AiSpacing.md,
-              bottom: AiSpacing.sm,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    haircut['name'],
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withValues(alpha: 0.5),
-                          offset: const Offset(0, 2),
-                          blurRadius: 4,
-                        ),
+              // Gradient overlay
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.3),
+                        Colors.black.withValues(alpha: 0.7),
                       ],
+                      stops: const [0.4, 0.7, 1.0],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+              // Minimal text overlay
+              Positioned(
+                left: AiSpacing.md,
+                right: AiSpacing.md,
+                bottom: AiSpacing.sm,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      haircut['name'],
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withValues(alpha: 0.5),
+                            offset: const Offset(0, 2),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1815,6 +1828,76 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           ),
         ),
       ),
+    );
+  }
+
+  void _showFullScreenGallery(
+    BuildContext context,
+    List<Map<String, dynamic>> items, {
+    int initialIndex = 0,
+  }) {
+    final PageController controller = PageController(initialPage: initialIndex);
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withValues(alpha: 0.85),
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.zero,
+          child: Stack(
+            children: [
+              PageView.builder(
+                controller: controller,
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final Map<String, dynamic> item = items[index];
+                  final Color accentColor =
+                      (item['accentColor'] as Color?) ??
+                      AdaptiveThemeColors.neonCyan(context);
+
+                  return Center(
+                    child: InteractiveViewer(
+                      minScale: 1,
+                      maxScale: 3,
+                      child: Image.network(
+                        item['image'] as String,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 320,
+                            width: 240,
+                            decoration: BoxDecoration(
+                              color: accentColor.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusLarge,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.image_not_supported,
+                              size: 80,
+                              color: accentColor,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+              Positioned(
+                top: 24,
+                right: 24,
+                child: IconButton(
+                  icon: Icon(Icons.close_rounded, color: Colors.white),
+                  onPressed: () => Navigator.pop(dialogContext),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
