@@ -1,0 +1,177 @@
+[
+  {
+    "name": "Classic Fade",
+    "price": "$25",
+    "duration": "30 min",
+    "description": "A timeless fade that never goes out of style",
+    "image": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Buzz Cut",
+    "price": "$15",
+    "duration": "15 min",
+    "description": "Clean and simple, perfect for low maintenance",
+    "image": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Pompadour",
+    "price": "$32",
+    "duration": "35 min",
+    "description": "Bold and stylish with volume on top",
+    "image": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Undercut",
+    "price": "$30",
+    "duration": "35 min",
+    "description": "Modern and edgy with short sides",
+    "image": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Crew Cut",
+    "price": "$20",
+    "duration": "20 min",
+    "description": "Professional and neat for any occasion",
+    "image": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Slicked Back",
+    "price": "$28",
+    "duration": "32 min",
+    "description": "Sleek and polished for a sophisticated look",
+    "image": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Textured Top",
+    "price": "$32",
+    "duration": "38 min",
+    "description": "Messy texture with clean sides",
+    "image": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Quiff",
+    "price": "$30",
+    "duration": "35 min",
+    "description": "Voluminous front with tapered sides",
+    "image": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Fade",
+    "price": "$26",
+    "duration": "30 min",
+    "description": "Fades down to skin with length on top",
+    "image": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Mid Fade",
+    "price": "$26",
+    "duration": "30 min",
+    "description": "Fade starts at mid-head height",
+    "image": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "High Fade",
+    "price": "$28",
+    "duration": "32 min",
+    "description": "Fade starts higher for more contrast",
+    "image": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Skin Fade",
+    "price": "$30",
+    "duration": "35 min",
+    "description": "Clean fade all the way to skin",
+    "image": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Temple Fade",
+    "price": "$25",
+    "duration": "28 min",
+    "description": "Fade concentrated around temples",
+    "image": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Side Part",
+    "price": "$24",
+    "duration": "27 min",
+    "description": "Classic side part with defined line",
+    "image": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Curly Top",
+    "price": "$32",
+    "duration": "40 min",
+    "description": "Embraces natural curls with clean sides",
+    "image": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Afro",
+    "price": "$28",
+    "duration": "35 min",
+    "description": "Full and voluminous natural afro",
+    "image": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Box Braids",
+    "price": "$40",
+    "duration": "90 min",
+    "description": "Intricate protective braided style",
+    "image": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Twists",
+    "price": "$38",
+    "duration": "75 min",
+    "description": "Twisted locks with defined pattern",
+    "image": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Cornrows",
+    "price": "$35",
+    "duration": "60 min",
+    "description": "Neat rows of braids close to scalp",
+    "image": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Dreadlocks",
+    "price": "$50",
+    "duration": "120 min",
+    "description": "Signature locked and twisted style",
+    "image": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Man Bun",
+    "price": "$22",
+    "duration": "25 min",
+    "description": "Long hair styled into a top knot",
+    "image": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Long & Layered",
+    "price": "$35",
+    "duration": "45 min",
+    "description": "Strategic layers for movement and flow",
+    "image": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Mohawk",
+    "price": "$35",
+    "duration": "40 min",
+    "description": "Bold statement with tall center strip",
+    "image": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Spiky",
+    "price": "$24",
+    "duration": "28 min",
+    "description": "Sharp and edgy spikes throughout",
+    "image": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "French Crop",
+    "price": "$26",
+    "duration": "31 min",
+    "description": "Short with textured fringe on top",
+    "image": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+  }
+]

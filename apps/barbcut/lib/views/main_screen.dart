@@ -64,7 +64,7 @@ class _MainScreenState extends State<MainScreen> {
               label: 'Products',
             ),
             BottomNavigationBarItem(
-              icon: _buildNavIcon(Icons.person, 3),
+              icon: _buildNavIcon(Icons.manage_accounts, 3),
               label: 'Profile',
             ),
           ],

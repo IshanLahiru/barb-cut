@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../controllers/theme_controller.dart';
 import '../theme/theme.dart';
 import '../core/di/service_locator.dart';
@@ -101,11 +102,25 @@ class _ProfileViewState extends State<ProfileView> {
                     context,
                     icon: Icons.lock_rounded,
                     title: 'Password',
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const ChangePasswordPage(),
+                        ),
+                      );
+                    },
                   ),
                   _buildSettingsTile(
                     context,
                     icon: Icons.notifications_rounded,
                     title: 'Notifications',
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationsSettingsPage(),
+                        ),
+                      );
+                    },
                   ),
                   _buildSettingsTile(
                     context,
@@ -307,6 +322,373 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ChangePasswordPage - Full screen page for password change
+class ChangePasswordPage extends StatefulWidget {
+  const ChangePasswordPage({Key? key}) : super(key: key);
+
+  @override
+  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
+}
+
+class _ChangePasswordPageState extends State<ChangePasswordPage> {
+  late TextEditingController _currentPasswordController;
+  late TextEditingController _newPasswordController;
+  late TextEditingController _confirmPasswordController;
+  bool _isLoading = false;
+  bool _showCurrentPassword = false;
+  bool _showNewPassword = false;
+  bool _showConfirmPassword = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPasswordController = TextEditingController();
+    _newPasswordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _changePassword() async {
+    if (_newPasswordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (_currentPasswordController.text.isEmpty ||
+        _newPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null && user.email != null) {
+        // Reauthenticate with current password
+        final credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: _currentPasswordController.text,
+        );
+        await user.reauthenticateWithCredential(credential);
+
+        // Update password
+        await user.updatePassword(_newPasswordController.text);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Password changed successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.pop(context);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Change Password'), elevation: 0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(AiSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: AiSpacing.sm),
+            Text(
+              'Current Password',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: AiSpacing.xs),
+            TextField(
+              controller: _currentPasswordController,
+              obscureText: !_showCurrentPassword,
+              decoration: InputDecoration(
+                hintText: 'Enter current password',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _showCurrentPassword
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(
+                      () => _showCurrentPassword = !_showCurrentPassword,
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: AiSpacing.lg),
+            Text('New Password', style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: AiSpacing.xs),
+            TextField(
+              controller: _newPasswordController,
+              obscureText: !_showNewPassword,
+              decoration: InputDecoration(
+                hintText: 'Enter new password',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _showNewPassword ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() => _showNewPassword = !_showNewPassword);
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: AiSpacing.lg),
+            Text(
+              'Confirm Password',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: AiSpacing.xs),
+            TextField(
+              controller: _confirmPasswordController,
+              obscureText: !_showConfirmPassword,
+              decoration: InputDecoration(
+                hintText: 'Confirm new password',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _showConfirmPassword
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(
+                      () => _showConfirmPassword = !_showConfirmPassword,
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: AiSpacing.xl),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _changePassword,
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Change Password'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// NotificationsSettingsPage - Full screen page for notification preferences
+class NotificationsSettingsPage extends StatefulWidget {
+  const NotificationsSettingsPage({Key? key}) : super(key: key);
+
+  @override
+  State<NotificationsSettingsPage> createState() =>
+      _NotificationsSettingsPageState();
+}
+
+class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
+  bool _emailNotifications = true;
+  bool _pushNotifications = true;
+  bool _updateNotifications = false;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load saved preferences
+    _loadNotificationPreferences();
+  }
+
+  Future<void> _loadNotificationPreferences() async {
+    // TODO: Load from SharedPreferences or Firebase
+    // For now, using default values
+  }
+
+  Future<void> _saveNotificationPreferences() async {
+    setState(() => _isSaving = true);
+    try {
+      // TODO: Save to SharedPreferences or Firebase
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Notification preferences saved'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
+  }
+
+  Widget _buildNotificationToggle(
+    String title,
+    String subtitle,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AiSpacing.lg,
+        vertical: AiSpacing.md,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: Theme.of(context).textTheme.titleSmall),
+                    const SizedBox(height: AiSpacing.xs),
+                    Text(
+                      subtitle,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AiSpacing.lg),
+              Switch(value: value, onChanged: onChanged),
+            ],
+          ),
+          const SizedBox(height: AiSpacing.md),
+          const Divider(),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Notification Preferences'),
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildNotificationToggle(
+                    'Email Notifications',
+                    'Receive email updates about your account',
+                    _emailNotifications,
+                    (value) {
+                      setState(() => _emailNotifications = value);
+                    },
+                  ),
+                  _buildNotificationToggle(
+                    'Push Notifications',
+                    'Receive push notifications on your device',
+                    _pushNotifications,
+                    (value) {
+                      setState(() => _pushNotifications = value);
+                    },
+                  ),
+                  _buildNotificationToggle(
+                    'Update Notifications',
+                    'Receive notifications about app updates',
+                    _updateNotifications,
+                    (value) {
+                      setState(() => _updateNotifications = value);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(AiSpacing.lg),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isSaving ? null : _saveNotificationPreferences,
+                child: _isSaving
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Save Preferences'),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

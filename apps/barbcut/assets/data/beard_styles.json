@@ -1,0 +1,170 @@
+[
+  {
+    "name": "Full Beard",
+    "price": "$20",
+    "duration": "25 min",
+    "description": "A classic full beard, well-groomed.",
+    "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Goatee",
+    "price": "$15",
+    "duration": "20 min",
+    "description": "A stylish goatee, precisely trimmed.",
+    "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Stubble",
+    "price": "$10",
+    "duration": "10 min",
+    "description": "A short, rugged stubble.",
+    "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Van Dyke",
+    "price": "$25",
+    "duration": "30 min",
+    "description": "Curled mustache with soul patch",
+    "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Ducktail",
+    "price": "$22",
+    "duration": "27 min",
+    "description": "Pointed beard shaped like a duck tail",
+    "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Verdi",
+    "price": "$20",
+    "duration": "25 min",
+    "description": "Full beard with curled mustache tips",
+    "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "French Fork",
+    "price": "$24",
+    "duration": "29 min",
+    "description": "Long beard split into two points",
+    "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Garibaldi",
+    "price": "$26",
+    "duration": "32 min",
+    "description": "Large, rounded, fully grown beard",
+    "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Beardstache",
+    "price": "$18",
+    "duration": "22 min",
+    "description": "Prominent mustache with minimal chin beard",
+    "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Balbo",
+    "price": "$18",
+    "duration": "22 min",
+    "description": "Disconnected mustache with goatee",
+    "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Anchor",
+    "price": "$19",
+    "duration": "23 min",
+    "description": "Goatee with soul patch extension",
+    "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Chevron",
+    "price": "$16",
+    "duration": "20 min",
+    "description": "Full mustache covering upper lip",
+    "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Handlebar",
+    "price": "$17",
+    "duration": "21 min",
+    "description": "Distinctive curled upturned mustache",
+    "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Pencil Stache",
+    "price": "$12",
+    "duration": "15 min",
+    "description": "Thin, refined mustache line",
+    "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Hipster",
+    "price": "$20",
+    "duration": "25 min",
+    "description": "Full beard with styled mustache",
+    "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Friendly Mutton Chops",
+    "price": "$23",
+    "duration": "28 min",
+    "description": "Full cheek whiskers with clean chin",
+    "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Circle Beard",
+    "price": "$21",
+    "duration": "26 min",
+    "description": "Mustache connected to chin beard",
+    "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Pointed Full Beard",
+    "price": "$24",
+    "duration": "29 min",
+    "description": "Pointed full beard with clean lines",
+    "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Extended Goatee",
+    "price": "$19",
+    "duration": "24 min",
+    "description": "Long goatee with extended length",
+    "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Short Beard",
+    "price": "$14",
+    "duration": "18 min",
+    "description": "Light, maintained short facial hair",
+    "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Designer Stubble",
+    "price": "$11",
+    "duration": "12 min",
+    "description": "Carefully maintained three-day growth",
+    "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Ducktail Goatee",
+    "price": "$23",
+    "duration": "28 min",
+    "description": "Pointed goatee shaped like duck tail",
+    "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Styled Beard",
+    "price": "$25",
+    "duration": "30 min",
+    "description": "Full beard with beard oil and styling",
+    "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+  },
+  {
+    "name": "Trimmed & Shaped",
+    "price": "$17",
+    "duration": "21 min",
+    "description": "Neatly trimmed beard with sharp lines",
+    "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+  }
+]
