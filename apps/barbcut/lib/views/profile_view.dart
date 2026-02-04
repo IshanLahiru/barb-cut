@@ -49,22 +49,6 @@ class _ProfileViewState extends State<ProfileView> {
             backgroundColor: AdaptiveThemeColors.backgroundDark(context),
             elevation: 0,
             toolbarHeight: 48,
-            leading: IconButton(
-              icon: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: AdaptiveThemeColors.backgroundSecondary(context),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  size: 16,
-                  color: AdaptiveThemeColors.textPrimary(context),
-                ),
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
             title: Text(
               'Settings',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
