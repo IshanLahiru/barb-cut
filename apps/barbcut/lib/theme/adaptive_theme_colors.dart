@@ -89,9 +89,23 @@ class AdaptiveThemeColors {
   );
 
   // Accent colors
-  static Color neonCyan(BuildContext context) => AiColors.neonCyan;
-  static Color neonPurple(BuildContext context) => AiColors.neonPurple;
-  static Color sunsetCoral(BuildContext context) => AiColors.sunsetCoral;
+  static Color neonCyan(BuildContext context) => _adaptiveColor(
+    context,
+    lightColor: const Color(0xFF1A1A1A), // Dark charcoal/black
+    darkColor: AiColors.neonCyan,
+  );
+
+  static Color neonPurple(BuildContext context) => _adaptiveColor(
+    context,
+    lightColor: const Color(0xFF2D2D2D), // Medium charcoal
+    darkColor: AiColors.neonPurple,
+  );
+
+  static Color sunsetCoral(BuildContext context) => _adaptiveColor(
+    context,
+    lightColor: const Color(0xFF424242), // Dark gray/charcoal
+    darkColor: AiColors.sunsetCoral,
+  );
   static Color primary(BuildContext context) => _adaptiveColor(
     context,
     lightColor: const Color(0xFF2D2D2D),

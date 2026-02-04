@@ -4,8 +4,6 @@ import '../../../../core/constants/app_data.dart';
 
 class HistoryLocalDataSource {
   List<HistoryEntity> getHistory() {
-    return AppData.generateHistory()
-        .map((item) => HistoryModel.fromMap(item))
-        .toList();
+    return AppData.history.map((item) => HistoryModel.fromMap(item)).toList();
   }
 }

@@ -23,26 +23,28 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   String _username = 'Loading...';
   String _email = 'Loading...';
-  int _appointmentsCount = 0;
-  int _favoritesCount = 0;
-  double _averageRating = 0.0;
-  bool _emailVerified = false;
+  bool _isEmailVerified = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFirebaseUserData();
+  }
+
+  Future<void> _loadFirebaseUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _email = user.email ?? 'No email';
+        _isEmailVerified = user.emailVerified;
+      });
+    }
+  }
 
   void _updateProfileData(ProfileEntity profile) {
     setState(() {
       _username = profile.username;
-      _email = profile.email;
-      _appointmentsCount = profile.appointmentsCount;
-      _favoritesCount = profile.favoritesCount;
-      _averageRating = profile.averageRating;
     });
-    // Get email verified status from Firebase
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      setState(() {
-        _emailVerified = user.emailVerified;
-      });
-    }
   }
 
   @override
@@ -131,6 +133,19 @@ class _ProfileViewState extends State<ProfileView> {
                       },
                     ),
                   ),
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.woman_rounded,
+                    title: 'Female version',
+                    trailing: Switch.adaptive(
+                      value: context.watch<ThemeController>().isFemaleVersion,
+                      onChanged: (value) {
+                        context.read<ThemeController>().toggleFemaleVersion(
+                          value,
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
               SizedBox(height: AiSpacing.lg),
@@ -167,187 +182,83 @@ class _ProfileViewState extends State<ProfileView> {
     return Container(
       padding: EdgeInsets.all(AiSpacing.lg),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AdaptiveThemeColors.backgroundSecondary(context),
-            AdaptiveThemeColors.surface(context),
-          ],
-        ),
         borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-        border: Border.all(
-          color: AdaptiveThemeColors.borderLight(context),
-          width: 1.5,
-        ),
         boxShadow: [
           BoxShadow(
-            color: AdaptiveThemeColors.neonCyan(context).withValues(alpha: 0.1),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Avatar and name row
-          Row(
-            children: [
-              Container(
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      AdaptiveThemeColors.neonCyan(
-                        context,
-                      ).withValues(alpha: 0.3),
-                      AdaptiveThemeColors.neonPurple(
-                        context,
-                      ).withValues(alpha: 0.3),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AdaptiveThemeColors.neonCyan(
-                        context,
-                      ).withValues(alpha: 0.2),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  Icons.person_rounded,
-                  size: 40,
-                  color: AdaptiveThemeColors.neonCyan(context),
-                ),
-              ),
-              SizedBox(width: AiSpacing.lg),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            _username,
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(
-                                  color: AdaptiveThemeColors.textPrimary(
-                                    context,
-                                  ),
-                                  fontWeight: FontWeight.w700,
-                                ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (_emailVerified)
-                          Padding(
-                            padding: EdgeInsets.only(left: AiSpacing.xs),
-                            child: Icon(
-                              Icons.verified_rounded,
-                              size: 20,
-                              color: AdaptiveThemeColors.neonCyan(context),
-                            ),
-                          ),
-                      ],
-                    ),
-                    SizedBox(height: AiSpacing.xs),
-                    Text(
-                      _email,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AdaptiveThemeColors.textTertiary(context),
-                        fontSize: 12,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          // Profile Picture
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: AdaptiveThemeColors.backgroundSecondary(context),
+            child: Icon(
+              Icons.person_rounded,
+              size: 48,
+              color: AdaptiveThemeColors.textPrimary(context),
+            ),
           ),
           SizedBox(height: AiSpacing.lg),
-          Divider(
-            color: AdaptiveThemeColors.borderLight(
-              context,
-            ).withValues(alpha: 0.2),
-            height: 1,
+          // Username
+          Text(
+            _username,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: AdaptiveThemeColors.textPrimary(context),
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          SizedBox(height: AiSpacing.md),
-          // Stats row
+          SizedBox(height: AiSpacing.sm),
+          // Email with verification status
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildStatItem(
-                context,
-                'Appointments',
-                '$_appointmentsCount',
-                AdaptiveThemeColors.neonCyan(context),
+              Flexible(
+                child: Text(
+                  _email,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AdaptiveThemeColors.textTertiary(context),
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              Container(
-                width: 1,
-                height: 40,
-                color: AdaptiveThemeColors.borderLight(
-                  context,
-                ).withValues(alpha: 0.2),
-              ),
-              _buildStatItem(
-                context,
-                'Favorites',
-                '$_favoritesCount',
-                AdaptiveThemeColors.neonPurple(context),
-              ),
-              Container(
-                width: 1,
-                height: 40,
-                color: AdaptiveThemeColors.borderLight(
-                  context,
-                ).withValues(alpha: 0.2),
-              ),
-              _buildStatItem(
-                context,
-                'Rating',
-                _averageRating.toStringAsFixed(1),
-                AdaptiveThemeColors.sunsetCoral(context),
-              ),
+              SizedBox(width: AiSpacing.xs),
+              if (_isEmailVerified)
+                Icon(
+                  Icons.verified_rounded,
+                  size: 16,
+                  color: AdaptiveThemeColors.success(context),
+                )
+              else
+                Icon(
+                  Icons.cancel_rounded,
+                  size: 16,
+                  color: AdaptiveThemeColors.error(context),
+                ),
             ],
+          ),
+          SizedBox(height: AiSpacing.xs),
+          Text(
+            _isEmailVerified ? 'Email verified' : 'Email not verified',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: _isEmailVerified
+                  ? AdaptiveThemeColors.success(context)
+                  : AdaptiveThemeColors.error(context),
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildStatItem(
-    BuildContext context,
-    String label,
-    String value,
-    Color accentColor,
-  ) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: accentColor,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        SizedBox(height: AiSpacing.xs),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: AdaptiveThemeColors.textTertiary(context),
-            fontSize: 11,
-          ),
-        ),
-      ],
     );
   }
 
@@ -817,45 +728,6 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildDetailRow(BuildContext context, String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: AdaptiveThemeColors.textTertiary(context),
-            fontWeight: FontWeight.w600,
-            fontSize: 11,
-          ),
-        ),
-        SizedBox(height: AiSpacing.xs),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(AiSpacing.sm),
-          decoration: BoxDecoration(
-            color: AdaptiveThemeColors.backgroundSecondary(context).withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(AiSpacing.radiusSmall),
-            border: Border.all(
-              color: AdaptiveThemeColors.borderLight(context).withValues(alpha: 0.2),
-              width: 1,
-            ),
-          ),
-          child: Text(
-            value,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AdaptiveThemeColors.textPrimary(context),
-              fontFamily: 'monospace',
-              fontSize: 12,
-            ),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
     );
   }
 }

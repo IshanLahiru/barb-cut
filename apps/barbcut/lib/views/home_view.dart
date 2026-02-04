@@ -1802,7 +1802,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               backgroundColor: AdaptiveThemeColors.neonCyan(
                                 context,
                               ),
-                              foregroundColor: Colors.black,
+                              foregroundColor: Colors.white,
                               padding: EdgeInsets.symmetric(vertical: 10),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
