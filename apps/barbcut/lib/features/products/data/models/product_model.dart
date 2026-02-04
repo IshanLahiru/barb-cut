@@ -11,6 +11,18 @@ class ProductModel extends ProductEntity {
     required super.icon,
   });
 
+  /// Convert icon name string to IconData
+  static IconData _getIconData(String iconName) {
+    final iconMap = {
+      'palette': Icons.palette,
+      'water_drop': Icons.water_drop,
+      'shower': Icons.shower,
+      'brush': Icons.brush,
+      'content_cut': Icons.content_cut,
+    };
+    return iconMap[iconName] ?? Icons.shopping_bag;
+  }
+
   factory ProductModel.fromMap(Map<String, dynamic> map) {
     return ProductModel(
       name: map['name'] as String,
@@ -18,7 +30,7 @@ class ProductModel extends ProductEntity {
       rating: map['rating'] as double,
       description: map['description'] as String,
       imageUrl: map['image'] as String,
-      icon: map['icon'] as IconData,
+      icon: _getIconData(map['icon'] as String),
     );
   }
 }
