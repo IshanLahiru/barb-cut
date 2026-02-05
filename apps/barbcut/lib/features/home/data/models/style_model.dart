@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import '../../domain/entities/style_entity.dart';
 
 class StyleModel extends StyleEntity {
@@ -8,7 +7,6 @@ class StyleModel extends StyleEntity {
     required super.duration,
     required super.description,
     required super.imageUrl,
-    required super.accentColor,
     required super.type,
   });
 
@@ -19,7 +17,6 @@ class StyleModel extends StyleEntity {
       duration: map['duration'] as String,
       description: map['description'] as String,
       imageUrl: map['image'] as String,
-      accentColor: map['accentColor'] as Color,
       type: type,
     );
   }

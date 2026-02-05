@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import '../theme/theme.dart';
 import '../core/di/service_locator.dart';
 import '../features/history/domain/entities/history_entity.dart';
@@ -45,7 +46,6 @@ class _HistoryViewState extends State<HistoryView> {
             'haircut': item.haircut,
             'beard': item.beard,
             'timestamp': item.timestamp,
-            'accentColor': item.accentColor,
           },
         )
         .toList();
@@ -82,47 +82,6 @@ class _HistoryViewState extends State<HistoryView> {
       'Dec',
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
-  }
-
-  String _formatDateTime(DateTime date) {
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    final hour = date.hour.toString().padLeft(2, '0');
-    final minute = date.minute.toString().padLeft(2, '0');
-    return '${months[date.month - 1]} ${date.day}, ${date.year} · $hour:$minute';
-  }
-
-  String _formatDateTimeWithSeconds(DateTime date) {
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    final hour = date.hour.toString().padLeft(2, '0');
-    final minute = date.minute.toString().padLeft(2, '0');
-    final second = date.second.toString().padLeft(2, '0');
-    return '${months[date.month - 1]} ${date.day}, ${date.year} · $hour:$minute:$second';
   }
 
   @override
@@ -201,40 +160,75 @@ class _HistoryViewState extends State<HistoryView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: EdgeInsets.all(AiSpacing.xl),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AdaptiveThemeColors.neonCyan(context).withValues(alpha: 0.2),
-                  AdaptiveThemeColors.neonPurple(
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 800),
+            builder: (context, value, child) {
+              return Transform.scale(
+                scale: 0.8 + (value * 0.2),
+                child: Opacity(opacity: value, child: child),
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.all(AiSpacing.xl),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AdaptiveThemeColors.neonCyan(
+                      context,
+                    ).withValues(alpha: 0.15),
+                    AdaptiveThemeColors.neonPurple(
+                      context,
+                    ).withValues(alpha: 0.15),
+                  ],
+                ),
+                border: Border.all(
+                  color: AdaptiveThemeColors.neonCyan(
                     context,
                   ).withValues(alpha: 0.2),
-                ],
+                  width: 1.5,
+                ),
               ),
-            ),
-            child: Icon(
-              Icons.history,
-              size: 64,
-              color: AdaptiveThemeColors.neonCyan(context),
+              child: Icon(
+                Icons.history_rounded,
+                size: 64,
+                color: AdaptiveThemeColors.neonCyan(context),
+              ),
             ),
           ),
           SizedBox(height: AiSpacing.xl),
-          Text(
-            'No generation history yet',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: AdaptiveThemeColors.textPrimary(context),
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(height: AiSpacing.sm),
-          Text(
-            'Generate your first style to see it here',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AdaptiveThemeColors.textTertiary(context),
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 900),
+            builder: (context, value, child) {
+              return Transform.translate(
+                offset: Offset(0, 10 * (1 - value)),
+                child: Opacity(opacity: value, child: child),
+              );
+            },
+            child: Column(
+              children: [
+                Text(
+                  'No generation history yet',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: AdaptiveThemeColors.textPrimary(context),
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                SizedBox(height: AiSpacing.md),
+                Text(
+                  'Generate your first style to see it here',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AdaptiveThemeColors.textTertiary(context),
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
         ],
@@ -248,28 +242,438 @@ class _HistoryViewState extends State<HistoryView> {
     double height,
   ) {
     final accentColor =
-        (item['accentColor'] as Color?) ??
+        // Using general color:
         AdaptiveThemeColors.neonCyan(context);
 
     return GestureDetector(
-      onTap: () => _showImagePreview(context, item),
-      child: Container(
-        height: height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-          border: Border.all(
-            color: AdaptiveThemeColors.borderLight(
-              context,
-            ).withValues(alpha: 0.3),
-            width: 1.5,
+      onTap: () => _showHistoryPreviewDialog(context, item),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          height: height,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Image background with fade
+                Image.network(
+                  item['image'] as String,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: accentColor.withValues(alpha: 0.2),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 80,
+                        color: accentColor.withValues(alpha: 0.6),
+                      ),
+                    );
+                  },
+                ),
+                // Enhanced gradient overlay
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.2),
+                          Colors.black.withValues(alpha: 0.85),
+                        ],
+                        stops: const [0.3, 0.65, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
+                // Accent border glow
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: accentColor.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(
+                        AiSpacing.radiusLarge,
+                      ),
+                    ),
+                  ),
+                ),
+                // Content at bottom
+                Positioned(
+                  left: AiSpacing.md,
+                  right: AiSpacing.md,
+                  bottom: AiSpacing.md,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Style badges
+                      Row(
+                        children: [
+                          if (item['haircut'] != null &&
+                              (item['haircut'] as String).isNotEmpty)
+                            Flexible(
+                              child: _buildModernBadge(
+                                context,
+                                item['haircut'] as String,
+                                accentColor,
+                              ),
+                            ),
+                          if (item['haircut'] != null &&
+                              (item['haircut'] as String).isNotEmpty &&
+                              item['beard'] != null &&
+                              (item['beard'] as String).isNotEmpty)
+                            SizedBox(width: AiSpacing.xs),
+                          if (item['beard'] != null &&
+                              (item['beard'] as String).isNotEmpty)
+                            Flexible(
+                              child: _buildModernBadge(
+                                context,
+                                item['beard'] as String,
+                                AdaptiveThemeColors.neonPurple(context),
+                              ),
+                            ),
+                        ],
+                      ),
+                      SizedBox(height: AiSpacing.sm),
+                      // Timestamp with modern styling
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: 13,
+                            color: Colors.white.withValues(alpha: 0.8),
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            _formatTimestamp(item['timestamp'] as DateTime),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Colors.white.withValues(alpha: 0.95),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                  letterSpacing: 0.2,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge - 1.5),
+      ),
+    );
+  }
+
+  Widget _buildModernBadge(
+    BuildContext context,
+    String text,
+    Color accentColor,
+  ) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: AiSpacing.sm, vertical: 6),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+          fontSize: 11,
+          letterSpacing: 0.3,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  void _showHistoryPreviewDialog(
+    BuildContext context,
+    Map<String, dynamic> item,
+  ) {
+    final int tappedIndex = _generationHistory.indexOf(item);
+    if (tappedIndex == -1) return;
+
+    final List<int> previewIndices = [tappedIndex];
+    for (int i = 0; i < _generationHistory.length; i++) {
+      if (previewIndices.length >= 4) break;
+      if (i != tappedIndex) previewIndices.add(i);
+    }
+    final List<Map<String, dynamic>> previewItems = previewIndices
+        .map((index) => _generationHistory[index])
+        .toList();
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        int activeIndex = 0;
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final Map<String, dynamic> activeItem = previewItems[activeIndex];
+            final accentColor =
+                // Using general color:
+                AdaptiveThemeColors.neonCyan(context);
+            final double screenHeight = MediaQuery.of(context).size.height;
+            final double screenWidth = MediaQuery.of(context).size.width;
+            final double carouselHeight = (screenWidth * (2 / 3)).clamp(
+              300.0,
+              550.0,
+            );
+
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: EdgeInsets.all(AiSpacing.lg),
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: 480,
+                  maxHeight: screenHeight * 0.95,
+                ),
+                decoration: BoxDecoration(
+                  color: AdaptiveThemeColors.backgroundDark(
+                    context,
+                  ).withValues(alpha: 0.85),
+                  borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+                ),
+                child: Stack(
+                  children: [
+                    SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Header
+                          Padding(
+                            padding: EdgeInsets.all(AiSpacing.lg),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.image,
+                                    color: accentColor,
+                                    size: 16,
+                                  ),
+                                ),
+                                SizedBox(width: AiSpacing.md),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Generated Style',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color:
+                                                  AdaptiveThemeColors.textPrimary(
+                                                    context,
+                                                  ),
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                      ),
+                                      SizedBox(height: 2),
+                                      Text(
+                                        _formatTimestamp(
+                                          activeItem['timestamp'] as DateTime,
+                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(
+                                              color:
+                                                  AdaptiveThemeColors.textTertiary(
+                                                    context,
+                                                  ),
+                                              fontSize: 12,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Image carousel - larger
+                          Padding(
+                            padding: EdgeInsets.all(AiSpacing.md),
+                            child: Container(
+                              height: carouselHeight,
+                              child: FlutterCarousel(
+                                options: CarouselOptions(
+                                  height: carouselHeight,
+                                  viewportFraction: 0.95,
+                                  enlargeCenterPage: true,
+                                  enableInfiniteScroll: previewItems.length > 1,
+                                  showIndicator: false,
+                                  onPageChanged: (index, reason) {
+                                    setState(() {
+                                      activeIndex = index;
+                                    });
+                                  },
+                                ),
+                                items: previewItems.asMap().entries.map((
+                                  entry,
+                                ) {
+                                  final int itemIndex = entry.key;
+                                  final Map<String, dynamic> carouselItem =
+                                      entry.value;
+                                  final Color itemAccentColor =
+                                      // Using general color:
+                                      AdaptiveThemeColors.neonCyan(context);
+
+                                  return GestureDetector(
+                                    onTap: () => _showFullScreenGallery(
+                                      context,
+                                      previewItems,
+                                      initialIndex: itemIndex,
+                                    ),
+                                    child: _buildPreviewImageCard(
+                                      context,
+                                      carouselItem,
+                                      itemAccentColor,
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                          // Indicators
+                          if (previewItems.length > 1)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: AiSpacing.sm,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: List.generate(
+                                  previewItems.length,
+                                  (index) => AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    width: activeIndex == index ? 24 : 6,
+                                    height: 6,
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: AiSpacing.xs,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: activeIndex == index
+                                          ? accentColor
+                                          : AiColors.borderLight.withValues(
+                                              alpha: 0.4,
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          // Details - minimal space
+                          Padding(
+                            padding: EdgeInsets.all(AiSpacing.md),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (activeItem['haircut'] != null &&
+                                    (activeItem['haircut'] as String)
+                                        .isNotEmpty) ...[
+                                  _buildDetailRowCompact(
+                                    context,
+                                    'Haircut',
+                                    activeItem['haircut'] as String,
+                                    accentColor,
+                                  ),
+                                  SizedBox(height: AiSpacing.sm),
+                                ],
+                                if (activeItem['beard'] != null &&
+                                    (activeItem['beard'] as String)
+                                        .isNotEmpty) ...[
+                                  _buildDetailRowCompact(
+                                    context,
+                                    'Beard',
+                                    activeItem['beard'] as String,
+                                    AdaptiveThemeColors.neonPurple(context),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // X close button - top right
+                    Positioned(
+                      top: AiSpacing.md,
+                      right: AiSpacing.md,
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(dialogContext),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AdaptiveThemeColors.backgroundDeep(
+                              context,
+                            ).withValues(alpha: 0.6),
+                            border: Border.all(
+                              color: AdaptiveThemeColors.borderLight(
+                                context,
+                              ).withValues(alpha: 0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.close,
+                            color: AdaptiveThemeColors.textPrimary(context),
+                            size: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildPreviewImageCard(
+    BuildContext context,
+    Map<String, dynamic> item,
+    Color accentColor,
+  ) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: AiSpacing.sm),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+        border: Border.all(color: accentColor.withValues(alpha: 0.3), width: 2),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge - 2),
+        child: AspectRatio(
+          aspectRatio: 2 / 3,
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Image background
               Image.network(
                 item['image'] as String,
                 fit: BoxFit.cover,
@@ -279,12 +683,11 @@ class _HistoryViewState extends State<HistoryView> {
                     child: Icon(
                       Icons.image_not_supported,
                       size: 80,
-                      color: accentColor.withValues(alpha: 0.6),
+                      color: accentColor,
                     ),
                   );
                 },
               ),
-              // Gradient overlay
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
@@ -293,75 +696,14 @@ class _HistoryViewState extends State<HistoryView> {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withValues(alpha: 0.3),
-                        Colors.black.withValues(alpha: 0.8),
+                        Colors.black.withValues(alpha: 0.25),
+                        Colors.black.withValues(alpha: 0.7),
                       ],
                       stops: const [0.4, 0.7, 1.0],
                     ),
                   ),
                 ),
               ),
-              // Content at bottom
-              Positioned(
-                left: AiSpacing.md,
-                right: AiSpacing.md,
-                bottom: AiSpacing.md,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Style badges
-                    Row(
-                      children: [
-                        if (item['haircut'] != null &&
-                            (item['haircut'] as String).isNotEmpty)
-                          Flexible(
-                            child: _buildMinimalBadge(
-                              context,
-                              item['haircut'] as String,
-                              accentColor,
-                            ),
-                          ),
-                        if (item['haircut'] != null &&
-                            (item['haircut'] as String).isNotEmpty &&
-                            item['beard'] != null &&
-                            (item['beard'] as String).isNotEmpty)
-                          SizedBox(width: AiSpacing.xs),
-                        if (item['beard'] != null &&
-                            (item['beard'] as String).isNotEmpty)
-                          Flexible(
-                            child: _buildMinimalBadge(
-                              context,
-                              item['beard'] as String,
-                              AdaptiveThemeColors.neonPurple(context),
-                            ),
-                          ),
-                      ],
-                    ),
-                    SizedBox(height: AiSpacing.sm),
-                    // Timestamp
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_time_rounded,
-                          size: 12,
-                          color: Colors.white.withValues(alpha: 0.7),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          _formatTimestamp(item['timestamp'] as DateTime),
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Colors.white.withValues(alpha: 0.9),
-                                fontWeight: FontWeight.w600,
-                                fontSize: 11,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
@@ -369,253 +711,120 @@ class _HistoryViewState extends State<HistoryView> {
     );
   }
 
-  Widget _buildMinimalBadge(
+  void _showFullScreenGallery(
     BuildContext context,
-    String text,
-    Color accentColor,
-  ) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: AiSpacing.sm, vertical: 4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        color: accentColor.withValues(alpha: 0.25),
-        border: Border.all(color: accentColor.withValues(alpha: 0.5), width: 1),
-      ),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
-          fontSize: 10,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-
-  void _showImagePreview(BuildContext context, Map<String, dynamic> item) {
-    final accentColor =
-        (item['accentColor'] as Color?) ??
-        AdaptiveThemeColors.neonCyan(context);
+    List<Map<String, dynamic>> items, {
+    int initialIndex = 0,
+  }) {
+    final PageController controller = PageController(initialPage: initialIndex);
 
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (dialogContext) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.all(AiSpacing.lg),
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
+      barrierColor: Colors.black.withValues(alpha: 0.85),
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.zero,
+          child: Stack(
             children: [
-              // Image preview
-              Container(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.6,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                  border: Border.all(
-                    color: accentColor.withValues(alpha: 0.3),
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: accentColor.withValues(alpha: 0.2),
-                      blurRadius: 20,
-                      spreadRadius: 5,
+              PageView.builder(
+                controller: controller,
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final Map<String, dynamic> item = items[index];
+                  final Color accentColor =
+                      // Using general color:
+                      AdaptiveThemeColors.neonCyan(context);
+
+                  return Center(
+                    child: InteractiveViewer(
+                      minScale: 1,
+                      maxScale: 3,
+                      child: Image.network(
+                        item['image'] as String,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 320,
+                            width: 240,
+                            decoration: BoxDecoration(
+                              color: accentColor.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusLarge,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.image_not_supported,
+                              size: 80,
+                              color: accentColor,
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                    AiSpacing.radiusLarge - 2,
-                  ),
-                  child: Image.network(
-                    item['image'] as String,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 300,
-                        color: accentColor.withValues(alpha: 0.2),
-                        child: Icon(
-                          Icons.image_not_supported,
-                          size: 80,
-                          color: accentColor,
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                  );
+                },
               ),
-              SizedBox(height: AiSpacing.lg),
-              // Details card
-              Container(
-                padding: EdgeInsets.all(AiSpacing.lg),
-                decoration: BoxDecoration(
-                  color: AdaptiveThemeColors.surface(context),
-                  borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                  border: Border.all(
-                    color: AdaptiveThemeColors.borderLight(
+              Positioned(
+                top: 24,
+                right: 24,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AdaptiveThemeColors.backgroundDark(
                       context,
-                    ).withValues(alpha: 0.3),
-                    width: 1.5,
-                  ),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: accentColor.withValues(alpha: 0.2),
-                          ),
-                          child: Icon(
-                            Icons.auto_awesome,
-                            color: accentColor,
-                            size: 16,
-                          ),
-                        ),
-                        SizedBox(width: AiSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            'Generation Details',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  color: AdaptiveThemeColors.textPrimary(
-                                    context,
-                                  ),
-                                  fontWeight: FontWeight.w700,
-                                ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: AiSpacing.md),
-                    Divider(
+                    ).withValues(alpha: 0.6),
+                    shape: BoxShape.circle,
+                    border: Border.all(
                       color: AdaptiveThemeColors.borderLight(
                         context,
-                      ).withValues(alpha: 0.2),
-                      height: 1,
+                      ).withValues(alpha: 0.3),
+                      width: 1,
                     ),
-                    SizedBox(height: AiSpacing.md),
-                    if (item['haircut'] != null &&
-                        (item['haircut'] as String).isNotEmpty) ...[
-                      _buildDetailRow(
-                        context,
-                        'Haircut',
-                        item['haircut'] as String,
-                        accentColor,
-                      ),
-                      SizedBox(height: AiSpacing.sm),
-                    ],
-                    if (item['beard'] != null &&
-                        (item['beard'] as String).isNotEmpty) ...[
-                      _buildDetailRow(
-                        context,
-                        'Beard',
-                        item['beard'] as String,
-                        AdaptiveThemeColors.neonPurple(context),
-                      ),
-                      SizedBox(height: AiSpacing.sm),
-                    ],
-                    _buildDetailRow(
-                      context,
-                      'Generated',
-                      _formatDateTimeWithSeconds(item['timestamp'] as DateTime),
-                      AdaptiveThemeColors.neonCyan(context),
+                  ),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.close_rounded,
+                      color: AdaptiveThemeColors.textPrimary(context),
                     ),
-                    SizedBox(height: AiSpacing.lg),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.pop(dialogContext),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: accentColor,
-                          foregroundColor: AdaptiveThemeColors.backgroundDeep(
-                            context,
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: AiSpacing.md),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              AiSpacing.radiusMedium,
-                            ),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: Text(
-                          'Close',
-                          style: Theme.of(context).textTheme.labelLarge
-                              ?.copyWith(
-                                color: AdaptiveThemeColors.backgroundDeep(
-                                  context,
-                                ),
-                                fontWeight: FontWeight.w700,
-                              ),
-                        ),
-                      ),
-                    ),
-                  ],
+                    onPressed: () => Navigator.pop(dialogContext),
+                  ),
                 ),
               ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildDetailRow(
+  Widget _buildDetailRowCompact(
     BuildContext context,
     String label,
     String value,
     Color accentColor,
   ) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 80,
-          child: Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AdaptiveThemeColors.textTertiary(context),
-              fontWeight: FontWeight.w600,
-              fontSize: 12,
-            ),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: AdaptiveThemeColors.textTertiary(context),
+            fontWeight: FontWeight.w600,
+            fontSize: 11,
           ),
         ),
-        SizedBox(width: AiSpacing.sm),
+        SizedBox(width: AiSpacing.xs),
         Expanded(
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: AiSpacing.sm,
-              vertical: AiSpacing.xs,
+          child: Text(
+            value,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AdaptiveThemeColors.textPrimary(context),
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
             ),
-            decoration: BoxDecoration(
-              color: accentColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(
-                color: accentColor.withValues(alpha: 0.3),
-                width: 1,
-              ),
-            ),
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: accentColor,
-                fontWeight: FontWeight.w700,
-                fontSize: 12,
-              ),
-            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

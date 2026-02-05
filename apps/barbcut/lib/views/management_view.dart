@@ -23,11 +23,27 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   String _username = 'Loading...';
   String _email = 'Loading...';
+  bool _isEmailVerified = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFirebaseUserData();
+  }
+
+  Future<void> _loadFirebaseUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _email = user.email ?? 'No email';
+        _isEmailVerified = user.emailVerified;
+      });
+    }
+  }
 
   void _updateProfileData(ProfileEntity profile) {
     setState(() {
       _username = profile.username;
-      _email = profile.email;
     });
   }
 
@@ -117,6 +133,19 @@ class _ProfileViewState extends State<ProfileView> {
                       },
                     ),
                   ),
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.woman_rounded,
+                    title: 'Female version',
+                    trailing: Switch.adaptive(
+                      value: context.watch<ThemeController>().isFemaleVersion,
+                      onChanged: (value) {
+                        context.read<ThemeController>().toggleFemaleVersion(
+                          value,
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
               SizedBox(height: AiSpacing.lg),
@@ -153,7 +182,6 @@ class _ProfileViewState extends State<ProfileView> {
     return Container(
       padding: EdgeInsets.all(AiSpacing.lg),
       decoration: BoxDecoration(
-        color: AdaptiveThemeColors.surface(context),
         borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
         boxShadow: [
           BoxShadow(
@@ -163,45 +191,71 @@ class _ProfileViewState extends State<ProfileView> {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Profile Picture
           CircleAvatar(
-            radius: 24,
+            radius: 40,
             backgroundColor: AdaptiveThemeColors.backgroundSecondary(context),
             child: Icon(
               Icons.person_rounded,
+              size: 48,
               color: AdaptiveThemeColors.textPrimary(context),
             ),
           ),
-          SizedBox(width: AiSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _username,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AdaptiveThemeColors.textPrimary(context),
-                    fontWeight: FontWeight.w700,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: 2),
-                Text(
+          SizedBox(height: AiSpacing.lg),
+          // Username
+          Text(
+            _username,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: AdaptiveThemeColors.textPrimary(context),
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          SizedBox(height: AiSpacing.sm),
+          // Email with verification status
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Text(
                   _email,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AdaptiveThemeColors.textTertiary(context),
                   ),
+                  textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ],
-            ),
+              ),
+              SizedBox(width: AiSpacing.xs),
+              if (_isEmailVerified)
+                Icon(
+                  Icons.verified_rounded,
+                  size: 16,
+                  color: AdaptiveThemeColors.success(context),
+                )
+              else
+                Icon(
+                  Icons.cancel_rounded,
+                  size: 16,
+                  color: AdaptiveThemeColors.error(context),
+                ),
+            ],
           ),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: AdaptiveThemeColors.textTertiary(context),
+          SizedBox(height: AiSpacing.xs),
+          Text(
+            _isEmailVerified ? 'Email verified' : 'Email not verified',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: _isEmailVerified
+                  ? AdaptiveThemeColors.success(context)
+                  : AdaptiveThemeColors.error(context),
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
