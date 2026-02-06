@@ -55,25 +55,25 @@ class _ExploreViewState extends State<ExploreView> {
     },
     {
       'name': 'Full Beard',
-      'price': '\$20',
-      'duration': '25 min',
       'description': 'A classic full beard, well-groomed.',
+      'tips':
+          'Let it grow evenly for 3-4 weeks; ask for a clean neckline two fingers above the Adam\'s apple.',
       'image':
           'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop',
     },
     {
       'name': 'Goatee',
-      'price': '\$15',
-      'duration': '20 min',
       'description': 'A stylish goatee, precisely trimmed.',
+      'tips':
+          'Keep the cheeks clean; define the chin outline with a sharp edge.',
       'image':
           'https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop',
     },
     {
       'name': 'Stubble',
-      'price': '\$10',
-      'duration': '10 min',
       'description': 'A short, rugged stubble.',
+      'tips':
+          'Agree on a guard length; keep the neckline tidy and follow the jawline.',
       'image':
           'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
     },
@@ -268,6 +268,8 @@ class _ExploreViewState extends State<ExploreView> {
     int index,
   ) {
     final accentColor = AdaptiveThemeColors.neonCyan(context);
+    final tips = (style['tips'] as String?)?.trim();
+    final hasTips = tips != null && tips.isNotEmpty;
 
     return Container(
       margin: EdgeInsets.symmetric(
@@ -352,6 +354,19 @@ class _ExploreViewState extends State<ExploreView> {
                     ],
                   ),
                 ),
+                if (hasTips) ...[
+                  SizedBox(height: 4),
+                  Text(
+                    tips,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.85),
+                      fontWeight: FontWeight.w500,
+                      height: 1.2,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

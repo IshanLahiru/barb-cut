@@ -1,170 +1,146 @@
 [
   {
     "name": "Full Beard",
-    "price": "$20",
-    "duration": "25 min",
     "description": "A classic full beard, well-groomed.",
+    "tips": "Let it grow evenly for 3-4 weeks; ask for a clean neckline two fingers above the Adam's apple.",
     "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
   },
   {
     "name": "Goatee",
-    "price": "$15",
-    "duration": "20 min",
     "description": "A stylish goatee, precisely trimmed.",
+    "tips": "Keep the cheeks clean; define the chin outline with a sharp edge.",
     "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Stubble",
-    "price": "$10",
-    "duration": "10 min",
     "description": "A short, rugged stubble.",
+    "tips": "Agree on a guard length; keep the neckline tidy and follow the jawline.",
     "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Van Dyke",
-    "price": "$25",
-    "duration": "30 min",
     "description": "Curled mustache with soul patch",
+    "tips": "Separate the mustache and chin; keep cheeks and jaw clean.",
     "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
   },
   {
     "name": "Ducktail",
-    "price": "$22",
-    "duration": "27 min",
     "description": "Pointed beard shaped like a duck tail",
+    "tips": "Blend the sides toward a point; keep the mustache neat.",
     "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Verdi",
-    "price": "$20",
-    "duration": "25 min",
     "description": "Full beard with curled mustache tips",
+    "tips": "Maintain length on the beard; curl the tips with wax and keep edges tidy.",
     "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
   },
   {
     "name": "French Fork",
-    "price": "$24",
-    "duration": "29 min",
     "description": "Long beard split into two points",
+    "tips": "Grow length first; ask for a clean split and tidy sides.",
     "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Garibaldi",
-    "price": "$26",
-    "duration": "32 min",
     "description": "Large, rounded, fully grown beard",
+    "tips": "Let it grow full; round the bottom and keep the neckline clean.",
     "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
   },
   {
     "name": "Beardstache",
-    "price": "$18",
-    "duration": "22 min",
     "description": "Prominent mustache with minimal chin beard",
+    "tips": "Keep the beard short; let the mustache stay fuller and combed.",
     "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Balbo",
-    "price": "$18",
-    "duration": "22 min",
     "description": "Disconnected mustache with goatee",
+    "tips": "Define the chin strap cleanly; keep the mustache disconnected.",
     "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
   },
   {
     "name": "Anchor",
-    "price": "$19",
-    "duration": "23 min",
     "description": "Goatee with soul patch extension",
+    "tips": "Outline the jaw to a point; keep the soul patch connected.",
     "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Chevron",
-    "price": "$16",
-    "duration": "20 min",
     "description": "Full mustache covering upper lip",
+    "tips": "Trim to the lip line; keep thickness even across the width.",
     "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Handlebar",
-    "price": "$17",
-    "duration": "21 min",
     "description": "Distinctive curled upturned mustache",
+    "tips": "Keep the ends longer; use mustache wax and curl upward.",
     "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
   },
   {
     "name": "Pencil Stache",
-    "price": "$12",
-    "duration": "15 min",
     "description": "Thin, refined mustache line",
+    "tips": "Shave above and below for a thin line; keep edges crisp.",
     "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Hipster",
-    "price": "$20",
-    "duration": "25 min",
     "description": "Full beard with styled mustache",
+    "tips": "Keep volume on the beard; brush downward and trim cheek lines.",
     "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Friendly Mutton Chops",
-    "price": "$23",
-    "duration": "28 min",
     "description": "Full cheek whiskers with clean chin",
+    "tips": "Keep the chin clean; blend sideburns into cheek whiskers.",
     "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
   },
   {
     "name": "Circle Beard",
-    "price": "$21",
-    "duration": "26 min",
     "description": "Mustache connected to chin beard",
+    "tips": "Connect mustache and chin; keep the circle symmetrical.",
     "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Pointed Full Beard",
-    "price": "$24",
-    "duration": "29 min",
     "description": "Pointed full beard with clean lines",
+    "tips": "Taper into a point; keep edges sharp and even.",
     "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Extended Goatee",
-    "price": "$19",
-    "duration": "24 min",
     "description": "Long goatee with extended length",
+    "tips": "Extend the chin length; keep cheeks clean and lines sharp.",
     "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Short Beard",
-    "price": "$14",
-    "duration": "18 min",
     "description": "Light, maintained short facial hair",
+    "tips": "Use a uniform guard length; define cheek and neck lines.",
     "image": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
   },
   {
     "name": "Designer Stubble",
-    "price": "$11",
-    "duration": "12 min",
     "description": "Carefully maintained three-day growth",
+    "tips": "Set a consistent guard; clean the neckline for contrast.",
     "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Ducktail Goatee",
-    "price": "$23",
-    "duration": "28 min",
     "description": "Pointed goatee shaped like duck tail",
+    "tips": "Blend the goatee into a point; keep cheeks clean.",
     "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Styled Beard",
-    "price": "$25",
-    "duration": "30 min",
     "description": "Full beard with beard oil and styling",
+    "tips": "Apply beard oil; brush to shape and tame flyaways.",
     "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
   },
   {
     "name": "Trimmed & Shaped",
-    "price": "$17",
-    "duration": "21 min",
     "description": "Neatly trimmed beard with sharp lines",
+    "tips": "Ask for a defined cheek line; keep the neckline crisp.",
     "image": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
   }
 ]

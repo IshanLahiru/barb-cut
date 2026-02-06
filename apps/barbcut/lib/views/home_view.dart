@@ -55,6 +55,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             'name': style.name,
             'price': style.price,
             'duration': style.duration,
+            'tips': style.tips,
             'description': style.description,
             'image': style.imageUrl,
           },
@@ -786,6 +787,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required VoidCallback onChangePressed,
     required VoidCallback onRemovePressed,
   }) {
+    final tips = (style['tips'] as String?)?.trim();
+    final hasTips = tips != null && tips.isNotEmpty;
+
     return Container(
       width: 200,
       decoration: BoxDecoration(
@@ -891,34 +895,49 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 6),
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        color: accentColor.withValues(alpha: 0.15),
-                      ),
-                      child: Text(
-                        '₹${style['price']}',
-                        style: TextStyle(
-                          color: accentColor,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 11,
+                if (hasTips)
+                  Text(
+                    tips,
+                    style: TextStyle(
+                      color: AiColors.textSecondary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  )
+                else
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          color: accentColor.withValues(alpha: 0.15),
+                        ),
+                        child: Text(
+                          '₹${style['price']}',
+                          style: TextStyle(
+                            color: accentColor,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 11,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 6),
-                    Text(
-                      '${style['duration'] ?? 45}min',
-                      style: TextStyle(
-                        color: AiColors.textSecondary,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
+                      SizedBox(width: 6),
+                      Text(
+                        '${style['duration'] ?? 45}min',
+                        style: TextStyle(
+                          color: AiColors.textSecondary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
                 SizedBox(height: 10),
 
                 // Buttons stacked vertically

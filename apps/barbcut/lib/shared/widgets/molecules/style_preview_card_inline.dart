@@ -8,6 +8,9 @@ class StylePreviewCardInline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tips = (style['tips'] as String?)?.trim();
+    final hasTips = tips != null && tips.isNotEmpty;
+
     return Row(
       children: [
         ClipRRect(
@@ -47,24 +50,36 @@ class StylePreviewCardInline extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 4),
-              Text(
-                '₹${style['price']}',
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? const Color(0xFF00E5FF)
-                      : const Color(0xFF0097A7),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
+              if (hasTips)
+                Text(
+                  tips,
+                  style: TextStyle(
+                    color: ThemeAdapter.getTextSecondary(context),
+                    fontSize: 12,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                )
+              else ...[
+                Text(
+                  '₹${style['price']}',
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF00E5FF)
+                        : const Color(0xFF0097A7),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
                 ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                '${style['duration'] ?? 45} mins',
-                style: TextStyle(
-                  color: ThemeAdapter.getTextTertiary(context),
-                  fontSize: 12,
+                SizedBox(height: 2),
+                Text(
+                  '${style['duration'] ?? 45} mins',
+                  style: TextStyle(
+                    color: ThemeAdapter.getTextTertiary(context),
+                    fontSize: 12,
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),
