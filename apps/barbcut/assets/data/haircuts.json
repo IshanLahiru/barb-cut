@@ -1,352 +1,477 @@
 [
   {
+    "id": "classic-fade",
     "name": "Classic Fade",
     "price": "$25",
     "duration": "30 min",
     "description": "A timeless fade that never goes out of style",
-    "images": [
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Diamond"],
-    "maintenanceTips": "Ask for a clean taper and keep the neckline sharp between visits."
+    "maintenanceTips": [
+      "Ask for a clean taper and keep the neckline sharp between visits.",
+      "Get a fade touchup every 2-3 weeks for optimal freshness.",
+      "Use a light styling cream to maintain texture."
+    ]
   },
   {
+    "id": "buzz-cut",
     "name": "Buzz Cut",
     "price": "$15",
     "duration": "15 min",
     "description": "Clean and simple, perfect for low maintenance",
-    "images": [
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Round"],
-    "maintenanceTips": "Keep the guard length consistent and refresh every 2-3 weeks."
+    "maintenanceTips": [
+      "Keep the guard length consistent and refresh every 2-3 weeks.",
+      "Use a moisturizing scalp treatment to prevent dryness.",
+      "Perfect for active lifestyles and hot weather."
+    ]
   },
   {
+    "id": "pompadour",
     "name": "Pompadour",
     "price": "$32",
     "duration": "35 min",
     "description": "Bold and stylish with volume on top",
-    "images": [
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Triangle", "Diamond"],
-    "maintenanceTips": "Use a blow dryer and matte pomade to keep the height balanced."
+    "maintenanceTips": [
+      "Use a blow dryer and matte pomade to keep the height balanced.",
+      "Apply product to damp hair and blow dry upward for volume.",
+      "Regular trims every 3-4 weeks maintain the shape."
+    ]
   },
   {
+    "id": "undercut",
     "name": "Undercut",
     "price": "$30",
     "duration": "35 min",
     "description": "Modern and edgy with short sides",
-    "images": [
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Heart"],
-    "maintenanceTips": "Keep the sides tight and clean around the ears for sharp contrast."
+    "maintenanceTips": [
+      "Keep the sides tight and clean around the ears for sharp contrast.",
+      "Touch up the disconnect line every 2 weeks.",
+      "Use texturizing product on top for modern styling."
+    ]
   },
   {
+    "id": "crew-cut",
     "name": "Crew Cut",
     "price": "$20",
     "duration": "20 min",
     "description": "Professional and neat for any occasion",
-    "images": [
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Round"],
-    "maintenanceTips": "Brush forward on top and keep the taper clean every few weeks."
+    "maintenanceTips": [
+      "Brush forward on top and keep the taper clean every few weeks.",
+      "A classic choice for professional settings.",
+      "Minimal styling required - wash and go."
+    ]
   },
   {
+    "id": "slicked-back",
     "name": "Slicked Back",
     "price": "$28",
     "duration": "32 min",
     "description": "Sleek and polished for a sophisticated look",
-    "images": [
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Diamond"],
-    "maintenanceTips": "Use a light shine pomade and comb backward for a sleek finish."
+    "maintenanceTips": [
+      "Use a light shine pomade and comb backward for a sleek finish.",
+      "Apply product to damp hair for best hold.",
+      "Perfect for formal occasions and professional settings."
+    ]
   },
   {
+    "id": "textured-top",
     "name": "Textured Top",
     "price": "$32",
     "duration": "38 min",
     "description": "Messy texture with clean sides",
-    "images": [
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Round", "Diamond"],
-    "maintenanceTips": "Use sea salt spray and pinch sections for loose, natural texture."
+    "maintenanceTips": [
+      "Use sea salt spray and pinch sections for loose, natural texture.",
+      "Blow dry with fingers for added volume and movement.",
+      "Ideal for casual, everyday styling."
+    ]
   },
   {
+    "id": "quiff",
     "name": "Quiff",
     "price": "$30",
     "duration": "35 min",
     "description": "Voluminous front with tapered sides",
-    "images": [
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Triangle"],
-    "maintenanceTips": "Blow dry the front up and back, then set with a matte paste."
+    "maintenanceTips": [
+      "Blow dry the front up and back, then set with a matte paste.",
+      "Work product through midlengths and ends for hold.",
+      "Versatile style suitable for various occasions."
+    ]
   },
   {
+    "id": "fade",
     "name": "Fade",
     "price": "$26",
     "duration": "30 min",
     "description": "Fades down to skin with length on top",
-    "images": [
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Round"],
-    "maintenanceTips": "Keep the blend clean and refresh the fade every 2 weeks."
+    "maintenanceTips": [
+      "Keep the blend clean and refresh the fade every 2 weeks.",
+      "Regular maintenance ensures crisp lines.",
+      "Great for all hair types and textures."
+    ]
   },
   {
+    "id": "mid-fade",
     "name": "Mid Fade",
     "price": "$26",
     "duration": "30 min",
     "description": "Fade starts at mid-head height",
-    "images": [
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Diamond"],
-    "maintenanceTips": "Ask for a soft transition at the mid point for balanced contrast."
+    "maintenanceTips": [
+      "Ask for a soft transition at the mid point for balanced contrast.",
+      "Perfect middle ground between low and high fades.",
+      "Maintains a professional yet modern appearance."
+    ]
   },
   {
+    "id": "high-fade",
     "name": "High Fade",
     "price": "$28",
     "duration": "32 min",
     "description": "Fade starts higher for more contrast",
-    "images": [
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Heart"],
-    "maintenanceTips": "Keep the top textured and taper the sides often for sharp contrast."
+    "maintenanceTips": [
+      "Keep the top textured and taper the sides often for sharp contrast.",
+      "Dramatic style statement with bold definition.",
+      "Require frequent trims to maintain the look."
+    ]
   },
   {
+    "id": "skin-fade",
     "name": "Skin Fade",
     "price": "$30",
     "duration": "35 min",
     "description": "Clean fade all the way to skin",
-    "images": [
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square"],
-    "maintenanceTips": "Get edge-ups between cuts to keep the skin fade crisp."
+    "maintenanceTips": [
+      "Get edge-ups between cuts to keep the skin fade crisp.",
+      "Most aggressive fade style with maximum contrast.",
+      "Best maintained with weekly touch-ups."
+    ]
   },
   {
+    "id": "temple-fade",
     "name": "Temple Fade",
     "price": "$25",
     "duration": "28 min",
     "description": "Fade concentrated around temples",
-    "images": [
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Round", "Square"],
-    "maintenanceTips": "Blend the temples cleanly and keep the lineup sharp."
+    "maintenanceTips": [
+      "Blend the temples cleanly and keep the lineup sharp.",
+      "Subtle fade perfect for conservative styles.",
+      "Great for maintaining length while adding definition."
+    ]
   },
   {
+    "id": "side-part",
     "name": "Side Part",
     "price": "$24",
     "duration": "27 min",
     "description": "Classic side part with defined line",
-    "images": [
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Diamond"],
-    "maintenanceTips": "Maintain a clean parting line and keep the sides tapered."
+    "maintenanceTips": [
+      "Maintain a clean parting line and keep the sides tapered.",
+      "Timeless style suitable for all ages.",
+      "Use a fine-tooth comb to define the part."
+    ]
   },
   {
+    "id": "curly-top",
     "name": "Curly Top",
     "price": "$32",
     "duration": "40 min",
     "description": "Embraces natural curls with clean sides",
-    "images": [
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Round", "Heart"],
-    "maintenanceTips": "Hydrate curls and keep the sides clean with regular trims."
+    "maintenanceTips": [
+      "Hydrate curls and keep the sides clean with regular trims.",
+      "Use curl-enhancing products to define texture.",
+      "Embrace your natural curl pattern."
+    ]
   },
   {
+    "id": "afro",
     "name": "Afro",
     "price": "$28",
     "duration": "35 min",
     "description": "Full and voluminous natural afro",
-    "images": [
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Round"],
-    "maintenanceTips": "Moisturize regularly and shape evenly to keep volume balanced."
+    "maintenanceTips": [
+      "Moisturize regularly and shape evenly to keep volume balanced.",
+      "Pick out with a wide-tooth comb for even distribution.",
+      "Celebrate your natural texture and volume."
+    ]
   },
   {
+    "id": "box-braids",
     "name": "Box Braids",
     "price": "$40",
     "duration": "90 min",
     "description": "Intricate protective braided style",
-    "images": [
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Round", "Square"],
-    "maintenanceTips": "Keep the scalp hydrated and wrap at night to reduce frizz."
+    "maintenanceTips": [
+      "Keep the scalp hydrated and wrap at night to reduce frizz.",
+      "Long-lasting protective style for natural hair.",
+      "Apply light oil to scalp for moisture."
+    ]
   },
   {
+    "id": "twists",
     "name": "Twists",
     "price": "$38",
     "duration": "75 min",
     "description": "Twisted locks with defined pattern",
-    "images": [
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Heart", "Square"],
-    "maintenanceTips": "Use light oil and retwist edges as needed for definition."
+    "maintenanceTips": [
+      "Use light oil and retwist edges as needed for definition.",
+      "Protective style that lasts 4-6 weeks.",
+      "Keep scalp clean and moisturized."
+    ]
   },
   {
+    "id": "cornrows",
     "name": "Cornrows",
     "price": "$35",
     "duration": "60 min",
     "description": "Neat rows of braids close to scalp",
-    "images": [
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Round", "Square"],
-    "maintenanceTips": "Keep the scalp clean and avoid heavy product buildup."
+    "maintenanceTips": [
+      "Keep the scalp clean and avoid heavy product buildup.",
+      "Classic protective style with versatile patterns.",
+      "Can last 2-4 weeks with proper care."
+    ]
   },
   {
+    "id": "dreadlocks",
     "name": "Dreadlocks",
     "price": "$50",
     "duration": "120 min",
     "description": "Signature locked and twisted style",
-    "images": [
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Heart"],
-    "maintenanceTips": "Retwist roots regularly and keep locks moisturized."
+    "maintenanceTips": [
+      "Retwist roots regularly and keep locks moisturized.",
+      "Iconic style representing cultural heritage.",
+      "Requires commitment and regular maintenance."
+    ]
   },
   {
+    "id": "man-bun",
     "name": "Man Bun",
     "price": "$22",
     "duration": "25 min",
     "description": "Long hair styled into a top knot",
-    "images": [
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Triangle"],
-    "maintenanceTips": "Keep the ends trimmed and use conditioner to reduce frizz."
+    "maintenanceTips": [
+      "Keep the ends trimmed and use conditioner to reduce frizz.",
+      "Versatile style that can be worn up or down.",
+      "Use quality hair ties to prevent breakage."
+    ]
   },
   {
+    "id": "long-layered",
     "name": "Long & Layered",
     "price": "$35",
     "duration": "45 min",
     "description": "Strategic layers for movement and flow",
-    "images": [
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Round", "Heart"],
-    "maintenanceTips": "Use lightweight layers and regular trims to prevent split ends."
+    "maintenanceTips": [
+      "Use lightweight layers and regular trims to prevent split ends.",
+      "Perfect for adding dimension and movement.",
+      "Style with texturizing spray for natural volume."
+    ]
   },
   {
+    "id": "mohawk",
     "name": "Mohawk",
     "price": "$35",
     "duration": "40 min",
     "description": "Bold statement with tall center strip",
-    "images": [
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Diamond"],
-    "maintenanceTips": "Use strong hold product and keep the sides faded clean."
+    "maintenanceTips": [
+      "Use strong hold product and keep the sides faded clean.",
+      "Edgy style that makes a bold statement.",
+      "Requires frequent side maintenance."
+    ]
   },
   {
+    "id": "spiky",
     "name": "Spiky",
     "price": "$24",
     "duration": "28 min",
     "description": "Sharp and edgy spikes throughout",
-    "images": [
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Round"],
-    "maintenanceTips": "Use a matte clay and dry the hair upward for texture."
+    "maintenanceTips": [
+      "Use a matte clay and dry the hair upward for texture.",
+      "Fun and playful style with youthful energy.",
+      "Work product through with fingers for definition."
+    ]
   },
   {
+    "id": "french-crop",
     "name": "French Crop",
     "price": "$26",
     "duration": "31 min",
     "description": "Short with textured fringe on top",
-    "images": [
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
-    ],
+    "images": {
+      "front": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=800&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=800&fit=crop",
+      "back": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=800&fit=crop"
+    },
     "suitableFaceShapes": ["Oval", "Square", "Round"],
-    "maintenanceTips": "Keep the fringe textured and the sides tapered for balance."
+    "maintenanceTips": [
+      "Keep the fringe textured and the sides tapered for balance.",
+      "Modern European-inspired style.",
+      "Low maintenance with stylish appeal."
+    ]
   }
 ]

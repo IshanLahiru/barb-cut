@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/theme_controller.dart';
+import 'controllers/style_selection_controller.dart';
 import 'services/auth_service.dart';
 import 'auth_screen.dart';
 import 'theme/theme.dart';
@@ -62,6 +63,7 @@ class MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController(AuthService())),
         ChangeNotifierProvider.value(value: widget.themeController),
+        ChangeNotifierProvider(create: (_) => StyleSelectionController()),
       ],
       child: Consumer<ThemeController>(
         builder: (context, themeController, _) {
