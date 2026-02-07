@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:math';
 import 'dart:async';
 import 'dart:ui';
@@ -16,6 +18,7 @@ import '../features/home/presentation/bloc/home_event.dart';
 import '../features/home/presentation/bloc/home_state.dart';
 import '../shared/widgets/molecules/add_style_card.dart';
 import '../shared/widgets/molecules/style_preview_card_inline.dart';
+import '../controllers/style_selection_controller.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -26,9 +29,11 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   final PanelController _panelController = PanelController();
+  final ScrollController _mainScrollController = ScrollController();
   final TextEditingController _panelSearchController = TextEditingController();
   int _selectedHaircutIndex = 0;
   int _selectedBeardIndex = 0;
+  int _selectedAngleIndex = 0;
   String _panelSearchQuery = '';
   double _panelSlidePosition = 0.0;
   late TabController _tabController;
@@ -40,6 +45,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   int? _confirmedHaircutIndex;
   int? _confirmedBeardIndex;
   Timer? _carouselTimer;
+
+  // NEW: Store StyleEntity objects from the bloc
+  late List<StyleEntity> _haircutEntities = [];
+  late List<StyleEntity> _beardEntities = [];
 
   final List<Map<String, dynamic>> _defaultHaircuts = const [];
 
@@ -57,10 +66,24 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             'duration': style.duration,
             'tips': style.tips,
             'description': style.description,
-            'image': style.imageUrl,
+            'maintenanceTips': style.maintenanceTips,
+            'suitableFaceShapes': style.suitableFaceShapes,
+            'images': style.images,
+            'image': style.images.isNotEmpty
+                ? style.images.first
+                : style.imageUrl,
           },
         )
         .toList();
+  }
+
+  List<String> _extractImages(Map<String, dynamic>? style) {
+    final images = style?['images'];
+    if (images is List) {
+      return images.map((value) => value.toString()).toList();
+    }
+    final image = style?['image'];
+    return image != null ? [image.toString()] : <String>[];
   }
 
   void _regenerateHeights() {
@@ -82,9 +105,74 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
+    _mainScrollController.addListener(_handleMainScroll);
     _haircuts = List<Map<String, dynamic>>.from(_defaultHaircuts);
     _beardStyles = List<Map<String, dynamic>>.from(_defaultBeardStyles);
     _regenerateHeights();
+  }
+
+  double _lastScrollOffset = 0.0;
+  static const double _scrollThresholdToRetractPanel = 40.0;
+  static const double _scrollDeltaMin = 18.0;
+  static const double _scrollOffsetDescriptionVisible = 280.0;
+  static const double _scrollOffsetRevealPanel = 260.0;
+
+  // Panel levels: 1 = minimal (reading description), 2 = peek, 4 = full screen
+  static const double _panelLevel1 = 0.0;
+  static const double _panelLevel2 = 0.20; // middle stage — a bit lower
+  static const double _panelLevel4 = 1.0;
+
+  static const Duration _panelRevealDuration = Duration(milliseconds: 480);
+
+  Future<void> _setPanelLevel(double level, {Duration? duration}) async {
+    if (!_panelController.isAttached) return;
+    await _panelController.animatePanelToPosition(
+      level.clamp(0.0, 1.0),
+      duration: duration ?? const Duration(milliseconds: 280),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  void _handleMainScroll() {
+    if (!_mainScrollController.hasClients) return;
+    _handleScrollOffset(_mainScrollController.offset);
+  }
+
+  void _handleScrollOffset(double offset) {
+    if (!_panelController.isAttached) return;
+    final delta = offset - _lastScrollOffset;
+
+    // When viewing description: collapse panel to minimum (no hide/show — avoids stuck state)
+    if (offset >= _scrollOffsetDescriptionVisible) {
+      if (_panelSlidePosition > 0) {
+        _setPanelLevel(_panelLevel1);
+      }
+      _lastScrollOffset = offset;
+      return;
+    }
+
+    // Back in top area: bring panel back to peek when user scrolls up
+    if (offset < _scrollOffsetRevealPanel && _panelSlidePosition < _panelLevel2) {
+      _setPanelLevel(_panelLevel2, duration: _panelRevealDuration);
+      _lastScrollOffset = offset;
+      return;
+    }
+
+    // Scrolling down: go to level 2 (peek)
+    if (delta > _scrollDeltaMin &&
+        offset > _scrollThresholdToRetractPanel &&
+        _panelSlidePosition > _panelLevel2) {
+      _setPanelLevel(_panelLevel2);
+    }
+
+    // Scrolling up (panel visible): animate to full
+    if (delta < -_scrollDeltaMin &&
+        offset < _scrollOffsetDescriptionVisible &&
+        _panelSlidePosition < _panelLevel4) {
+      _setPanelLevel(_panelLevel4, duration: _panelRevealDuration);
+    }
+
+    _lastScrollOffset = offset;
   }
 
   void _onTryThisPressed() async {
@@ -708,7 +796,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               _confirmedHaircutIndex = null;
                               _confirmedBeardIndex = null;
                             });
-                            _panelController.close();
+                            _setPanelLevel(_panelLevel2);
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AiColors.textSecondary,
@@ -993,7 +1081,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       _isGenerating = true;
     });
 
-    _panelController.close();
+    _setPanelLevel(_panelLevel2);
 
     // After 5 seconds, reset
     Future.delayed(Duration(seconds: 5), () {
@@ -1014,6 +1102,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     _arrowAnimationController.dispose();
     _carouselTimer?.cancel();
     _panelSearchController.dispose();
+    _mainScrollController.dispose();
     super.dispose();
   }
 
@@ -1029,13 +1118,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final media = MediaQuery.of(context);
-    final availableHeight =
-        media.size.height - media.padding.top - kBottomNavigationBarHeight - 22;
-    final minPanelHeight = availableHeight * 0.28;
-    final maxPanelHeight = availableHeight * 0.9;
-
-    return BlocProvider(
+    return BlocProvider<HomeBloc>(
       create: (_) => HomeBloc(
         getHaircutsUseCase: getIt<GetHaircutsUseCase>(),
         getBeardStylesUseCase: getIt<GetBeardStylesUseCase>(),
@@ -1044,6 +1127,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         listener: (context, state) {
           if (state is HomeLoaded) {
             setState(() {
+              // Store both StyleEntity objects and Maps
+              _haircutEntities = state.haircuts;
+              _beardEntities = state.beardStyles;
               _haircuts = _mapStyles(state.haircuts);
               _beardStyles = _mapStyles(state.beardStyles);
 
@@ -1074,6 +1160,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 _confirmedBeardIndex = null;
               }
 
+              _selectedAngleIndex = 0;
               _regenerateHeights();
             });
           }
@@ -1087,42 +1174,56 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             );
           }
         },
-        child: Scaffold(
-          backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
-          appBar: AppBar(
-            backgroundColor: AdaptiveThemeColors.backgroundDark(context),
-            elevation: 0,
-            toolbarHeight: 48,
-            title: Text(
-              'Barbcut',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: AdaptiveThemeColors.textPrimary(context),
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            centerTitle: true,
-            surfaceTintColor: Colors.transparent,
-          ),
-          body: SlidingUpPanel(
-            controller: _panelController,
-            minHeight: minPanelHeight,
-            maxHeight: maxPanelHeight,
-            borderRadius: BorderRadius.zero,
-            backdropEnabled: false,
-            isDraggable: true,
-            parallaxEnabled: true,
-            parallaxOffset: 0.5,
-            onPanelSlide: (position) {
-              setState(() {
-                _panelSlidePosition = position;
-              });
-              // Animate arrow: 0 = up (0.0), 1 = down (1.0)
-              _arrowAnimationController.animateTo(position);
-            },
-            panelBuilder: (scrollController) => _buildPanel(scrollController),
-            body: _buildMainContent(),
+        child: _buildScaffold(),
+      ),
+    );
+  }
+
+  Widget _buildScaffold() {
+    final media = MediaQuery.of(context);
+    final availableHeight =
+        media.size.height - media.padding.top - kBottomNavigationBarHeight - 22;
+    // Level 1 = minimal strip (4%), Level 2 = 28% via position, Level 4 = 90%
+    final minPanelHeight = (availableHeight * 0.04).clamp(32.0, 48.0);
+    final maxPanelHeight = availableHeight * 0.9;
+
+    return Scaffold(
+      backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
+      appBar: AppBar(
+        backgroundColor: AdaptiveThemeColors.backgroundDark(context),
+        elevation: 0,
+        toolbarHeight: 48,
+        title: Text(
+          'Barbcut',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            color: AdaptiveThemeColors.textPrimary(context),
+            fontWeight: FontWeight.w800,
           ),
         ),
+        centerTitle: true,
+        surfaceTintColor: Colors.transparent,
+      ),
+      body: SlidingUpPanel(
+        controller: _panelController,
+        minHeight: minPanelHeight,
+        maxHeight: maxPanelHeight,
+        borderRadius: BorderRadius.zero,
+        backdropEnabled: false,
+        isDraggable: true,
+        parallaxEnabled: true,
+        parallaxOffset: 0.5,
+        onPanelSlide: (position) {
+          setState(() {
+            _panelSlidePosition = position;
+          });
+          // Arrow: up when bottom/middle (position < 0.5), down when top (position >= 0.5)
+          final arrowTarget = position >= 0.5 ? 1.0 : 0.0;
+          if (_arrowAnimationController.value != arrowTarget) {
+            _arrowAnimationController.animateTo(arrowTarget);
+          }
+        },
+        panelBuilder: (scrollController) => _buildPanel(scrollController),
+        body: _buildMainContent(),
       ),
     );
   }
@@ -1135,34 +1236,113 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           520,
         );
         final double iconSize = (carouselHeight * 0.55).clamp(140, 260);
+        final Map<String, dynamic>? selectedHaircut = _haircuts.isNotEmpty
+            ? _haircuts[_selectedHaircutIndex]
+            : null;
+        final List<String> carouselImages = _extractImages(selectedHaircut);
+        final List<String> activeImages = carouselImages.isNotEmpty
+            ? carouselImages
+            : <String>[''];
 
-        return Container(
-          decoration: BoxDecoration(
-            color: AdaptiveThemeColors.backgroundDeep(context),
-          ),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(
-              AiSpacing.lg,
-              0,
-              AiSpacing.lg,
-              AiSpacing.lg,
+        // Match carousel viewportFraction so title aligns with slide
+        final double viewportFraction = (constraints.maxWidth < 360)
+            ? 0.88
+            : (constraints.maxWidth < 600 ? 0.8 : 0.7);
+        final double contentWidth = constraints.maxWidth - 2 * AiSpacing.lg;
+        final double slideHorizontalPadding =
+            (contentWidth * (1 - viewportFraction)) / 2;
+
+        // Space for name; reduced top/bottom spacing
+        const double nameTopPadding = 6.0;
+        const double nameBottomPadding = 0.0;
+        const double headerAreaHeight = 36.0;
+
+        // Match SlidingUpPanel parallax: body shifts up by position * (max - min) * 0.5
+        final media = MediaQuery.of(context);
+        final availableHeight = media.size.height -
+            media.padding.top -
+            kBottomNavigationBarHeight -
+            22;
+        final minPanelH = (availableHeight * 0.04).clamp(32.0, 48.0);
+        final maxPanelH = availableHeight * 0.9;
+        final parallaxShift =
+            _panelSlidePosition * (maxPanelH - minPanelH) * 0.5;
+
+        return NotificationListener<ScrollNotification>(
+          onNotification: (ScrollNotification notification) {
+            if (notification is ScrollUpdateNotification ||
+                notification is ScrollEndNotification) {
+              final pixels = notification.metrics.pixels;
+              _handleScrollOffset(pixels);
+            }
+            return false;
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: AdaptiveThemeColors.backgroundDeep(context),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+            child: SingleChildScrollView(
+              controller: _mainScrollController,
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(
+                AiSpacing.lg,
+                // Compensate for parallax so name and carousel stay visible in middle/top stage
+                parallaxShift,
+                AiSpacing.lg,
+                AiSpacing.lg +
+                    80 +
+                    (MediaQuery.of(context).size.height -
+                            MediaQuery.of(context).padding.top -
+                            kBottomNavigationBarHeight -
+                            22) *
+                        0.20,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                // Haircut name: starts at left edge of slide, similar spacing above and below
+                if (selectedHaircut != null) ...[
+                  SizedBox(
+                    height: headerAreaHeight,
+                    width: double.infinity,
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        slideHorizontalPadding,
+                        nameTopPadding,
+                        slideHorizontalPadding,
+                        nameBottomPadding,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          selectedHaircut['name']?.toString() ?? '',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                color: AdaptiveThemeColors.textPrimary(context),
+                                fontWeight: FontWeight.w800,
+                              ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
                 SizedBox(
                   height: carouselHeight,
                   child: Stack(
                     children: [
                       FlutterCarousel(
+                        key: ValueKey(
+                          'haircut-carousel-$_selectedHaircutIndex',
+                        ),
                         options: CarouselOptions(
                           height: carouselHeight,
                           viewportFraction: (constraints.maxWidth < 360)
                               ? 0.88
                               : (constraints.maxWidth < 600 ? 0.8 : 0.7),
                           enlargeCenterPage: true,
-                          enableInfiniteScroll: true,
+                          enableInfiniteScroll: false,
                           autoPlay: _isGenerating,
                           autoPlayInterval: Duration(milliseconds: 1500),
                           autoPlayAnimationDuration: Duration(
@@ -1171,58 +1351,77 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           showIndicator: false,
                           onPageChanged: (index, reason) {
                             setState(() {
-                              _selectedHaircutIndex = index;
+                              _selectedAngleIndex = index;
                             });
                           },
                         ),
-                        items: _haircuts.take(4).toList().asMap().entries.map((
-                          entry,
-                        ) {
-                          final int itemIndex = entry.key;
-                          final Map<String, dynamic> haircut = entry.value;
-                          final Color accentColor =
-                              // Using general color:
-                              AdaptiveThemeColors.neonCyan(context);
-                          final List<Map<String, dynamic>> carouselItems =
-                              _haircuts.take(4).toList();
+                        items: [
+                          // Image slides (n)
+                          ...activeImages.asMap().entries.map((entry) {
+                            final int itemIndex = entry.key;
+                            final String imageUrl = entry.value;
+                            final Color accentColor =
+                                AdaptiveThemeColors.neonCyan(context);
 
-                          return Align(
-                            alignment: Alignment.center,
-                            child: _buildCarouselCard(
-                              haircut: haircut,
-                              accentColor: accentColor,
-                              itemIndex: itemIndex,
-                              iconSize: iconSize,
-                              isGenerating: _isGenerating,
-                              allItems: carouselItems,
-                            ),
-                          );
-                        }).toList(),
+                            return Align(
+                              alignment: Alignment.center,
+                              child: _buildCarouselCard(
+                                imageUrl: imageUrl,
+                                title: '',
+                                accentColor: accentColor,
+                                itemIndex: itemIndex,
+                                iconSize: iconSize,
+                                isGenerating: _isGenerating,
+                                allImages: activeImages,
+                              ),
+                            );
+                          }).toList(),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: AiSpacing.none),
-                // Carousel indicators
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    4,
-                    (index) => Container(
-                      width: 6,
-                      height: 6,
-                      margin: EdgeInsets.symmetric(horizontal: 3),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _selectedHaircutIndex == index
-                            ? AdaptiveThemeColors.neonCyan(context)
-                            : AiColors.borderLight.withValues(alpha: 0.5),
+                SizedBox(height: 2),
+                // Carousel indicators (one per angle) — larger and higher contrast so they stay visible
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 2),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      activeImages.length,
+                      (index) => Container(
+                        width: 8,
+                        height: 8,
+                        margin: EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _selectedAngleIndex == index
+                              ? AdaptiveThemeColors.neonCyan(context)
+                              : Colors.white.withValues(alpha: 0.4),
+                          boxShadow: _selectedAngleIndex == index
+                              ? [
+                                  BoxShadow(
+                                    color: AdaptiveThemeColors.neonCyan(context)
+                                        .withValues(alpha: 0.5),
+                                    blurRadius: 4,
+                                    spreadRadius: 0,
+                                  ),
+                                ]
+                              : null,
+                        ),
                       ),
                     ),
                   ),
                 ),
                 SizedBox(height: AiSpacing.md),
+                // Main section: details, face shapes, maintenance tips (scrolls into view; panel retracts on scroll)
+                if (selectedHaircut != null)
+                  _buildMainSection(
+                    selectedHaircut,
+                    slideHorizontalPadding,
+                  ),
               ],
+            ),
             ),
           ),
         );
@@ -1230,19 +1429,194 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
+  Widget _buildMainSection(
+    Map<String, dynamic> style,
+    double horizontalPadding,
+  ) {
+    final description = style['description']?.toString();
+    final maintenanceTips = style['maintenanceTips'];
+    final tipsList = maintenanceTips is List
+        ? (maintenanceTips as List).map((e) => e.toString()).toList()
+        : maintenanceTips is String
+            ? [maintenanceTips]
+            : <String>[];
+    final faceShapes = (style['suitableFaceShapes'] as List?)
+            ?.map((e) => e.toString())
+            .toList() ??
+        <String>[];
+    final accentColor = AdaptiveThemeColors.neonCyan(context);
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (description != null && description.isNotEmpty) ...[
+            Text(
+              'About this style',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AdaptiveThemeColors.textSecondary(context),
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+            ),
+            SizedBox(height: AiSpacing.xs),
+            Text(
+              description,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AdaptiveThemeColors.textPrimary(context),
+                    height: 1.45,
+                  ),
+            ),
+            SizedBox(height: AiSpacing.lg),
+          ],
+          if (faceShapes.isNotEmpty) ...[
+            Text(
+              'Suitable face shapes',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AdaptiveThemeColors.textSecondary(context),
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+            ),
+            SizedBox(height: AiSpacing.sm),
+            Wrap(
+              spacing: AiSpacing.sm,
+              runSpacing: AiSpacing.xs,
+              children: faceShapes
+                  .map(
+                    (shape) => Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AiSpacing.md,
+                        vertical: AiSpacing.xs,
+                      ),
+                      decoration: BoxDecoration(
+                        color: accentColor.withValues(alpha: 0.15),
+                        borderRadius:
+                            BorderRadius.circular(AiSpacing.radiusMedium),
+                        border: Border.all(
+                          color: accentColor.withValues(alpha: 0.4),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        shape,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: AdaptiveThemeColors.textPrimary(context),
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+            SizedBox(height: AiSpacing.lg),
+          ],
+          if (tipsList.isNotEmpty) ...[
+            Text(
+              'Maintenance tips',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AdaptiveThemeColors.textSecondary(context),
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+            ),
+            SizedBox(height: AiSpacing.sm),
+            ...tipsList.map(
+              (tip) => Padding(
+                padding: EdgeInsets.only(bottom: AiSpacing.sm),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 6),
+                      child: Container(
+                        width: 5,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: accentColor,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: AiSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        tip,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AdaptiveThemeColors.textSecondary(context),
+                              height: 1.4,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          if (_haircutEntities.length > _selectedHaircutIndex) ...[
+            SizedBox(height: AiSpacing.md),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _confirmedHaircutIndex = _selectedHaircutIndex;
+                  });
+                  if (_confirmedBeardIndex != null) {
+                    _showConfirmationDialog();
+                  } else {
+                    _onTryThisPressed();
+                  }
+                },
+                icon: Icon(
+                  Icons.check_circle_outline,
+                  size: 20,
+                  color: AdaptiveThemeColors.backgroundDeep(context),
+                ),
+                label: Text(
+                  'Try this',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: AdaptiveThemeColors.backgroundDeep(context),
+                  ),
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: accentColor,
+                  foregroundColor:
+                      AdaptiveThemeColors.backgroundDeep(context),
+                  padding: EdgeInsets.symmetric(vertical: AiSpacing.md),
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(AiSpacing.radiusMedium),
+                  ),
+                ),
+              ),
+            ),
+          ],
+          SizedBox(height: AiSpacing.xl),
+          // Extra bottom space so "Try this" stays visible when panel is hidden
+          SizedBox(height: 80),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCarouselCard({
-    required Map<String, dynamic> haircut,
+    required String imageUrl,
+    required String title,
     required Color accentColor,
     required int itemIndex,
     required double iconSize,
     bool isGenerating = false,
-    List<Map<String, dynamic>>? allItems,
+    List<String>? allImages,
   }) {
     Widget cardContent = GestureDetector(
-      onTap: allItems != null
+      onTap: allImages != null
           ? () => _showFullScreenGallery(
               context,
-              allItems,
+              allImages,
               initialIndex: itemIndex,
             )
           : null,
@@ -1270,7 +1644,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
                   child: Image.network(
-                    haircut['image'],
+                    imageUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
@@ -1301,33 +1675,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       stops: const [0.4, 0.7, 1.0],
                     ),
                   ),
-                ),
-              ),
-              // Minimal text overlay
-              Positioned(
-                left: AiSpacing.md,
-                right: AiSpacing.md,
-                bottom: AiSpacing.sm,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      haircut['name'],
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withValues(alpha: 0.5),
-                            offset: const Offset(0, 2),
-                            blurRadius: 4,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ],
@@ -1379,12 +1726,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           // Animated draggable arrow indicator
           GestureDetector(
             onTap: () {
-              // Toggle panel state on tap
+              // Toggle between level 2 (peek) and level 4 (full)
               if (_panelController.isAttached) {
                 if (_panelSlidePosition > 0.3) {
-                  _panelController.close();
+                  _setPanelLevel(_panelLevel2);
                 } else {
-                  _panelController.open();
+                  _setPanelLevel(_panelLevel4);
                 }
               }
             },
@@ -1621,6 +1968,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         itemBuilder: (context, index) {
           final itemIndex = filteredIndices[index];
           final haircut = _haircuts[itemIndex];
+          final haircutEntity = _haircutEntities[itemIndex];
           final isSelected = _selectedHaircutIndex == itemIndex;
           return _buildStyleCard(
             item: haircut,
@@ -1628,9 +1976,15 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             isSelected: isSelected,
             height: _haircutHeights[itemIndex],
             onTap: () {
+              // Select haircut and show its images in the main view
+              context.read<StyleSelectionController>().selectHaircutStyle(
+                haircutEntity,
+              );
               setState(() {
                 _selectedHaircutIndex = itemIndex;
+                _selectedAngleIndex = 0;
               });
+              _setPanelLevel(_panelLevel2);
             },
           );
         },
@@ -1702,6 +2056,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         itemBuilder: (context, index) {
           final itemIndex = filteredIndices[index];
           final beard = _beardStyles[itemIndex];
+          final beardEntity = _beardEntities[itemIndex];
           final isSelected = _selectedBeardIndex == itemIndex;
           return _buildStyleCard(
             item: beard,
@@ -1709,9 +2064,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             isSelected: isSelected,
             height: _beardHeights[itemIndex],
             onTap: () {
-              setState(() {
-                _selectedBeardIndex = itemIndex;
-              });
+              // Select beard style and close panel
+              context.read<StyleSelectionController>().selectBeardStyle(
+                beardEntity,
+              );
+              setState(() => _selectedBeardIndex = itemIndex);
+              _setPanelLevel(_panelLevel2);
             },
           );
         },
@@ -1783,16 +2141,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        item['name'],
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
                       if (isSelected) ...[
                         SizedBox(height: 8),
                         SizedBox(
@@ -1851,7 +2199,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   void _showFullScreenGallery(
     BuildContext context,
-    List<Map<String, dynamic>> items, {
+    List<String> images, {
     int initialIndex = 0,
   }) {
     final PageController controller = PageController(initialPage: initialIndex);
@@ -1868,9 +2216,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             children: [
               PageView.builder(
                 controller: controller,
-                itemCount: items.length,
+                itemCount: images.length,
                 itemBuilder: (context, index) {
-                  final Map<String, dynamic> item = items[index];
                   final Color accentColor =
                       // Using general color:
                       AdaptiveThemeColors.neonCyan(context);
@@ -1880,7 +2227,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       minScale: 1,
                       maxScale: 3,
                       child: Image.network(
-                        item['image'] as String,
+                        images[index],
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
