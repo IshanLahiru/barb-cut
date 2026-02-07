@@ -1,5 +1,6 @@
 import 'package:barbcut/views/main_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -31,6 +32,13 @@ Future<ThemeController> _initializeThemeController() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Lock to portrait orientation
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
