@@ -5,6 +5,9 @@ class StyleEntity {
   final String? price;
   final String? duration;
   final String? tips;
+  final List<String> images;
+  final List<String> suitableFaceShapes;
+  final String maintenanceTips;
   final String description;
   final String imageUrl;
   final StyleType type;
@@ -14,6 +17,9 @@ class StyleEntity {
     this.price,
     this.duration,
     this.tips,
+    required this.images,
+    required this.suitableFaceShapes,
+    required this.maintenanceTips,
     required this.description,
     required this.imageUrl,
     required this.type,
