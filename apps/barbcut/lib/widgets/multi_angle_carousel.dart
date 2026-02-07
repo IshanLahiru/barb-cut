@@ -36,6 +36,16 @@ class _MultiAngleCarouselState extends State<MultiAngleCarousel> {
   }
 
   @override
+  void didUpdateWidget(MultiAngleCarousel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reset carousel when a different style is selected
+    if (oldWidget.style.id != widget.style.id) {
+      _currentIndex = 0;
+      _pageController.jumpToPage(0);
+    }
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
