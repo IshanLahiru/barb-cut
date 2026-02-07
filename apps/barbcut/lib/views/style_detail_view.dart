@@ -4,8 +4,8 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../features/home/domain/entities/style_entity.dart';
 import '../controllers/style_selection_controller.dart';
 import '../theme/theme.dart';
-import 'multi_angle_carousel.dart';
-import 'style_info_section.dart';
+import '../widgets/multi_angle_carousel.dart';
+import '../widgets/style_info_section.dart';
 
 class StyleDetailView extends StatefulWidget {
   final StyleEntity style;
@@ -23,7 +23,6 @@ class _StyleDetailViewState extends State<StyleDetailView> {
   late PanelController _panelController;
   late ScrollController _scrollController;
   bool _isExpanded = false;
-  double _panelPosition = 0.0;
 
   @override
   void initState() {
@@ -96,10 +95,8 @@ class _StyleDetailViewState extends State<StyleDetailView> {
           panel: _buildDetailPanel(),
           collapsed: _buildCollapsedPanel(),
           onPanelSlide: (position) {
-            setState(() {
-              _panelPosition = position;
-            });
-          },
+          // Handle panel slide
+        },
           onPanelClosed: () {
             setState(() => _isExpanded = false);
           },

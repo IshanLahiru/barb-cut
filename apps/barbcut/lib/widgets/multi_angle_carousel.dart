@@ -152,7 +152,7 @@ class _MultiAngleCarouselState extends State<MultiAngleCarousel> {
               },
               errorBuilder: (context, error, stackTrace) {
                 return Container(
-                  color: AiColors.backgroundLight,
+                  color: AiColors.backgroundDark,
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
