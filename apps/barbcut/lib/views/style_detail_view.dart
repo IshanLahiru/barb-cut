@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../features/home/domain/entities/style_entity.dart';
-import '../controllers/style_selection_controller.dart';
 import '../theme/theme.dart';
 import '../widgets/multi_angle_carousel.dart';
 import '../widgets/style_info_section.dart';
@@ -112,9 +110,6 @@ class _StyleDetailViewState extends State<StyleDetailView> {
           child: MultiAngleCarousel(
             style: widget.style,
             height: MediaQuery.of(context).size.height * 0.6,
-            onAngleChanged: (index) {
-              context.read<StyleSelectionController>().selectAngle(index);
-            },
           ),
         ),
       ),

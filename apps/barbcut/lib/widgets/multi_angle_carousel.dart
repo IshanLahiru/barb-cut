@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../features/home/domain/entities/style_entity.dart';
-import '../controllers/style_selection_controller.dart';
 import '../theme/theme.dart';
 
 class MultiAngleCarousel extends StatefulWidget {
@@ -48,7 +46,6 @@ class _MultiAngleCarouselState extends State<MultiAngleCarousel> {
       _currentIndex = index;
     });
     widget.onAngleChanged?.call(index);
-    context.read<StyleSelectionController>().selectAngle(index);
   }
 
   void _navigateToAngle(int index) {
