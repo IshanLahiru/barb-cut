@@ -107,7 +107,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       }
     });
     _arrowAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 380),
       vsync: this,
     );
     _mainScrollController.addListener(_handleMainScroll);
@@ -118,7 +118,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   double _lastScrollOffset = 0.0;
   static const double _scrollThresholdToRetractPanel = 40.0;
-  static const double _scrollDeltaMin = 18.0;
+  static const double _scrollDeltaMin = 24.0;
   static const double _scrollOffsetDescriptionVisible = 280.0;
   static const double _scrollOffsetRevealPanel = 260.0;
 
@@ -127,14 +127,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   static const double _panelLevel2 = 0.20; // middle stage — a bit lower
   static const double _panelLevel4 = 1.0;
 
-  static const Duration _panelRevealDuration = Duration(milliseconds: 480);
+  static const Duration _panelRevealDuration = Duration(milliseconds: 520);
+  static const Duration _panelSnapDuration = Duration(milliseconds: 320);
+  static const Curve _panelCurve = Curves.fastOutSlowIn;
 
   Future<void> _setPanelLevel(double level, {Duration? duration}) async {
     if (!_panelController.isAttached) return;
     await _panelController.animatePanelToPosition(
       level.clamp(0.0, 1.0),
-      duration: duration ?? const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
+      duration: duration ?? _panelSnapDuration,
+      curve: _panelCurve,
     );
   }
 
@@ -1101,7 +1103,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           // Arrow: up when bottom/middle (position < 0.5), down when top (position >= 0.5)
           final arrowTarget = position >= 0.5 ? 1.0 : 0.0;
           if (_arrowAnimationController.value != arrowTarget) {
-            _arrowAnimationController.animateTo(arrowTarget);
+            _arrowAnimationController.animateTo(
+              arrowTarget,
+              curve: Curves.fastOutSlowIn,
+            );
           }
         },
         panelBuilder: (scrollController) => _buildPanel(scrollController),
@@ -1227,9 +1232,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           enlargeCenterPage: true,
                           enableInfiniteScroll: false,
                           autoPlay: _isGenerating,
-                          autoPlayInterval: Duration(milliseconds: 1500),
-                          autoPlayAnimationDuration: Duration(
-                            milliseconds: 800,
+                          autoPlayInterval: const Duration(milliseconds: 1800),
+                          autoPlayAnimationDuration: const Duration(
+                            milliseconds: 600,
                           ),
                           showIndicator: false,
                           onPageChanged: (index, reason) {
@@ -1265,34 +1270,41 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   ),
                 ),
                 SizedBox(height: 2),
-                // Carousel indicators (one per angle) — larger and higher contrast so they stay visible
+                // Carousel indicators — smooth transition when changing angle
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 2),
+                  padding: const EdgeInsets.symmetric(vertical: 2),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       activeImages.length,
-                      (index) => Container(
-                        width: 8,
-                        height: 8,
-                        margin: EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _selectedAngleIndex == index
-                              ? AdaptiveThemeColors.neonCyan(context)
-                              : Colors.white.withValues(alpha: 0.4),
-                          boxShadow: _selectedAngleIndex == index
-                              ? [
-                                  BoxShadow(
-                                    color: AdaptiveThemeColors.neonCyan(context)
-                                        .withValues(alpha: 0.5),
-                                    blurRadius: 4,
-                                    spreadRadius: 0,
-                                  ),
-                                ]
-                              : null,
-                        ),
-                      ),
+                      (index) {
+                        final isActive = _selectedAngleIndex == index;
+                        final accent = AdaptiveThemeColors.neonCyan(context);
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 220),
+                            curve: Curves.easeOutCubic,
+                            width: isActive ? 10 : 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isActive
+                                  ? accent
+                                  : Colors.white.withValues(alpha: 0.4),
+                              boxShadow: isActive
+                                  ? [
+                                      BoxShadow(
+                                        color: accent.withValues(alpha: 0.5),
+                                        blurRadius: 4,
+                                        spreadRadius: 0,
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -1718,8 +1730,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             ),
           ),
           AnimatedSize(
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeOutCubic,
+            duration: const Duration(milliseconds: 450),
+            curve: Curves.fastOutSlowIn,
             alignment: Alignment.topCenter,
             child: SizedBox(
               height: _panelSlidePosition * 70,
@@ -2020,8 +2032,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
         height: height,
         decoration: BoxDecoration(
           border: isSelected
