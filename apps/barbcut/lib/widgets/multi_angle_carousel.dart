@@ -24,7 +24,12 @@ class _MultiAngleCarouselState extends State<MultiAngleCarousel> {
   late PageController _pageController;
   int _currentIndex = 0;
 
-  final List<String> _angleLabels = ['Front', 'Left Side', 'Right Side', 'Back'];
+  final List<String> _angleLabels = [
+    'Front',
+    'Left Side',
+    'Right Side',
+    'Back',
+  ];
 
   @override
   void initState() {
@@ -144,7 +149,7 @@ class _MultiAngleCarouselState extends State<MultiAngleCarousel> {
                   child: CircularProgressIndicator(
                     value: loadingProgress.expectedTotalBytes != null
                         ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
+                              loadingProgress.expectedTotalBytes!
                         : null,
                     color: AdaptiveThemeColors.neonCyan(context),
                   ),
@@ -297,7 +302,9 @@ class _MultiAngleCarouselState extends State<MultiAngleCarousel> {
               ),
               decoration: BoxDecoration(
                 color: isActive
-                    ? AdaptiveThemeColors.neonCyan(context).withValues(alpha: 0.2)
+                    ? AdaptiveThemeColors.neonCyan(
+                        context,
+                      ).withValues(alpha: 0.2)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
                 border: isActive
@@ -310,7 +317,9 @@ class _MultiAngleCarouselState extends State<MultiAngleCarousel> {
               child: Text(
                 _angleLabels[index],
                 style: TextStyle(
-                  color: isActive ? AiColors.textPrimary : AiColors.textSecondary,
+                  color: isActive
+                      ? AiColors.textPrimary
+                      : AiColors.textSecondary,
                   fontSize: 13,
                   fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                 ),

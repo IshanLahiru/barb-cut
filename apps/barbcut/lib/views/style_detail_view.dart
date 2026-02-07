@@ -10,10 +10,7 @@ import '../widgets/style_info_section.dart';
 class StyleDetailView extends StatefulWidget {
   final StyleEntity style;
 
-  const StyleDetailView({
-    super.key,
-    required this.style,
-  });
+  const StyleDetailView({super.key, required this.style});
 
   @override
   State<StyleDetailView> createState() => _StyleDetailViewState();
@@ -76,10 +73,7 @@ class _StyleDetailViewState extends State<StyleDetailView> {
                   width: 1,
                 ),
               ),
-              child: Icon(
-                Icons.arrow_back,
-                color: AiColors.textPrimary,
-              ),
+              child: Icon(Icons.arrow_back, color: AiColors.textPrimary),
             ),
           ),
         ),
@@ -95,8 +89,8 @@ class _StyleDetailViewState extends State<StyleDetailView> {
           panel: _buildDetailPanel(),
           collapsed: _buildCollapsedPanel(),
           onPanelSlide: (position) {
-          // Handle panel slide
-        },
+            // Handle panel slide
+          },
           onPanelClosed: () {
             setState(() => _isExpanded = false);
           },
@@ -252,14 +246,10 @@ class _StyleDetailViewState extends State<StyleDetailView> {
         ),
 
         // Info section
-        SliverToBoxAdapter(
-          child: StyleInfoSection(style: widget.style),
-        ),
+        SliverToBoxAdapter(child: StyleInfoSection(style: widget.style)),
 
         // Bottom spacing
-        SliverToBoxAdapter(
-          child: SizedBox(height: AiSpacing.xl),
-        ),
+        SliverToBoxAdapter(child: SizedBox(height: AiSpacing.xl)),
       ],
     );
   }
