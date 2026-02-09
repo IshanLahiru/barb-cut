@@ -1,0 +1,50 @@
+[
+    {
+        "id": "textured-crew-cut",
+        "name": "Textured Crew Cut",
+        "price": "$20",
+        "duration": "25 min",
+        "description": "A versatile, low-maintenance short crop with jagged texture on top and tapered sides.",
+        "images": {
+            "front": "/apps/barbcut/assets/data/images/017d638e3daea06085427bc0314cff61ae758c6bcf739e38eea8385e493e44dd.png",
+            "left_side": "/apps/barbcut/assets/data/images/600e4213c0bafe4177dca9a33df3bd4c7ddf24f8656f014b00b8039e8cfca895.png",
+            "right_side": "/apps/barbcut/assets/data/images/1603d6b0a8a122c9d24d2c30b6687d779da6b8d3ca606622815f8fea77d6fa36.png",
+            "back": "/apps/barbcut/assets/data/images/b079e79b08eed40da28d1bd4bed6bc370708e42274bfb549c599265aa17dcc08.png"
+        },
+        "suitableFaceShapes": [
+            "Oval",
+            "Square",
+            "Round",
+            "Heart"
+        ],
+        "maintenanceTips": [
+            "Use a matte clay or texturizing paste to define the jagged texture on top.",
+            "Schedule a trim every 3-4 weeks to keep the tapered sides looking clean.",
+            "Point-cutting the top is essential to maintain the 'messy' but intentional look."
+        ]
+    },
+    {
+        "id": "bowl-cut",
+        "name": "Bowl Cut",
+        "price": "$25",
+        "duration": "30 min",
+        "description": "A precision-cut style featuring a straight fringe and uniform length around the perimeter, creating a distinct rounded, bowl-like silhouette.",
+        "images": {
+            "front": "/apps/barbcut/assets/data/images/581f24e518b77b6df72538066fd27bb3e3348bbcee0dd837e423542a9706d57b.png",
+            "left_side": "/apps/barbcut/assets/data/images/1d005eaf203922cfd8978eb4c775a8dc532b378aea47de2c6f8608ca8fc59e35.png",
+            "right_side": "/apps/barbcut/assets/data/images/b9a1834101cbb1a1eb393bc492c7e8b3edfde941f4ef0b3b630324bdb6e7cbcc.png",
+            "back": "/apps/barbcut/assets/data/images/7a6562669f4700496356ac5788b48364347e5f2abebca02bdc366a4ed1882647.png"
+        },
+        "suitableFaceShapes": [
+            "Oval",
+            "Oblong",
+            "Heart",
+            "Diamond"
+        ],
+        "maintenanceTips": [
+            "Apply a smoothing serum or light oil to maintain a sleek, frizz-free texture.",
+            "Schedule trims every 3-4 weeks to keep the horizontal line sharp and prevent the fringe from covering the eyes.",
+            "Blow-dry with a large round brush or use a flat iron to ensure the hair lies perfectly flat and uniform."
+        ]
+    }
+]
