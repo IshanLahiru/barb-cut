@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --project functions/tsconfig.json",
     "watch": "tsc --project functions/tsconfig.json --watch",
-    "serve": "firebase emulators:start --only firestore,auth,functions",
+    "serve": "firebase emulators:start --only auth,firestore,functions",
     "deploy": "firebase deploy",
     "deploy:functions": "firebase deploy --only functions",
     "deploy:rules": "firebase deploy --only firestore:rules",
