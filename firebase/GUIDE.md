@@ -71,9 +71,10 @@ npm run serve
 ```
 
 The emulator starts with:
-- **Firestore**: http://127.0.0.1:8080
-- **Functions**: http://127.0.0.1:5001
-- **Emulator UI**: http://127.0.0.1:4000
+- **Authentication**: http://127.0.0.1:9099 (port 9099)
+- **Firestore**: http://127.0.0.1:8080 (port 8080)
+- **Functions**: http://127.0.0.1:5001 (port 5001)
+- **Emulator UI**: http://127.0.0.1:4000 (port 4400)
 
 ### 3. Run Database Migrations
 
@@ -87,7 +88,9 @@ This loads 2 hairstyles from `apps/barbcut/assets/data/images/data.json` into Fi
 
 ## Cloud Functions
 
-All functions automatically set `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080`, so they connect to the local emulator by default.
+All functions automatically set emulator environment variables and connect to local emulators by default:
+- `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080` - Firestore emulator
+- `FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099` - Auth emulator
 
 ### Auth Functions (Automatic Triggers)
 
@@ -292,6 +295,7 @@ curl -X POST http://127.0.0.1:5001/barb-cut/us-central1/updateUserProfile \
 
 ```dart
 // Configure Flutter to use emulator
+FirebaseAuth.instance.useAuthEmulator('127.0.0.1', 9099);
 FirebaseFunctions.instance.useFunctionsEmulator('127.0.0.1', 5001);
 FirebaseFirestore.instance.useFirestoreEmulator('127.0.0.1', 8080);
 
@@ -374,10 +378,10 @@ Access the Firebase Emulator Suite at **http://127.0.0.1:4000**
 
 ### Features
 
-- **Firestore** - View/edit documents, run queries
-- **Functions** - View logs, copy function URLs
-- **Authentication** - Manage test users
-- **Emulator Hub** - Monitor all services
+- **Firestore** (Port 8080) - View/edit documents, run queries
+- **Functions** (Port 5001) - View logs, copy function URLs
+- **Authentication** (Port 9099) - Create/manage test users, view auth logs
+- **Emulator Hub** (Port 4400) - Monitor all services, view connection details
 
 ---
 
@@ -453,6 +457,7 @@ firebase emulators:start --only firestore,auth,functions --import=./emulator-dat
 ### Development (Local Emulator)
 
 ```bash
+FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099
 FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
 ```
 
