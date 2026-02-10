@@ -16,6 +16,7 @@ if (isEmulator) {
   console.log("🔥 Using Firebase Emulator...");
   admin.initializeApp({
     projectId: "barb-cut",
+    storageBucket: "barb-cut.appspot.com",
   });
 } else {
   // Using production Firebase - credentials required
@@ -35,6 +36,7 @@ if (isEmulator) {
   try {
     admin.initializeApp({
       credential: admin.credential.cert(require(credentialsPath)),
+      storageBucket: "barb-cut.appspot.com",
     });
   } catch (error) {
     console.error("❌ Error: Could not load Firebase credentials");

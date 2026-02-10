@@ -4,12 +4,16 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "serve": "npm run build && cd .. && firebase emulators:start --only auth,firestore,functions",
+    "serve": "npm run build && cd .. && firebase emulators:start --only auth,firestore,functions,storage",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "migrate:up": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node build/cli.js up",
-    "migrate:down": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node build/cli.js down",
-    "migrate:status": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node build/cli.js status"
+    "copy-assets": "mkdir -p src/data/images && cp -r ../../apps/barbcut/assets/data/images/* src/data/images/",
+    "clean-assets": "rm -rf src/data build/data",
+    "predeploy": "npm run copy-assets && npm run build",
+    "migrate:up": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js up",
+    "migrate:down": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js down",
+    "migrate:status": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js status",
+    "migrate:prod": "npm run copy-assets && npm run build && node build/cli.js"
   },
   "engines": {
     "node": "18"

@@ -6,7 +6,7 @@ import * as path from "path";
 /**
  * Migration 001: Initialize Styles Collection from app data
  * Loads haircut styles from apps/barbcut/assets/data/images/data.json
- * and imports them into Firestore with properly configured storage paths
+ * Uploads images to Firebase Storage and stores public URLs in Firestore
  */
 
 // Interface for the style data structure
@@ -28,13 +28,63 @@ interface StyleData {
   maintenanceTips: string[];
 }
 
-// Convert app asset path to Cloud Storage path
-function convertAssetPathToStoragePath(assetPath: string): string {
-  // Transform: /apps/barbcut/assets/data/images/xxx.png
-  // Into: gs://PROJECT_ID.appspot.com/apps/barbcut/assets/data/images/xxx.png
-  // For now, we store the path as-is for local assets
-  // In production, these will be uploaded to Cloud Storage
-  return assetPath;
+/**
+ * Get public URL for a storage file
+ * @param storagePath - Path in Firebase Storage
+ * @returns Public download URL
+ */
+function getPublicUrl(storagePath: string): string {
+  const bucket = admin.storage().bucket();
+  const isEmulator = process.env.FIRESTORE_EMULATOR_HOST || process.env.FIREBASE_STORAGE_EMULATOR_HOST;
+  
+  if (isEmulator) {
+    // Emulator URL format
+    const storageEmulatorHost = process.env.FIREBASE_STORAGE_EMULATOR_HOST || '127.0.0.1:9199';
+    return `http://${storageEmulatorHost}/v0/b/${bucket.name}/o/${encodeURIComponent(storagePath)}?alt=media`;
+  } else {
+    // Production URL format
+    return `https://storage.googleapis.com/${bucket.name}/${storagePath}`;
+  }
+}
+
+/**
+ * Upload an image file to Firebase Storage (with idempotency)
+ * @param localPath - Local file path to the image
+ * @param storagePath - Destination path in Firebase Storage (e.g., "styles/style-id/front.png")
+ * @returns Public download URL
+ */
+async function uploadImageToStorage(
+  localPath: string,
+  storagePath: string
+): Promise<string> {
+  const bucket = admin.storage().bucket();
+  const file = bucket.file(storagePath);
+  
+  // Check if file already exists (idempotency)
+  const [exists] = await file.exists();
+  
+  if (exists) {
+    console.log(`    ⏭️  Skipped (already exists): ${storagePath}`);
+    return getPublicUrl(storagePath);
+  }
+  
+  // Upload file to Storage
+  await bucket.upload(localPath, {
+    destination: storagePath,
+    metadata: {
+      contentType: "image/png",
+      cacheControl: "public, max-age=31536000", // Cache for 1 year
+    },
+  });
+
+  // Make the file publicly accessible (only in production)
+  const isEmulator = process.env.FIRESTORE_EMULATOR_HOST || process.env.FIREBASE_STORAGE_EMULATOR_HOST;
+  
+  if (!isEmulator) {
+    await file.makePublic();
+  }
+  
+  return getPublicUrl(storagePath);
 }
 
 // Parse price string to number
@@ -53,12 +103,23 @@ export async function up(db: admin.firestore.Firestore) {
   console.log("⬆️  Running migration 001: init_styles_from_data");
 
   try {
-    // Read data.json from the assets directory
-    // Navigate to workspace root: firebase/functions -> firebase -> workspace root
-    const dataFilePath = path.join(
+    // Auto-detect data path (development vs production)
+    // Production: firebase/functions/build/data/images (bundled with deployment)
+    // Development: workspace root/apps/barbcut/assets/data/images
+    const productionDataPath = path.join(__dirname, "../data/images");
+    const developmentDataPath = path.join(
       process.cwd(),
-      "../../apps/barbcut/assets/data/images/data.json"
+      "../../apps/barbcut/assets/data/images"
     );
+    
+    // Try production path first, fallback to development
+    const imagesBaseDir = fs.existsSync(productionDataPath) 
+      ? productionDataPath 
+      : developmentDataPath;
+    
+    const dataFilePath = path.join(imagesBaseDir, "data.json");
+    
+    console.log(`📂 Looking for assets in: ${imagesBaseDir}`);
 
     if (!fs.existsSync(dataFilePath)) {
       console.warn(`⚠️  Data file not found at: ${dataFilePath}`);
@@ -89,12 +150,35 @@ export async function up(db: admin.firestore.Firestore) {
 
       // Import each style into Firestore
       for (const style of stylesData) {
+        console.log(`  Processing style: ${style.name}`);
+        
+        // Check if style already exists (idempotency)
         const styleRef = db.collection("styles").doc(style.id);
+        const existingStyle = await styleRef.get();
+        
+        if (existingStyle.exists) {
+          console.log(`  ⏭️  Style already exists, skipping: ${style.name}`);
+          continue;
+        }
 
-        // Convert image paths for Cloud Storage
+        // Upload images to Firebase Storage and get public URLs
         const images: { [key: string]: string } = {};
+        
         for (const [angleKey, assetPath] of Object.entries(style.images)) {
-          images[angleKey] = convertAssetPathToStoragePath(assetPath);
+          // Extract filename from asset path
+          const filename = path.basename(assetPath);
+          const localImagePath = path.join(imagesBaseDir, filename);
+
+          if (fs.existsSync(localImagePath)) {
+            // Upload to Storage: styles/{style-id}/{angle}.png
+            const storagePath = `styles/${style.id}/${angleKey}.png`;
+            const publicUrl = await uploadImageToStorage(localImagePath, storagePath);
+            images[angleKey] = publicUrl;
+            console.log(`    ✓ Uploaded ${angleKey}: ${filename}`);
+          } else {
+            console.warn(`    ⚠️  Image not found: ${localImagePath}`);
+            images[angleKey] = assetPath; // Fallback to original path
+          }
         }
 
         batch.set(styleRef, {
@@ -113,7 +197,6 @@ export async function up(db: admin.firestore.Firestore) {
           isActive: true,
           createdAt: FieldValue.serverTimestamp(),
           updatedAt: FieldValue.serverTimestamp(),
-          assetPath: style.images.front, // Original asset path for reference
         });
 
         console.log(`  ✓ Added style: ${style.name}`);
@@ -132,13 +215,30 @@ export async function down(db: admin.firestore.Firestore) {
   console.log("⬇️  Rolling back migration 001: init_styles_from_data");
 
   try {
+    const bucket = admin.storage().bucket();
     const batch = db.batch();
 
-    // Delete all styles
+    // Get all styles to delete their images from Storage
     const snapshot = await db.collection("styles").get();
-    snapshot.docs.forEach((doc) => {
+    
+    for (const doc of snapshot.docs) {
+      // Delete images from Storage
+      const styleId = doc.id;
+      const storagePrefix = `styles/${styleId}/`;
+      
+      try {
+        const [files] = await bucket.getFiles({ prefix: storagePrefix });
+        for (const file of files) {
+          await file.delete();
+          console.log(`  ✓ Deleted image: ${file.name}`);
+        }
+      } catch (error) {
+        console.warn(`  ⚠️  Could not delete images for style ${styleId}:`, error);
+      }
+
+      // Delete Firestore document
       batch.delete(doc.ref);
-    });
+    }
 
     // Reset migration status
     const statusRef = db.collection("_migrations").doc("migration_status");
@@ -162,7 +262,7 @@ export async function down(db: admin.firestore.Firestore) {
 
 export const migration = {
   id: "001_init_styles_from_data",
-  description: "Initialize styles collection from apps/barbcut/assets/data/images/data.json",
+  description: "Initialize styles collection and upload images to Firebase Storage",
   up,
   down,
 };

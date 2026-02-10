@@ -6,6 +6,9 @@ src/**/*.js
 src/**/*.d.ts
 src/**/*.js.map
 
+# Bundled assets (copied at build time from apps/barbcut/assets)
+src/data/
+
 # Dependencies
 node_modules/
 
