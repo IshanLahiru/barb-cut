@@ -1,12 +1,12 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-const db = admin.firestore();
-
 /**
  * Health check endpoint for monitoring Firebase backend status
  */
 export const healthCheck = functions.https.onCall(async (data, context) => {
+  const db = admin.firestore();
+
   try {
     // Check Firestore connectivity
     const testDoc = await db.collection("_health").doc("status").get();

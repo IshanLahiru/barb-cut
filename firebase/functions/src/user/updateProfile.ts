@@ -1,8 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-const db = admin.firestore();
-
 /**
  * Update user profile information
  */
@@ -18,6 +16,8 @@ export const updateUserProfile = functions.https.onCall(
 
     const userId = context.auth.uid;
     const { displayName, phone, address, photoURL, bio, role } = data;
+
+    const db = admin.firestore();
 
     try {
       const updateData: any = {

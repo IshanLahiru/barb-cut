@@ -1,8 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-const db = admin.firestore();
-
 /**
  * Delete user profile and all associated data (admin only)
  */
@@ -18,6 +16,8 @@ export const deleteUserProfile = functions.https.onCall(
 
     const userId = context.auth.uid;
     const { targetUserId } = data;
+
+    const db = admin.firestore();
 
     try {
       // Check if user is admin or deleting own account

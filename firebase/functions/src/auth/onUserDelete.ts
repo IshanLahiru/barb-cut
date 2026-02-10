@@ -1,13 +1,13 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-const db = admin.firestore();
-
 /**
  * Delete user document and related data when user is deleted from Firebase Auth
  */
 export const deleteUserDocument = functions.auth.user().onDelete(async (user) => {
   console.log(`🗑️  User deleted: ${user.uid}`);
+
+  const db = admin.firestore();
 
   try {
     const batch = db.batch();

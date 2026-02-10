@@ -1,8 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-const db = admin.firestore();
-
 /**
  * Get user profile information
  */
@@ -21,6 +19,8 @@ export const getUserProfile = functions.https.onCall(
 
     // Users can only read their own profile, admins can read any
     const readUserId = targetUserId || userId;
+
+    const db = admin.firestore();
 
     try {
       const userDoc = await db.collection("users").doc(readUserId).get();
