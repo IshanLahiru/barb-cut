@@ -2,7 +2,7 @@
   "name": "barbcut-firebase",
   "version": "1.0.0",
   "description": "Firebase Backend for Barbcut - Barber Appointment System",
-  "main": "functions/lib/index.js",
+  "main": "functions/build/index.js",
   "scripts": {
     "build": "tsc --project functions/tsconfig.json",
     "watch": "tsc --project functions/tsconfig.json --watch",
@@ -10,9 +10,9 @@
     "deploy": "firebase deploy",
     "deploy:functions": "firebase deploy --only functions",
     "deploy:rules": "firebase deploy --only firestore:rules",
-    "migrate:status": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node functions/lib/cli.js status",
-    "migrate:up": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node functions/lib/cli.js up",
-    "migrate:down": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node functions/lib/cli.js down",
+    "migrate:status": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node functions/build/cli.js status",
+    "migrate:up": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node functions/build/cli.js up",
+    "migrate:down": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node functions/build/cli.js down",
     "logs": "firebase functions:log",
     "shell": "firebase functions:shell"
   },
