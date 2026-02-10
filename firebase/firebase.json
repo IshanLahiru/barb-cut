@@ -13,5 +13,26 @@
       "firebase-debug.log",
       "firestore-debug.log"
     ]
+  },
+  "emulators": {
+    "auth": {
+      "host": "127.0.0.1",
+      "port": 9099
+    },
+    "firestore": {
+      "host": "127.0.0.1",
+      "port": 8080
+    },
+    "functions": {
+      "host": "127.0.0.1",
+      "port": 5001
+    },
+    "hub": {
+      "host": "127.0.0.1",
+      "port": 4400
+    },
+    "ui": {
+      "enabled": true
+    }
   }
 }
