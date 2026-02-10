@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 import { migrations, Migration } from "./migrations/index";
 
 export interface MigrationStatus {
@@ -28,6 +29,22 @@ export async function getMigrationStatus(
   }
 
   return doc.data() as MigrationStatus;
+}
+
+/**
+ * Update migration status in Firestore
+ */
+async function updateMigrationStatus(
+  db: admin.firestore.Firestore,
+  status: Partial<MigrationStatus>
+): Promise<void> {
+  await db.doc(MIGRATION_STATUS_DOC).set(
+    {
+      ...status,
+      timestamp: FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
 }
 
 /**
@@ -72,6 +89,15 @@ export async function migrateUp(
       await migration.up(db);
 
       migrationsRan.push(migration.id);
+      
+      // Update status after each successful migration
+      const newVersion = status.version + migrationsRan.length;
+      await updateMigrationStatus(db, {
+        version: newVersion,
+        lastMigration: migration.id,
+        migrationsRun: [...status.migrationsRun, migration.id],
+      });
+
       console.log(`✅ Completed: ${migration.id}\n`);
     } catch (error) {
       console.error(`❌ Failed to run migration: ${migration.id}`);
@@ -105,6 +131,15 @@ export async function migrateDown(
     }
 
     await migrationToRollback.down(db);
+
+    // Update status after successful rollback
+    const newVersion = status.version - 1;
+    const updatedMigrationsRun = status.migrationsRun.slice(0, -1);
+    await updateMigrationStatus(db, {
+      version: newVersion,
+      lastMigration: updatedMigrationsRun[updatedMigrationsRun.length - 1] || null,
+      migrationsRun: updatedMigrationsRun,
+    });
 
     console.log(`✅ Rolled back: ${migrationToRollback.id}`);
 

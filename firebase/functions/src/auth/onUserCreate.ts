@@ -1,5 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 
 /**
  * Create user document when user is created via Firebase Auth
@@ -17,8 +18,8 @@ export const createUserDocument = functions.auth.user().onCreate(async (user) =>
       phone: user.phoneNumber || "",
       photoURL: user.photoURL || "",
       role: "customer", // Default role
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
       isActive: true,
     });
 

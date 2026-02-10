@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -53,10 +54,10 @@ export async function up(db: admin.firestore.Firestore) {
 
   try {
     // Read data.json from the assets directory
-    // Use process.cwd() to get the project root, then go to apps/
+    // Navigate to workspace root: firebase/functions -> firebase -> workspace root
     const dataFilePath = path.join(
       process.cwd(),
-      "../apps/barbcut/assets/data/images/data.json"
+      "../../apps/barbcut/assets/data/images/data.json"
     );
 
     if (!fs.existsSync(dataFilePath)) {
@@ -74,7 +75,7 @@ export async function up(db: admin.firestore.Firestore) {
       {
         version: 1,
         lastMigration: "001_init_styles_from_data",
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        timestamp: FieldValue.serverTimestamp(),
       },
       { merge: true }
     );
@@ -110,8 +111,8 @@ export async function up(db: admin.firestore.Firestore) {
           suitableFaceShapes: style.suitableFaceShapes || [],
           maintenanceTips: style.maintenanceTips || [],
           isActive: true,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
           assetPath: style.images.front, // Original asset path for reference
         });
 
@@ -146,7 +147,7 @@ export async function down(db: admin.firestore.Firestore) {
       {
         version: 0,
         lastMigration: null,
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        timestamp: FieldValue.serverTimestamp(),
       },
       { merge: true }
     );
