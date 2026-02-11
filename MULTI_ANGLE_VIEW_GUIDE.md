@@ -169,7 +169,7 @@ Consumer<StyleSelectionController>(builder: (context, controller, _) {
 4. **Share functionality**: Add ability to share selected style
 5. **Favorites**: Mark styles as favorites
 6. **AR preview**: Integrate AR for trying styles on camera
-7. **Booking integration**: Add "Book Now" button linked to booking system
+7. **Save or share**: Let users save or share a selected look
 
 ## Testing
 
