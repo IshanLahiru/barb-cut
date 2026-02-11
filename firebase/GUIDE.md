@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is the complete Firebase backend for the Barbcut barber appointment system. It includes:
+This is the complete Firebase backend for the Barbcut haircut visualization app. It includes:
 
 - **Firestore Database** - Document-based NoSQL database
 - **Cloud Functions** - Serverless backend functions
@@ -109,7 +109,7 @@ All functions automatically set emulator environment variables and connect to lo
 
 ```typescript
 // Automatic - fires when user account is deleted
-// Cleans up: bookings, aiGenerations, preferences, ratings
+// Cleans up: aiGenerations, preferences, ratings
 ```
 
 ---
