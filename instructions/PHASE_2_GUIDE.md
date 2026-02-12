@@ -124,7 +124,7 @@ class ProductCard extends StatelessWidget {
 For user profile display in profile view.
 
 #### Create `lib/shared/widgets/molecules/stat_item.dart`
-For stats row (Generations, Favorites, Bookings).
+For stats row (Generations, Favorites, Try-Ons).
 
 ### 4. Create Organisms (Full Sections)
 
