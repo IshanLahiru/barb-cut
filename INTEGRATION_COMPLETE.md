@@ -246,7 +246,7 @@ controller.nextAngle();    // Move to next angle
 5. **Favorites** - Mark styles as favorites
 6. **Search Integration** - Search by suitable face shapes
 7. **AR Preview** - Virtual try-on using phone camera
-8. **Booking Integration** - Link to booking system
+8. **Sharing/Export** - Save or share a selected look
 
 ---
 
