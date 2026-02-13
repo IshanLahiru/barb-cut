@@ -46,13 +46,12 @@ class _StyleDetailViewState extends State<StyleDetailView> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (_isExpanded) {
+    return PopScope(
+      canPop: !_isExpanded,
+      onPopInvokedWithResult: (didPop, result) {
+        if (_isExpanded && !didPop) {
           _panelController.close();
-          return false;
         }
-        return true;
       },
       child: Scaffold(
         extendBodyBehindAppBar: true,
