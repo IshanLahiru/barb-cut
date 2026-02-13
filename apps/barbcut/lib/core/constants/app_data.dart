@@ -88,10 +88,7 @@ class AppData {
         'assets/data/history.json',
       );
       _history = List<Map<String, dynamic>>.from(jsonDecode(historyJson));
-
-      print('✓ AppData loaded successfully');
     } catch (e) {
-      print('✗ Error loading AppData: $e');
       rethrow;
     }
   }
