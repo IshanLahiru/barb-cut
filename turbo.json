@@ -3,11 +3,25 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", ".expo/**", "build/**"]
+      "outputs": ["dist/**", ".next/**", ".expo/**", "build/**", "functions/build/**"]
     },
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "emulator:start": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    },
+    "emulator:migrate": {
+      "cache": false,
+      "dependsOn": ["^build", "emulator:start"]
+    },
+    "dev:local": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["emulator:start"]
     },
     "lint": {
       "dependsOn": ["^lint"]

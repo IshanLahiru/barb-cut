@@ -6,6 +6,11 @@
   "scripts": {
     "build": "tsc --project functions/tsconfig.json",
     "watch": "tsc --project functions/tsconfig.json --watch",
+    "emulator:start": "firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data",
+    "emulator:start:clean": "rm -rf ./emulator-data && firebase emulators:start --export-on-exit=./emulator-data",
+    "emulator:migrate": "cd functions && npm run migrate:data:local:clear",
+    "dev": "npm run emulator:start",
+    "dev:local": "npm run emulator:start",
     "serve": "firebase emulators:start --only auth,firestore,functions,storage",
     "deploy": "firebase deploy",
     "deploy:functions": "firebase deploy --only functions",

@@ -1,8 +1,11 @@
 import 'package:barbcut/views/main_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -30,6 +33,29 @@ Future<ThemeController> _initializeThemeController() async {
   return themeController;
 }
 
+Future<void> _connectToEmulators() async {
+  const emulatorHost = '127.0.0.1';
+
+  try {
+    // Connect to Firebase Auth Emulator
+    await FirebaseAuth.instance.useAuthEmulator(emulatorHost, 9099);
+    debugPrint('✅ Connected to Auth Emulator at $emulatorHost:9099');
+
+    // Connect to Firestore Emulator
+    FirebaseFirestore.instance.useFirestoreEmulator(emulatorHost, 8080);
+    debugPrint('✅ Connected to Firestore Emulator at $emulatorHost:8080');
+
+    // Connect to Storage Emulator
+    await FirebaseStorage.instance.useStorageEmulator(emulatorHost, 9199);
+    debugPrint('✅ Connected to Storage Emulator at $emulatorHost:9199');
+  } catch (e) {
+    debugPrint('⚠️ Failed to connect to emulators: $e');
+    debugPrint(
+      'Make sure Firebase emulators are running: cd firebase && npm run emulator:start',
+    );
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -44,7 +70,13 @@ void main() async {
   } catch (e) {
     debugPrint('Failed to load .env: $e');
   }
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Connect to Firebase Emulators in debug mode
+  if (kDebugMode) {
+    await _connectToEmulators();
+  }
 
   // Load app data from JSON files
   try {

@@ -8,9 +8,14 @@
   ],
   "scripts": {
     "dev": "turbo run dev",
+    "dev:local": "turbo run dev:local --parallel",
+    "start:local": "./scripts/start-local-dev.sh",
+    "emulator:start": "turbo run emulator:start",
+    "emulator:migrate": "turbo run emulator:migrate",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "setup:local": "npm run emulator:start && npm run emulator:migrate"
   },
   "devDependencies": {
     "turbo": "^2.0.0"
