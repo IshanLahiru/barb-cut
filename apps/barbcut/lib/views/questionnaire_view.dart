@@ -595,7 +595,7 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: AdaptiveThemeColors.neonCyan(context),
+            activeThumbColor: AdaptiveThemeColors.neonCyan(context),
             activeTrackColor: AdaptiveThemeColors.neonCyan(
               context,
             ).withValues(alpha: 0.5),
