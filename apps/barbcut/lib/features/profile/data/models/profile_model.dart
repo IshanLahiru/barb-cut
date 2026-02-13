@@ -22,4 +22,16 @@ class ProfileModel extends ProfileEntity {
       averageRating: map['averageRating'] as double,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'userId': userId,
+      'username': username,
+      'email': email,
+      'bio': bio,
+      'appointmentsCount': appointmentsCount,
+      'favoritesCount': favoritesCount,
+      'averageRating': averageRating,
+    };
+  }
 }

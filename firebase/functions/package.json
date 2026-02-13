@@ -14,7 +14,9 @@
     "migrate:up": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js up",
     "migrate:down": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js down",
     "migrate:status": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js status",
-    "migrate:prod": "npm run copy-assets && npm run build && node build/cli.js"
+    "migrate:prod": "npm run copy-assets && npm run build && node build/cli.js",
+    "migrate:data": "npx ts-node migrate-data.ts",
+    "migrate:data:clear": "npx ts-node migrate-data.ts --clear"
   },
   "engines": {
     "node": "18"

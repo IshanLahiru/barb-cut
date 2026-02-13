@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/product_entity.dart';
 
 class ProductModel extends ProductEntity {
+  final String iconName;
+
   const ProductModel({
     required super.name,
     required super.price,
@@ -9,6 +11,7 @@ class ProductModel extends ProductEntity {
     required super.description,
     required super.imageUrl,
     required super.icon,
+    required this.iconName,
   });
 
   /// Convert icon name string to IconData
@@ -24,13 +27,26 @@ class ProductModel extends ProductEntity {
   }
 
   factory ProductModel.fromMap(Map<String, dynamic> map) {
+    final iconName = map['icon'] as String;
     return ProductModel(
       name: map['name'] as String,
       price: map['price'] as String,
-      rating: map['rating'] as double,
+      rating: (map['rating'] as num).toDouble(),
       description: map['description'] as String,
       imageUrl: map['image'] as String,
-      icon: _getIconData(map['icon'] as String),
+      icon: _getIconData(iconName),
+      iconName: iconName,
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'price': price,
+      'rating': rating,
+      'description': description,
+      'image': imageUrl,
+      'icon': iconName,
+    };
   }
 }

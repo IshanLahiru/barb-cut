@@ -1,19 +1,21 @@
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../features/home/data/datasources/home_local_data_source.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../features/home/data/datasources/home_remote_data_source.dart';
 import '../../features/home/data/repositories/home_repository_impl.dart';
 import '../../features/home/domain/repositories/home_repository.dart';
 import '../../features/home/domain/usecases/get_beard_styles_usecase.dart';
 import '../../features/home/domain/usecases/get_haircuts_usecase.dart';
-import '../../features/history/data/datasources/history_local_data_source.dart';
+import '../../features/history/data/datasources/history_remote_data_source.dart';
 import '../../features/history/data/repositories/history_repository_impl.dart';
 import '../../features/history/domain/repositories/history_repository.dart';
 import '../../features/history/domain/usecases/get_history_usecase.dart';
-import '../../features/products/data/datasources/products_local_data_source.dart';
+import '../../features/products/data/datasources/products_remote_data_source.dart';
 import '../../features/products/data/repositories/products_repository_impl.dart';
 import '../../features/products/domain/repositories/products_repository.dart';
 import '../../features/products/domain/usecases/get_products_usecase.dart';
-import '../../features/profile/data/datasources/profile_local_data_source.dart';
+import '../../features/profile/data/datasources/profile_remote_data_source.dart';
 import '../../features/profile/data/repositories/profile_repository_impl.dart';
 import '../../features/profile/domain/repositories/profile_repository.dart';
 import '../../features/profile/domain/usecases/get_profile_usecase.dart';
@@ -27,6 +29,12 @@ Future<void> setupServiceLocator() async {
   final prefs = await SharedPreferences.getInstance();
   getIt.registerSingleton<SharedPreferences>(prefs);
 
+  // Firebase instances
+  getIt.registerLazySingleton<FirebaseFirestore>(
+    () => FirebaseFirestore.instance,
+  );
+  getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
+
   // Add more registrations here as features are added
   // Example pattern:
   _setupHomeFeature();
@@ -39,12 +47,12 @@ Future<void> setupServiceLocator() async {
 // Feature setup functions will go here
 // Example:
 void _setupHomeFeature() {
-  getIt.registerLazySingleton<HomeLocalDataSource>(
-    () => HomeLocalDataSourceImpl(),
+  getIt.registerLazySingleton<HomeRemoteDataSource>(
+    () => HomeRemoteDataSourceImpl(firestore: getIt<FirebaseFirestore>()),
   );
 
   getIt.registerLazySingleton<HomeRepository>(
-    () => HomeRepositoryImpl(localDataSource: getIt<HomeLocalDataSource>()),
+    () => HomeRepositoryImpl(remoteDataSource: getIt<HomeRemoteDataSource>()),
   );
 
   getIt.registerLazySingleton<GetHaircutsUseCase>(
@@ -57,13 +65,17 @@ void _setupHomeFeature() {
 }
 
 void _setupHistoryFeature() {
-  getIt.registerLazySingleton<HistoryLocalDataSource>(
-    () => HistoryLocalDataSource(),
+  getIt.registerLazySingleton<HistoryRemoteDataSource>(
+    () => HistoryRemoteDataSourceImpl(
+      firestore: getIt<FirebaseFirestore>(),
+      auth: getIt<FirebaseAuth>(),
+    ),
   );
 
   getIt.registerLazySingleton<HistoryRepository>(
-    () =>
-        HistoryRepositoryImpl(localDataSource: getIt<HistoryLocalDataSource>()),
+    () => HistoryRepositoryImpl(
+      remoteDataSource: getIt<HistoryRemoteDataSource>(),
+    ),
   );
 
   getIt.registerLazySingleton<GetHistoryUseCase>(
@@ -72,13 +84,13 @@ void _setupHistoryFeature() {
 }
 
 void _setupProductsFeature() {
-  getIt.registerLazySingleton<ProductsLocalDataSource>(
-    () => ProductsLocalDataSource(),
+  getIt.registerLazySingleton<ProductsRemoteDataSource>(
+    () => ProductsRemoteDataSourceImpl(firestore: getIt<FirebaseFirestore>()),
   );
 
   getIt.registerLazySingleton<ProductsRepository>(
     () => ProductsRepositoryImpl(
-      localDataSource: getIt<ProductsLocalDataSource>(),
+      remoteDataSource: getIt<ProductsRemoteDataSource>(),
     ),
   );
 
@@ -88,13 +100,17 @@ void _setupProductsFeature() {
 }
 
 void _setupProfileFeature() {
-  getIt.registerLazySingleton<ProfileLocalDataSource>(
-    () => ProfileLocalDataSource(),
+  getIt.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(
+      firestore: getIt<FirebaseFirestore>(),
+      auth: getIt<FirebaseAuth>(),
+    ),
   );
 
   getIt.registerLazySingleton<ProfileRepository>(
-    () =>
-        ProfileRepositoryImpl(localDataSource: getIt<ProfileLocalDataSource>()),
+    () => ProfileRepositoryImpl(
+      remoteDataSource: getIt<ProfileRemoteDataSource>(),
+    ),
   );
 
   getIt.registerLazySingleton<GetProfileUseCase>(

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/history_entity.dart';
 
 class HistoryModel extends HistoryEntity {
@@ -15,7 +16,17 @@ class HistoryModel extends HistoryEntity {
       imageUrl: map['imageUrl'] as String,
       haircut: map['haircut'] as String,
       beard: map['beard'] as String,
-      timestamp: map['timestamp'] as DateTime,
+      timestamp: (map['timestamp'] as Timestamp).toDate(),
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'imageUrl': imageUrl,
+      'haircut': haircut,
+      'beard': beard,
+      'timestamp': Timestamp.fromDate(timestamp),
+    };
   }
 }
