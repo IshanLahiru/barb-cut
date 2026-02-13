@@ -2,17 +2,17 @@
   "version": "0.2",
   "language": "en",
   "words": [
-    "usecase",
     "usecases",
+    "usecase",
     "Barbcut",
-    "haircuts",
-    "haircut",
-    "firebase",
-    "firestore",
-    "bloc",
-    "Ishan",
-    "Lahiru"
+    "barbcut"
   ],
   "ignoreWords": [],
-  "import": []
+  "ignorePaths": [
+    "node_modules",
+    ".git",
+    "build",
+    "dist",
+    ".dart_tool"
+  ]
 }
