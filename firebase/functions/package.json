@@ -10,6 +10,7 @@
     "copy-assets": "mkdir -p src/data/images && cp -r ../../apps/barbcut/assets/data/images/* src/data/images/",
     "clean-assets": "rm -rf src/data build/data",
     "predeploy": "npm run copy-assets && npm run build",
+    "seed:mock": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node build/mock_data.js",
     "migrate:up": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js up",
     "migrate:down": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js down",
     "migrate:status": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js status",
