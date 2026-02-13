@@ -1,0 +1,18 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "usecase",
+    "usecases",
+    "Barbcut",
+    "haircuts",
+    "haircut",
+    "firebase",
+    "firestore",
+    "bloc",
+    "Ishan",
+    "Lahiru"
+  ],
+  "ignoreWords": [],
+  "import": []
+}
