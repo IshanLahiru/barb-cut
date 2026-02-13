@@ -1,4 +1,4 @@
-/// Compatibility wrapper for gradients used in loading states
+// Compatibility wrapper for gradients used in loading states
 import 'package:flutter/material.dart';
 
 class AiGradients {

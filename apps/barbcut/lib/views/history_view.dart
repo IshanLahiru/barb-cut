@@ -526,30 +526,28 @@ class _HistoryViewState extends State<HistoryView> {
                                   });
                                 },
                               ),
-                                items: previewItems.asMap().entries.map((
-                                  entry,
-                                ) {
-                                  final int itemIndex = entry.key;
-                                  final Map<String, dynamic> carouselItem =
-                                      entry.value;
-                                  final Color itemAccentColor =
-                                      // Using general color:
-                                      AdaptiveThemeColors.neonCyan(context);
+                              items: previewItems.asMap().entries.map((entry) {
+                                final int itemIndex = entry.key;
+                                final Map<String, dynamic> carouselItem =
+                                    entry.value;
+                                final Color itemAccentColor =
+                                    // Using general color:
+                                    AdaptiveThemeColors.neonCyan(context);
 
-                                  return GestureDetector(
-                                    onTap: () => _showFullScreenGallery(
-                                      context,
-                                      previewItems,
-                                      initialIndex: itemIndex,
-                                    ),
-                                    child: _buildPreviewImageCard(
-                                      context,
-                                      carouselItem,
-                                      itemAccentColor,
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
+                                return GestureDetector(
+                                  onTap: () => _showFullScreenGallery(
+                                    context,
+                                    previewItems,
+                                    initialIndex: itemIndex,
+                                  ),
+                                  child: _buildPreviewImageCard(
+                                    context,
+                                    carouselItem,
+                                    itemAccentColor,
+                                  ),
+                                );
+                              }).toList(),
+                            ),
                           ),
                           // Indicators
                           if (previewItems.length > 1)

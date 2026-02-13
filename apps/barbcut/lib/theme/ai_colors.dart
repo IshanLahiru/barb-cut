@@ -1,5 +1,6 @@
 /// Compatibility wrapper for old AiColors
 /// Maps to new theme system using ThemeAdapter
+library;
 import 'package:flutter/material.dart';
 
 class AiColors {
