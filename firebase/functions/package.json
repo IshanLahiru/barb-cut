@@ -4,7 +4,8 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "serve": "npm run build && cd .. && firebase emulators:start --only auth,firestore,functions,storage",
+    "serve": "npm run build && cd .. && firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data",
+    "serve:clean": "npm run build && cd .. && rm -rf ./emulator-data && firebase emulators:start --export-on-exit=./emulator-data",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "copy-assets": "mkdir -p src/data/images && cp -r ../../apps/barbcut/assets/data/images/* src/data/images/",
@@ -15,8 +16,10 @@
     "migrate:down": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js down",
     "migrate:status": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js status",
     "migrate:prod": "npm run copy-assets && npm run build && node build/cli.js",
-    "migrate:data": "npx ts-node migrate-data.ts",
-    "migrate:data:clear": "npx ts-node migrate-data.ts --clear"
+    "migrate:data:local": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 npx ts-node migrate-data.ts",
+    "migrate:data:local:clear": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 npx ts-node migrate-data.ts --clear",
+    "migrate:data:prod": "npx ts-node migrate-data.ts",
+    "migrate:data:prod:clear": "npx ts-node migrate-data.ts --clear"
   },
   "engines": {
     "node": "18"

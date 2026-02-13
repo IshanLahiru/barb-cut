@@ -2,14 +2,34 @@ import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Initialize Firebase Admin
-admin.initializeApp();
+// Check if running with emulator
+const useEmulator = process.env.FIRESTORE_EMULATOR_HOST !== undefined;
+
+if (useEmulator) {
+  console.log('🔧 Using Firebase Emulator at:', process.env.FIRESTORE_EMULATOR_HOST);
+  // Initialize without credentials for emulator
+  admin.initializeApp({ projectId: 'demo-barbcut' });
+} else {
+  console.log('☁️  Using Production Firebase');
+  // Initialize Firebase Admin (uses default credentials or service account)
+  admin.initializeApp();
+}
 
 const db = admin.firestore();
 
+// Configure Firestore settings for emulator if needed
+if (useEmulator) {
+  db.settings({
+    host: process.env.FIRESTORE_EMULATOR_HOST,
+    ssl: false,
+  });
+}
+
 /**
  * Migration script to upload local JSON data to Firebase Firestore
- * Run with: npx ts-node migrate-data.ts
+ * 
+ * Local (Emulator): FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 npx ts-node migrate-data.ts
+ * Production: npx ts-node migrate-data.ts
  */
 
 async function migrateHaircuts() {

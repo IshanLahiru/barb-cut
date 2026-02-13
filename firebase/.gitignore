@@ -18,6 +18,8 @@ pubsub-debug.log
 # Emulator data
 .runtimeconfig.json
 firebase-emulator-data/
+emulator-data/
+ui-debug.log
 
 # IDE
 .vscode/
