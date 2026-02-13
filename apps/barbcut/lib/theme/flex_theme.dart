@@ -67,22 +67,6 @@ class BarbCutTheme {
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      // Alert dialog theme
-      alertDialogTheme: AlertDialogTheme(
-        backgroundColor: const Color(0xFFFAFAFA),
-        surfaceTintColor: const Color(0xFF2D2D2D),
-        titleTextStyle: const TextStyle(
-          color: Color(0xFF212121),
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
-        contentTextStyle: const TextStyle(
-          color: Color(0xFF616161),
-          fontSize: 14,
-        ),
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
     );
   }
 
@@ -120,22 +104,6 @@ class BarbCutTheme {
     ).copyWith(
       // Dialog theme for dark mode
       dialogTheme: DialogThemeData(
-        backgroundColor: const Color(0xFF1A1A1A),
-        surfaceTintColor: const Color(0xFFE0E0E0),
-        titleTextStyle: const TextStyle(
-          color: Color(0xFFE0E0E0),
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
-        contentTextStyle: const TextStyle(
-          color: Color(0xFFBDBDBD),
-          fontSize: 14,
-        ),
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      // Alert dialog theme
-      alertDialogTheme: AlertDialogTheme(
         backgroundColor: const Color(0xFF1A1A1A),
         surfaceTintColor: const Color(0xFFE0E0E0),
         titleTextStyle: const TextStyle(

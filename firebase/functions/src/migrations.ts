@@ -1,122 +1,182 @@
 import * as admin from "firebase-admin";
-import { MIGRATIONS_REGISTRY } from "../../migrations/index";
+import { FieldValue } from "firebase-admin/firestore";
+import { migrations, Migration } from "./migrations/index";
 
-export interface Migration {
-  id: string;
-  up: (db: admin.firestore.Firestore) => Promise<void>;
-  down: (db: admin.firestore.Firestore) => Promise<void>;
+export interface MigrationStatus {
+  version: number;
+  lastMigration: string | null;
+  timestamp: any;
+  migrationsRun: string[];
 }
 
-const MIGRATIONS: Migration[] = [
-  ...MIGRATIONS_REGISTRY as Migration[],
-];
+const MIGRATION_STATUS_DOC = "_migrations/migration_status";
 
 /**
- * Get the current migration version from Firestore
+ * Get current migration status from Firestore
  */
-export async function getCurrentVersion(
+export async function getMigrationStatus(
   db: admin.firestore.Firestore
-): Promise<number> {
-  try {
-    const doc = await db
-      .collection("_migrations")
-      .doc("migration_status")
-      .get();
-    return doc.exists ? (doc.data()?.version || 0) : 0;
-  } catch (error) {
-    console.log("First migration run, starting from version 0");
-    return 0;
+): Promise<MigrationStatus> {
+  const doc = await db.doc(MIGRATION_STATUS_DOC).get();
+
+  if (!doc.exists) {
+    return {
+      version: 0,
+      lastMigration: null,
+      timestamp: new Date(),
+      migrationsRun: [],
+    };
   }
+
+  return doc.data() as MigrationStatus;
 }
 
 /**
- * Run pending migrations up
+ * Update migration status in Firestore
+ */
+async function updateMigrationStatus(
+  db: admin.firestore.Firestore,
+  status: Partial<MigrationStatus>
+): Promise<void> {
+  await db.doc(MIGRATION_STATUS_DOC).set(
+    {
+      ...status,
+      timestamp: FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
+
+/**
+ * Get the next migration to run
+ */
+export function getNextMigration(currentVersion: number): Migration | null {
+  if (currentVersion >= migrations.length) {
+    return null;
+  }
+
+  return migrations[currentVersion];
+}
+
+/**
+ * Run all pending migrations (forward)
  */
 export async function migrateUp(
   db: admin.firestore.Firestore
-): Promise<{ success: boolean; migrationsRun: string[] }> {
-  const currentVersion = await getCurrentVersion(db);
-  const pendingMigrations = MIGRATIONS.filter(
-    (m) => m && parseInt(m.id.split("_")[0]) > currentVersion
-  );
+): Promise<string[]> {
+  const status = await getMigrationStatus(db);
+  const migrationsRan: string[] = [];
+
+  console.log(`\n📊 Current version: ${status.version}`);
+  console.log(`📊 Total migrations available: ${migrations.length}`);
+
+  const pendingMigrations = migrations.slice(status.version);
 
   if (pendingMigrations.length === 0) {
-    console.log("✓ No pending migrations");
-    return { success: true, migrationsRun: [] };
+    console.log("✅ Database is up to date!");
+    return [];
   }
 
-  const migrationsRun: string[] = [];
+  console.log(`\n🚀 Running ${pendingMigrations.length} pending migration(s)...\n`);
 
   for (const migration of pendingMigrations) {
     try {
+      console.log(`Running: ${migration.id}`);
+      if (migration.description) {
+        console.log(`  └─ ${migration.description}`);
+      }
+
       await migration.up(db);
-      const versionNum = parseInt(migration.id.split("_")[0]);
-      await db.collection("_migrations").doc("migration_status").set({
-        version: versionNum,
+
+      migrationsRan.push(migration.id);
+      
+      // Update status after each successful migration
+      const newVersion = status.version + migrationsRan.length;
+      await updateMigrationStatus(db, {
+        version: newVersion,
         lastMigration: migration.id,
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        migrationsRun: [...status.migrationsRun, migration.id],
       });
-      migrationsRun.push(migration.id);
-      console.log(`✓ Migration ${migration.id} completed`);
+
+      console.log(`✅ Completed: ${migration.id}\n`);
     } catch (error) {
-      console.error(`✗ Migration ${migration.id} failed:`, error);
+      console.error(`❌ Failed to run migration: ${migration.id}`);
+      console.error(`Error: ${error}`);
       throw error;
     }
   }
 
-  return { success: true, migrationsRun };
+  return migrationsRan;
 }
 
 /**
- * Rollback last migration
+ * Rollback the last migration (backward)
  */
 export async function migrateDown(
   db: admin.firestore.Firestore
-): Promise<{ success: boolean; rolledBack?: string }> {
-  const currentVersion = await getCurrentVersion(db);
+): Promise<string | null> {
+  const status = await getMigrationStatus(db);
 
-  if (currentVersion === 0) {
-    console.log("✓ Already at version 0");
-    return { success: true };
+  if (status.version === 0) {
+    console.log("❌ No migrations to rollback");
+    return null;
   }
 
-  const migrationToRollback = MIGRATIONS.find(
-    (m) => m && parseInt(m.id.split("_")[0]) === currentVersion
-  );
-
-  if (!migrationToRollback) {
-    throw new Error(`Migration ${currentVersion} not found`);
-  }
+  const migrationToRollback = migrations[status.version - 1];
 
   try {
+    console.log(`⏮️  Rolling back: ${migrationToRollback.id}`);
+    if (migrationToRollback.description) {
+      console.log(`  └─ ${migrationToRollback.description}`);
+    }
+
     await migrationToRollback.down(db);
-    await db.collection("_migrations").doc("migration_status").set({
-      version: currentVersion - 1,
-      lastMigration: `${currentVersion - 1}`,
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+
+    // Update status after successful rollback
+    const newVersion = status.version - 1;
+    const updatedMigrationsRun = status.migrationsRun.slice(0, -1);
+    await updateMigrationStatus(db, {
+      version: newVersion,
+      lastMigration: updatedMigrationsRun[updatedMigrationsRun.length - 1] || null,
+      migrationsRun: updatedMigrationsRun,
     });
-    console.log(`✓ Rolled back migration ${migrationToRollback.id}`);
-    return { success: true, rolledBack: migrationToRollback.id };
+
+    console.log(`✅ Rolled back: ${migrationToRollback.id}`);
+
+    return migrationToRollback.id;
   } catch (error) {
-    console.error(`✗ Rollback failed:`, error);
+    console.error(`❌ Failed to rollback migration: ${migrationToRollback.id}`);
+    console.error(`Error: ${error}`);
     throw error;
   }
 }
 
 /**
- * Get migration status
+ * Get detailed migration status
  */
-export async function getMigrationStatus(
+export async function getDetailedStatus(
   db: admin.firestore.Firestore
-): Promise<{ currentVersion: number; totalMigrations: number; pending: string[] }> {
-  const currentVersion = await getCurrentVersion(db);
-  const pending = MIGRATIONS.filter((m) => m && parseInt(m.id.split("_")[0]) > currentVersion).map(
-    (m) => m.id
+): Promise<void> {
+  const status = await getMigrationStatus(db);
+
+  console.log("\n" + "=".repeat(50));
+  console.log("📋 Migration Status");
+  console.log("=".repeat(50));
+  console.log(`\nCurrent Version: ${status.version}/${migrations.length}`);
+  console.log(`Last Migration: ${status.lastMigration || "None"}`);
+  console.log(
+    `Last Updated: ${status.timestamp?.toDate?.() || status.timestamp}`
   );
 
-  return {
-    currentVersion,
-    totalMigrations: MIGRATIONS.length,
-    pending,
-  };
+  console.log("\n📂 Available Migrations:");
+  migrations.forEach((m, idx) => {
+    const isMigrated = idx < status.version;
+    const icon = isMigrated ? "✅" : "⬜";
+    console.log(`  ${icon} ${m.id}`);
+    if (m.description) {
+      console.log(`     └─ ${m.description}`);
+    }
+  });
+
+  console.log("\n" + "=".repeat(50) + "\n");
 }

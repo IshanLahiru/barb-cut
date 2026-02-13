@@ -1,16 +1,4 @@
 {
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "default",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log"
-      ]
-    }
-  ],
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
@@ -18,45 +6,40 @@
   "storage": {
     "rules": "storage.rules"
   },
+  "functions": {
+    "runtime": "nodejs18",
+    "source": "functions",
+    "codebase": "default",
+    "ignore": [
+      "node_modules",
+      ".git",
+      "firebase-debug.log",
+      "firestore-debug.log"
+    ]
+  },
   "emulators": {
-    "apphosting": {
-      "port": 5002,
-      "rootDirectory": "./"
-    },
     "auth": {
+      "host": "127.0.0.1",
       "port": 9099
     },
-    "functions": {
-      "port": 5001
-    },
     "firestore": {
+      "host": "127.0.0.1",
       "port": 8080
     },
-    "database": {
-      "port": 9000
-    },
-    "hosting": {
-      "port": 5000
-    },
-    "pubsub": {
-      "port": 8085
+    "functions": {
+      "host": "127.0.0.1",
+      "port": 5001
     },
     "storage": {
+      "host": "127.0.0.1",
       "port": 9199
     },
-    "eventarc": {
-      "port": 9299
-    },
-    "dataconnect": {
-      "port": 9399,
-      "dataDir": "dataconnect/.dataconnect/pgliteData"
-    },
-    "tasks": {
-      "port": 9499
+    "hub": {
+      "host": "127.0.0.1",
+      "port": 4400
     },
     "ui": {
       "enabled": true
-    },
-    "singleProjectMode": true
+    }
   }
 }

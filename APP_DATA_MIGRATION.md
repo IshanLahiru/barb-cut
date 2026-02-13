@@ -56,7 +56,7 @@ These places already use AppData and will automatically use the JSON files:
 - **HomeLocalDataSource** - Loads haircuts and beard styles
 - **HistoryLocalDataSource** - Generates history records
 - **Home View** - Displays all style data
-- **Booking View** - Shows available services
+- **Style Preview View** - Shows available styles
 - **Profile View** - Displays default user profile
 
 ## Benefits

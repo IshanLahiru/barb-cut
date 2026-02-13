@@ -1,0 +1,34 @@
+# Compiled JavaScript files (build output)
+build/
+
+# Don't track compiled files in src directory
+src/**/*.js
+src/**/*.d.ts
+src/**/*.js.map
+
+# Bundled assets (copied at build time from apps/barbcut/assets)
+src/data/
+
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+firebase-debug.log*
+firebase-debug.*.log*
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local

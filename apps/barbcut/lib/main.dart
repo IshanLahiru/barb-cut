@@ -1,5 +1,6 @@
 import 'package:barbcut/views/main_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -7,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/theme_controller.dart';
+import 'controllers/style_selection_controller.dart';
 import 'services/auth_service.dart';
 import 'auth_screen.dart';
 import 'theme/theme.dart';
@@ -30,6 +32,13 @@ Future<ThemeController> _initializeThemeController() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Lock to portrait orientation
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
@@ -62,6 +71,7 @@ class MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController(AuthService())),
         ChangeNotifierProvider.value(value: widget.themeController),
+        ChangeNotifierProvider(create: (_) => StyleSelectionController()),
       ],
       child: Consumer<ThemeController>(
         builder: (context, themeController, _) {
