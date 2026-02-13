@@ -513,21 +513,19 @@ class _HistoryViewState extends State<HistoryView> {
                           // Image carousel - larger
                           Padding(
                             padding: EdgeInsets.all(AiSpacing.md),
-                            child: Container(
-                              height: carouselHeight,
-                              child: FlutterCarousel(
-                                options: CarouselOptions(
-                                  height: carouselHeight,
-                                  viewportFraction: 0.95,
-                                  enlargeCenterPage: true,
-                                  enableInfiniteScroll: previewItems.length > 1,
-                                  showIndicator: false,
-                                  onPageChanged: (index, reason) {
-                                    setState(() {
-                                      activeIndex = index;
-                                    });
-                                  },
-                                ),
+                            child: FlutterCarousel(
+                              options: CarouselOptions(
+                                height: carouselHeight,
+                                viewportFraction: 0.95,
+                                enlargeCenterPage: true,
+                                enableInfiniteScroll: previewItems.length > 1,
+                                showIndicator: false,
+                                onPageChanged: (index, reason) {
+                                  setState(() {
+                                    activeIndex = index;
+                                  });
+                                },
+                              ),
                                 items: previewItems.asMap().entries.map((
                                   entry,
                                 ) {
@@ -552,7 +550,6 @@ class _HistoryViewState extends State<HistoryView> {
                                   );
                                 }).toList(),
                               ),
-                            ),
                           ),
                           // Indicators
                           if (previewItems.length > 1)
