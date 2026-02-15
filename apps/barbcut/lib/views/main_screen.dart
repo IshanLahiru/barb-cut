@@ -4,6 +4,7 @@ import 'package:barbcut/features/history/presentation/pages/history_page.dart';
 import 'package:barbcut/features/products/presentation/pages/products_page.dart';
 import 'package:barbcut/features/profile/presentation/pages/profile_page.dart';
 import '../theme/theme.dart';
+import '../widgets/entitlement_widgets.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -35,7 +36,16 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+      body: Column(
+        children: [
+          // Subscription status banner (auto-shows if expiring soon)
+          const SubscriptionStatusBanner(),
+          // Main content
+          Expanded(
+            child: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+          ),
+        ],
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AdaptiveThemeColors.backgroundSecondary(context),

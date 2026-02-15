@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:provider/provider.dart';
 import '../theme/theme.dart';
 import '../core/di/service_locator.dart';
 import '../features/products/domain/entities/product_entity.dart';
@@ -8,6 +9,7 @@ import '../features/products/domain/usecases/get_products_usecase.dart';
 import '../features/products/presentation/bloc/products_bloc.dart';
 import '../features/products/presentation/bloc/products_event.dart';
 import '../features/products/presentation/bloc/products_state.dart';
+import '../controllers/subscription_controller.dart';
 
 class ProductsView extends StatefulWidget {
   const ProductsView({super.key});
@@ -356,104 +358,189 @@ class _ProductsViewState extends State<ProductsView> {
         // Using general color:
         AdaptiveThemeColors.neonCyan(context);
 
-    return GestureDetector(
-      onTap: () {
-        _showProductDetailsDialog(context, product);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-          color: AdaptiveThemeColors.backgroundDark(context),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    // Check if product is pro-only based on name pattern
+    // This is a simple example - adjust based on your product naming convention
+    final isProOnly = product['name'].toString().toLowerCase().contains('pro');
+
+    return Consumer<SubscriptionController>(
+      builder: (context, subscriptionCtrl, _) {
+        return GestureDetector(
+          onTap: () {
+            _showProductDetailsDialog(context, product);
+          },
+          child: Stack(
             children: [
-              AspectRatio(
-                aspectRatio: 2 / 3,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.network(
-                      product['image'] as String,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: accentColor.withValues(alpha: 0.2),
-                          child: Icon(
-                            Icons.image_not_supported,
-                            size: 48,
-                            color: accentColor.withValues(alpha: 0.6),
-                          ),
-                        );
-                      },
-                    ),
-                    Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Colors.black.withValues(alpha: 0.5),
-                            ],
-                          ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+                  color: AdaptiveThemeColors.backgroundDark(context),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 2 / 3,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.network(
+                              product['image'] as String,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: accentColor.withValues(alpha: 0.2),
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    size: 48,
+                                    color: accentColor.withValues(alpha: 0.6),
+                                  ),
+                                );
+                              },
+                            ),
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withValues(alpha: 0.5),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // Pro-only overlay if no access
+                            if (isProOnly && !subscriptionCtrl.hasProAccess)
+                              Positioned.fill(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.6),
+                                  ),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.lock,
+                                          color: Colors.white,
+                                          size: 40,
+                                        ),
+                                        SizedBox(height: AiSpacing.sm),
+                                        Text(
+                                          'Pro Only',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge
+                                              ?.copyWith(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            Positioned(
+                              left: AiSpacing.md,
+                              right: AiSpacing.md,
+                              bottom: AiSpacing.sm,
+                              child: Text(
+                                product['name'] as String,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    Positioned(
-                      left: AiSpacing.md,
-                      right: AiSpacing.md,
-                      bottom: AiSpacing.sm,
-                      child: Text(
-                        product['name'] as String,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
+                      Padding(
+                        padding: const EdgeInsets.all(AiSpacing.md),
+                        child: Row(
+                          children: [
+                            Text(
+                              '₹${product['price']}',
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(
+                                    color: AdaptiveThemeColors.textPrimary(
+                                      context,
+                                    ),
+                                    fontWeight: FontWeight.w700,
+                                  ),
                             ),
+                            const Spacer(),
+                            Icon(
+                              Icons.star_rounded,
+                              size: 14,
+                              color: AdaptiveThemeColors.sunsetCoral(context),
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              '${product['rating']}',
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: AdaptiveThemeColors.textSecondary(
+                                      context,
+                                    ),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(AiSpacing.md),
-                child: Row(
-                  children: [
-                    Text(
-                      '₹${product['price']}',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: AdaptiveThemeColors.textPrimary(context),
-                        fontWeight: FontWeight.w700,
+              // Pro badge in corner
+              if (isProOnly)
+                Positioned(
+                  top: AiSpacing.sm,
+                  right: AiSpacing.sm,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AiSpacing.sm,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.circular(
+                        AiSpacing.radiusMedium,
                       ),
                     ),
-                    const Spacer(),
-                    Icon(
-                      Icons.star_rounded,
-                      size: 14,
-                      color: AdaptiveThemeColors.sunsetCoral(context),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.star, size: 12, color: Colors.black),
+                        SizedBox(width: 4),
+                        Text(
+                          'PRO',
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 10,
+                              ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 2),
-                    Text(
-                      '${product['rating']}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AdaptiveThemeColors.textSecondary(context),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
