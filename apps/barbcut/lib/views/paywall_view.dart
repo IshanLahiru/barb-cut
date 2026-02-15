@@ -142,9 +142,9 @@ class _PaywallViewState extends State<PaywallView> {
               Text(
                 'BarbCut Pro',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ],
           ),
@@ -155,9 +155,9 @@ class _PaywallViewState extends State<PaywallView> {
         Text(
           'Unlock Premium Features',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: AdaptiveThemeColors.textPrimary(context),
-                fontWeight: FontWeight.w800,
-              ),
+            color: AdaptiveThemeColors.textPrimary(context),
+            fontWeight: FontWeight.w800,
+          ),
           textAlign: TextAlign.center,
         ),
         SizedBox(height: AiSpacing.sm),
@@ -166,8 +166,8 @@ class _PaywallViewState extends State<PaywallView> {
         Text(
           'Get unlimited access to all styles, products and premium features',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AdaptiveThemeColors.textSecondary(context),
-              ),
+            color: AdaptiveThemeColors.textSecondary(context),
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -208,8 +208,9 @@ class _PaywallViewState extends State<PaywallView> {
               Container(
                 padding: EdgeInsets.all(AiSpacing.sm),
                 decoration: BoxDecoration(
-                  color: AdaptiveThemeColors.neonCyan(context)
-                      .withValues(alpha: 0.2),
+                  color: AdaptiveThemeColors.neonCyan(
+                    context,
+                  ).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
                 ),
                 child: Icon(
@@ -226,16 +227,16 @@ class _PaywallViewState extends State<PaywallView> {
                     Text(
                       feature['title'] as String,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: AdaptiveThemeColors.textPrimary(context),
-                            fontWeight: FontWeight.w700,
-                          ),
+                        color: AdaptiveThemeColors.textPrimary(context),
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     SizedBox(height: 2),
                     Text(
                       feature['description'] as String,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AdaptiveThemeColors.textSecondary(context),
-                          ),
+                        color: AdaptiveThemeColors.textSecondary(context),
+                      ),
                     ),
                   ],
                 ),
@@ -262,9 +263,9 @@ class _PaywallViewState extends State<PaywallView> {
         Text(
           'Choose Your Plan',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AdaptiveThemeColors.textPrimary(context),
-                fontWeight: FontWeight.w800,
-              ),
+            color: AdaptiveThemeColors.textPrimary(context),
+            fontWeight: FontWeight.w800,
+          ),
         ),
         SizedBox(height: AiSpacing.md),
         ...sortedProducts.map((product) => _buildPlanCard(product)),
@@ -293,8 +294,9 @@ class _PaywallViewState extends State<PaywallView> {
           border: Border.all(
             color: isSelected
                 ? accentColor
-                : AdaptiveThemeColors.textTertiary(context)
-                    .withValues(alpha: 0.2),
+                : AdaptiveThemeColors.textTertiary(
+                    context,
+                  ).withValues(alpha: 0.2),
             width: isSelected ? 2 : 1,
           ),
           boxShadow: isSelected
@@ -325,16 +327,10 @@ class _PaywallViewState extends State<PaywallView> {
                             : AdaptiveThemeColors.textTertiary(context),
                         width: 2,
                       ),
-                      color: isSelected
-                          ? accentColor
-                          : Colors.transparent,
+                      color: isSelected ? accentColor : Colors.transparent,
                     ),
                     child: isSelected
-                        ? Icon(
-                            Icons.check,
-                            size: 16,
-                            color: Colors.white,
-                          )
+                        ? Icon(Icons.check, size: 16, color: Colors.white)
                         : null,
                   ),
                   SizedBox(width: AiSpacing.md),
@@ -346,13 +342,11 @@ class _PaywallViewState extends State<PaywallView> {
                       children: [
                         Text(
                           product.displayName,
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: AdaptiveThemeColors.textPrimary(
-                                      context,
-                                    ),
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: AdaptiveThemeColors.textPrimary(context),
+                                fontWeight: FontWeight.w700,
+                              ),
                         ),
                         SizedBox(height: 4),
                         Text(
@@ -367,12 +361,12 @@ class _PaywallViewState extends State<PaywallView> {
                           SizedBox(height: 4),
                           Text(
                             'Best Value - Save on yearly plan',
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AdaptiveThemeColors.textSecondary(
-                                        context,
-                                      ),
-                                    ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: AdaptiveThemeColors.textSecondary(
+                                    context,
+                                  ),
+                                ),
                           ),
                         ],
                       ],
@@ -394,10 +388,7 @@ class _PaywallViewState extends State<PaywallView> {
                   ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [
-                        Colors.amber,
-                        Colors.orange,
-                      ],
+                      colors: [Colors.amber, Colors.orange],
                     ),
                     borderRadius: BorderRadius.only(
                       topRight: Radius.circular(AiSpacing.radiusLarge),
@@ -407,10 +398,10 @@ class _PaywallViewState extends State<PaywallView> {
                   child: Text(
                     'BEST VALUE',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 10,
-                        ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 10,
+                    ),
                   ),
                 ),
               ),
@@ -453,9 +444,9 @@ class _PaywallViewState extends State<PaywallView> {
             : Text(
                 'Start Free Trial',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
       ),
     );
@@ -467,9 +458,9 @@ class _PaywallViewState extends State<PaywallView> {
       child: Text(
         'Cancel anytime. By subscribing, you agree to our Terms of Service and Privacy Policy. Payment will be charged to your account at confirmation of purchase.',
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AdaptiveThemeColors.textTertiary(context),
-              fontSize: 11,
-            ),
+          color: AdaptiveThemeColors.textTertiary(context),
+          fontSize: 11,
+        ),
         textAlign: TextAlign.center,
       ),
     );
@@ -481,9 +472,7 @@ class _PaywallViewState extends State<PaywallView> {
       decoration: BoxDecoration(
         color: Colors.red.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-        border: Border.all(
-          color: Colors.red.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -492,9 +481,9 @@ class _PaywallViewState extends State<PaywallView> {
           Expanded(
             child: Text(
               message,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.red,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.red),
             ),
           ),
         ],
@@ -508,9 +497,7 @@ class _PaywallViewState extends State<PaywallView> {
       decoration: BoxDecoration(
         color: Colors.green.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-        border: Border.all(
-          color: Colors.green.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -519,9 +506,9 @@ class _PaywallViewState extends State<PaywallView> {
           Expanded(
             child: Text(
               message,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.green,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.green),
             ),
           ),
         ],
@@ -543,14 +530,11 @@ class _PaywallViewState extends State<PaywallView> {
           Text(
             'Unable to load subscription plans',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AdaptiveThemeColors.textSecondary(context),
-                ),
+              color: AdaptiveThemeColors.textSecondary(context),
+            ),
           ),
           SizedBox(height: AiSpacing.sm),
-          TextButton(
-            onPressed: _loadProducts,
-            child: Text('Retry'),
-          ),
+          TextButton(onPressed: _loadProducts, child: Text('Retry')),
         ],
       ),
     );

@@ -320,9 +320,7 @@ class _ProfileViewState extends State<ProfileView> {
                   } else {
                     // Navigate to paywall
                     Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const PaywallView(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const PaywallView()),
                     );
                   }
                 },
