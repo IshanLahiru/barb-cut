@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import '../controllers/theme_controller.dart';
+import '../controllers/subscription_controller.dart';
 import '../theme/theme.dart';
 import '../core/di/service_locator.dart';
 import '../features/profile/domain/entities/profile_entity.dart';
@@ -9,8 +11,10 @@ import '../features/profile/domain/usecases/get_profile_usecase.dart';
 import '../features/profile/presentation/bloc/profile_bloc.dart';
 import '../features/profile/presentation/bloc/profile_event.dart';
 import '../features/profile/presentation/bloc/profile_state.dart';
+import '../widgets/customer_center_widget.dart';
 
 import 'questionnaire_view.dart';
+import 'paywall_view.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -63,6 +67,9 @@ class _ProfileViewState extends State<ProfileView> {
             padding: EdgeInsets.all(AiSpacing.lg),
             children: [
               _buildProfileCard(context),
+              SizedBox(height: AiSpacing.lg),
+              // Subscription Status Section
+              _buildSubscriptionSection(context),
               SizedBox(height: AiSpacing.lg),
               _buildSectionLabel(context, 'Other settings'),
               SizedBox(height: AiSpacing.sm),
@@ -204,6 +211,126 @@ class _ProfileViewState extends State<ProfileView> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSubscriptionSection(BuildContext context) {
+    return Consumer<SubscriptionController>(
+      builder: (context, subscriptionCtrl, _) {
+        return Container(
+          decoration: BoxDecoration(
+            color: AdaptiveThemeColors.surface(context),
+            borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Subscription Status
+              ListTile(
+                leading: Icon(
+                  Icons.card_membership,
+                  color: subscriptionCtrl.hasProAccess
+                      ? Colors.green
+                      : AdaptiveThemeColors.textTertiary(context),
+                ),
+                title: const Text('Subscription'),
+                subtitle: subscriptionCtrl.hasProAccess
+                    ? const Text('BarbCut Pro Active')
+                    : const Text('Free Plan'),
+                trailing: subscriptionCtrl.hasProAccess
+                    ? Icon(Icons.check_circle, color: Colors.green)
+                    : Icon(Icons.upgrade),
+              ),
+
+              // Warning banner if expiring soon
+              if (subscriptionCtrl.hasProAccess &&
+                  subscriptionCtrl.subscriptionStatus?.isExpiringSoon == true)
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AiSpacing.md,
+                    vertical: AiSpacing.sm,
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.all(AiSpacing.sm),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(
+                        AiSpacing.radiusMedium,
+                      ),
+                      border: Border.all(
+                        color: Colors.orange.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.warning, color: Colors.orange, size: 18),
+                        SizedBox(width: AiSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            'Expires in ${subscriptionCtrl.subscriptionStatus?.getDaysUntilExpiration()} days',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: Colors.orange),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              Divider(
+                height: 0,
+                color: AdaptiveThemeColors.textTertiary(
+                  context,
+                ).withValues(alpha: 0.1),
+              ),
+
+              // Manage Subscription / Upgrade buttons
+              ListTile(
+                leading: Icon(
+                  subscriptionCtrl.hasProAccess ? Icons.settings : Icons.star,
+                  color: subscriptionCtrl.hasProAccess
+                      ? AdaptiveThemeColors.neonCyan(context)
+                      : Colors.amber,
+                ),
+                title: Text(
+                  subscriptionCtrl.hasProAccess
+                      ? 'Manage Subscription'
+                      : 'Upgrade to Pro',
+                ),
+                trailing: Icon(Icons.arrow_forward),
+                onTap: () {
+                  if (subscriptionCtrl.hasProAccess) {
+                    // Show customer center
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (ctx) => DraggableScrollableSheet(
+                        expand: false,
+                        builder: (ctx, controller) => CustomerCenterWidget(
+                          onDismiss: () => Navigator.of(ctx).pop(),
+                        ),
+                      ),
+                    );
+                  } else {
+                    // Navigate to paywall
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const PaywallView(),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
