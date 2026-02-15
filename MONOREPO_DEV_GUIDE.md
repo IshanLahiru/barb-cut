@@ -98,6 +98,33 @@ Emulator data is automatically persisted in `firebase/emulator-data/` directory:
 - Data is **excluded** from git (in `.gitignore`)
 - To reset data, delete the directory or use `emulator:start:clean`
 
+#### Firebase CLI Flags (Automatic Persistence)
+
+If you start emulators manually with the Firebase CLI, use `--import` and `--export-on-exit` to persist data between sessions:
+
+```bash
+firebase emulators:start --import=./firebase-data --export-on-exit=./firebase-data
+```
+
+- `--import=./firebase-data` loads data on startup (the directory is created if it does not exist)
+- `--export-on-exit=./firebase-data` saves emulator state on shutdown
+
+These flags work with Auth, Firestore, Realtime Database, and Storage emulators.
+
+#### Manual Export/Import
+
+Export from a running emulator:
+
+```bash
+firebase emulators:export ./export-directory
+```
+
+Import on startup:
+
+```bash
+firebase emulators:start --import=./export-directory
+```
+
 ### Emulator UI Features
 
 Access at http://127.0.0.1:4000:
