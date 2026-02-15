@@ -82,3 +82,4 @@ firebase-debug.log
 # Linux/Windows
 **/linux/flutter/ephemeral/
 **/windows/flutter/ephemeral/
+.emulator.pid
