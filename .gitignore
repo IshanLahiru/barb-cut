@@ -11,9 +11,12 @@ node_modules/
 .flutter-plugins-dependencies
 .fvm/
 lib/generated_plugin_registrant.dart
+pubspec.lock
 
 # Flutter build outputs
 **/build/
+**/native_assets/
+**/native_hooks/
 
 # Environment variables
 .env
@@ -24,6 +27,8 @@ lib/generated_plugin_registrant.dart
 
 # Testing
 coverage/
+test/.test_coverage.dart
+.test_coverage.dart
 
 # Production
 dist/
@@ -32,6 +37,7 @@ dist/
 .DS_Store
 *.pem
 *.log
+*.lock
 
 # Debug
 npm-debug.log*
@@ -48,6 +54,33 @@ yarn-error.log*
 # Firebase
 .firebase/
 firebase-debug.log
+firestore-debug.log
+ui-debug.log
+**/firebase-export-*/
+**/emulator-data/
+firebase/.env
+firebase/.DS_Store
+firebase/functions/build/
+firebase/functions/node_modules/
+firebase/functions/package-lock.json
+firebase/functions/.eslintrc.js
+firebase/functions/src/data/images/*.png
+firebase/functions/src/data/images/*.jpg
+firebase/functions/src/data/images/*.jpeg
+
+# Firebase Credentials (sensitive - never commit)
+serviceAccountKey.json
+*-key.json
+GoogleService-Info.plist
+google-services.json
+apps/**/google-services.json
+apps/**/GoogleService-Info.plist
+*.key
+
+# Allow example credential templates
+!GoogleService-Info.plist.example
+!google-services.json.example
+!serviceAccountKey.json.example
 
 # IDE
 .vscode/
@@ -57,28 +90,30 @@ firebase-debug.log
 *~
 
 # Android
-**/android/.gradle/
 **/android/local.properties
-**/android/**/GeneratedPluginRegistrant.java
-**/android/**/flutter_export_environment.sh
+**/android/.gradle/
+**/android/.idea/
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/gradle/wrapper/
 
 # iOS
 **/ios/Pods/
-**/ios/Flutter/ephemeral/
 **/ios/Flutter/Generated.xcconfig
 **/ios/Flutter/flutter_export_environment.sh
-**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/ephemeral/
+**/ios/.symlinks/
 **/ios/Runner.xcworkspace/xcuserdata/
 **/ios/Runner.xcodeproj/xcuserdata/
+**/ios/Runner.xcodeproj/project.xcworkspace/xcuserdata/
 
 # macOS
 **/macos/Pods/
+**/macos/Flutter/GeneratedPluginRegistrant.swift
 **/macos/Flutter/ephemeral/
-**/macos/Flutter/Generated.xcconfig
-**/macos/Flutter/flutter_export_environment.sh
-**/macos/Runner.xcworkspace/xcuserdata/
-**/macos/Runner.xcodeproj/xcuserdata/
 
-# Linux/Windows
-**/linux/flutter/ephemeral/
-**/windows/flutter/ephemeral/
+# Generated assets
+apps/barbcut/assets/data/images/*.png
+apps/barbcut/assets/data/images/*.jpg
+apps/barbcut/assets/data/images/*.jpeg
