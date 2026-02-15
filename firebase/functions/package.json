@@ -11,18 +11,18 @@
     "copy-assets": "mkdir -p src/data/images && cp -r ../../apps/barbcut/assets/data/images/* src/data/images/",
     "clean-assets": "rm -rf src/data build/data",
     "predeploy": "npm run copy-assets && npm run build",
-    "seed:mock": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node build/mock_data.js",
-    "migrate:up": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js up",
-    "migrate:down": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js down",
-    "migrate:status": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js status",
+    "seed:mock": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8081 node build/mock_data.js",
+    "migrate:up": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8081 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js up",
+    "migrate:down": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8081 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js down",
+    "migrate:status": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8081 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node build/cli.js status",
     "migrate:prod": "npm run copy-assets && npm run build && node build/cli.js",
-    "migrate:data:local": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 npx ts-node migrate-data.ts",
-    "migrate:data:local:clear": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 npx ts-node migrate-data.ts --clear",
+    "migrate:data:local": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8081 npx ts-node migrate-data.ts",
+    "migrate:data:local:clear": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8081 npx ts-node migrate-data.ts --clear",
     "migrate:data:prod": "npx ts-node migrate-data.ts",
     "migrate:data:prod:clear": "npx ts-node migrate-data.ts --clear"
   },
   "engines": {
-    "node": "18"
+    "node": ">=18"
   },
   "main": "build/index.js",
   "dependencies": {

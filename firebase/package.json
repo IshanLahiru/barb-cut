@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --project functions/tsconfig.json",
     "watch": "tsc --project functions/tsconfig.json --watch",
-    "emulator:start": "firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data",
+    "emulator:start": "mkdir -p ./emulator-data && firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data",
     "emulator:start:clean": "rm -rf ./emulator-data && firebase emulators:start --export-on-exit=./emulator-data",
     "emulator:migrate": "cd functions && npm run migrate:data:local:clear",
     "dev": "npm run emulator:start",
@@ -18,9 +18,9 @@
     "copy-assets": "mkdir -p functions/src/data/images && cp -r ../apps/barbcut/assets/data/images/* functions/src/data/images/",
     "clean-assets": "rm -rf functions/src/data functions/build/data",
     "predeploy": "npm run copy-assets && npm run build",
-    "migrate:status": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node functions/build/cli.js status",
-    "migrate:up": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node functions/build/cli.js up",
-    "migrate:down": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node functions/build/cli.js down",
+    "migrate:status": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8081 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node functions/build/cli.js status",
+    "migrate:up": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8081 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node functions/build/cli.js up",
+    "migrate:down": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8081 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node functions/build/cli.js down",
     "migrate:prod": "npm run copy-assets && npm run build && node functions/build/cli.js",
     "logs": "firebase functions:log",
     "shell": "firebase functions:shell"
@@ -34,6 +34,6 @@
     "typescript": "^5.3.3"
   },
   "engines": {
-    "node": "18"
+    "node": ">=18"
   }
 }
