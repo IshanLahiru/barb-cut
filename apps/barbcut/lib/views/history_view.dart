@@ -513,7 +513,7 @@ class _HistoryViewState extends State<HistoryView> {
                           // Image carousel - larger
                           Padding(
                             padding: EdgeInsets.all(AiSpacing.md),
-                            child: Container(
+                            child: SizedBox(
                               height: carouselHeight,
                               child: FlutterCarousel(
                                 options: CarouselOptions(
