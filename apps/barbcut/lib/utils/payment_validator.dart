@@ -69,7 +69,7 @@ extension SubscriptionStatusExtension on SubscriptionStatus {
     switch (this) {
       case SubscriptionStatus.active:
         return 'Active';
-      case SubscriptionStatus.expiringoon:
+      case SubscriptionStatus.expiringsoon:
         return 'Expiring Soon';
       case SubscriptionStatus.expired:
         return 'Expired';
