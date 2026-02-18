@@ -61,18 +61,18 @@ class PurchaseResult extends PaymentResult<SubscriptionModel> {
   final String packageId;
 
   PurchaseResult.success(
-    SubscriptionModel subscription, {
+    SubscriptionModel super.subscription, {
     required this.amount,
     required this.packageId,
   }) : timestamp = DateTime.now(),
-       super.success(subscription);
+       super.success();
 
   PurchaseResult.failure(
-    String error, {
+    String super.error, {
     required this.amount,
     required this.packageId,
   }) : timestamp = DateTime.now(),
-       super.failure(error);
+       super.failure();
 
   @override
   String toString() =>
@@ -86,16 +86,16 @@ class RestoreResult extends PaymentResult<List<SubscriptionModel>> {
   final DateTime timestamp;
 
   RestoreResult.success(
-    List<SubscriptionModel> subscriptions, {
+    List<SubscriptionModel> super.subscriptions, {
     required this.restoredCount,
   }) : subscribedCount = subscriptions.length,
        timestamp = DateTime.now(),
-       super.success(subscriptions);
+       super.success();
 
-  RestoreResult.failure(String error, {this.restoredCount = 0})
+  RestoreResult.failure(String super.error, {this.restoredCount = 0})
     : subscribedCount = 0,
       timestamp = DateTime.now(),
-      super.failure(error);
+      super.failure();
 
   @override
   String toString() =>
