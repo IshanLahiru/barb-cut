@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:purchases_flutter/purchases_flutter.dart' hide CustomerInfo;
 import 'package:barbcut/models/subscription_model.dart';
 
 class RevenuecatService {
-  static const String _apiKey = 'goog_ApYcEmNqTqQlKlAmBrQlZbKKqzS';
   static RevenuecatService? _instance;
 
   RevenuecatService._();
@@ -21,10 +21,17 @@ class RevenuecatService {
     if (_initialized) return;
 
     try {
+      final apiKey = dotenv.env['REVENUECAT_API_KEY'];
+      if (apiKey == null || apiKey.isEmpty) {
+        throw Exception(
+          'RevenueCat API key not found in environment variables',
+        );
+      }
+
       await Purchases.setLogLevel(LogLevel.debug);
 
-      // Configure RevenueCat with API Key
-      await Purchases.configure(PurchasesConfiguration(_apiKey));
+      // Configure RevenueCat with API Key from environment
+      await Purchases.configure(PurchasesConfiguration(apiKey));
 
       _initialized = true;
       debugPrint('RevenueCat initialized successfully');
@@ -36,33 +43,46 @@ class RevenuecatService {
 
   Future<CustomerInfo> fetchCustomerInfo() async {
     try {
-      final customerInfo = await Purchases.getCustomerInfo();
+      final revenuecatCustomerInfo = await Purchases.getCustomerInfo();
 
       final subscriptions = <SubscriptionModel>[];
 
-      // Process active subscriptions
-      for (var entry in customerInfo.allPurchasedProductIdentifiers) {
+      // Process all purchased subscriptions
+      for (var productId
+          in revenuecatCustomerInfo.allPurchasedProductIdentifiers) {
+        // Get expiration date from the allExpirationDates map
+        final expirationDateStr =
+            revenuecatCustomerInfo.allExpirationDates[productId];
+        DateTime? expirationDate;
+        if (expirationDateStr != null) {
+          try {
+            expirationDate = DateTime.parse(expirationDateStr);
+          } catch (e) {
+            debugPrint('Failed to parse expiration date: $expirationDateStr');
+          }
+        }
+
         subscriptions.add(
           SubscriptionModel(
-            id: entry,
-            title: _getSubscriptionTitle(entry),
-            description: _getSubscriptionDescription(entry),
+            id: productId,
+            title: _getSubscriptionTitle(productId),
+            description: _getSubscriptionDescription(productId),
             price: 0.0,
             currencyCode: 'USD',
-            billingPeriod: _getBillingPeriod(entry),
-            isActive: true,
-            expirationDate: customerInfo.getExpirationDateForProductIdentifier(
-              entry,
+            billingPeriod: _getBillingPeriod(productId),
+            isActive: revenuecatCustomerInfo.activeSubscriptions.contains(
+              productId,
             ),
+            expirationDate: expirationDate,
           ),
         );
       }
 
       return CustomerInfo(
-        customerId: customerInfo.originalAppUserId,
+        customerId: revenuecatCustomerInfo.originalAppUserId,
         subscriptions: subscriptions,
         hasActiveSubscription:
-            customerInfo.allPurchasedProductIdentifiers.isNotEmpty,
+            revenuecatCustomerInfo.activeSubscriptions.isNotEmpty,
         requestDate: DateTime.now(),
       );
     } catch (e) {
@@ -111,8 +131,11 @@ class RevenuecatService {
       );
 
       if (storePackage != null) {
-        final purchaserInfo = await Purchases.purchasePackage(storePackage);
-        debugPrint('Purchase successful: ${purchaserInfo.originalAppUserId}');
+        final purchaseParams = PurchaseParams.package(storePackage);
+        final purchaseResult = await Purchases.purchase(purchaseParams);
+        debugPrint(
+          'Purchase successful: ${purchaseResult.customerInfo.originalAppUserId}',
+        );
       }
     } catch (e) {
       debugPrint('Error during purchase: $e');
@@ -173,11 +196,12 @@ class RevenuecatService {
   }
 
   String _formatIntroPrice(StoreProduct product) {
-    final introPrice = product.introPrice;
-    if (introPrice?.price == null) {
+    final introPriceInfo = product.introductoryPrice;
+    if (introPriceInfo == null) {
       return '';
     }
-    return 'Start at \$${introPrice!.price} for ${introPrice.period}';
+    final billingPeriod = _extractBillingPeriod(product.subscriptionPeriod);
+    return 'Start at \$${introPriceInfo.price} for $billingPeriod';
   }
 
   String _extractBillingPeriod(String? period) {
