@@ -12,7 +12,7 @@ class PaymentUIHelper {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: statusColor.withOpacity(0.1),
+        color: statusColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: statusColor),
       ),
@@ -44,7 +44,7 @@ class PaymentUIHelper {
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         Text(
-          '${package.billingPeriod.toLowerCase()}',
+          package.billingPeriod.toLowerCase(),
           style: TextStyle(fontSize: 12, color: Colors.grey[600]),
         ),
         if (package.introPrice.isNotEmpty)
