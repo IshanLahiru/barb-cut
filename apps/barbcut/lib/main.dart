@@ -44,19 +44,27 @@ void main() async {
   } catch (e) {
     debugPrint('Failed to load .env: $e');
   }
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Load app data from JSON files
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } catch (e) {
+    debugPrint('Firebase init failed: $e');
+    // Don't rethrow - allow app to continue
+  }
+
   try {
     await AppData.loadAppData();
   } catch (e) {
-    debugPrint('Failed to load AppData: $e');
+    debugPrint('AppData load failed: $e');
+    // Don't rethrow - use empty defaults
   }
 
-  // Initialize service locator (core DI setup)
-  await setupServiceLocator();
+  try {
+    await setupServiceLocator();
+  } catch (e) {
+    debugPrint('Service locator setup failed: $e');
+  }
 
-  // Initialize ThemeController
   final themeController = await _initializeThemeController();
 
   runApp(MyApp(themeController: themeController));
