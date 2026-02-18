@@ -1,4 +1,5 @@
 /// Payment exception classes for proper error handling
+library;
 
 class PaymentException implements Exception {
   final String message;
@@ -22,32 +23,28 @@ class PurchaseFailedException extends PaymentException {
 }
 
 class RestorePurchasesFailedException extends PaymentException {
-  RestorePurchasesFailedException(String message, [dynamic exception])
-    : super(message, exception);
+  RestorePurchasesFailedException(super.message, [super.exception]);
 
   @override
   String toString() => 'RestorePurchasesFailedException: $message';
 }
 
 class RevenueCatInitializationException extends PaymentException {
-  RevenueCatInitializationException(String message, [dynamic exception])
-    : super(message, exception);
+  RevenueCatInitializationException(super.message, [super.exception]);
 
   @override
   String toString() => 'RevenueCatInitializationException: $message';
 }
 
 class CustomerInfoFetchException extends PaymentException {
-  CustomerInfoFetchException(String message, [dynamic exception])
-    : super(message, exception);
+  CustomerInfoFetchException(super.message, [super.exception]);
 
   @override
   String toString() => 'CustomerInfoFetchException: $message';
 }
 
 class PackagesFetchException extends PaymentException {
-  PackagesFetchException(String message, [dynamic exception])
-    : super(message, exception);
+  PackagesFetchException(super.message, [super.exception]);
 
   @override
   String toString() => 'PackagesFetchException: $message';
@@ -65,8 +62,7 @@ class InvalidPackageException extends PaymentException {
 }
 
 class NetworkException extends PaymentException {
-  NetworkException(String message, [dynamic exception])
-    : super(message, exception);
+  NetworkException(super.message, [super.exception]);
 
   @override
   String toString() => 'NetworkException: $message';
