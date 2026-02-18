@@ -1263,7 +1263,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                 allImages: activeImages,
                               ),
                             );
-                          }).toList(),
+                          }),
                         ],
                       ),
                     ],
@@ -1333,7 +1333,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final description = style['description']?.toString();
     final maintenanceTips = style['maintenanceTips'];
     final tipsList = maintenanceTips is List
-        ? (maintenanceTips as List).map((e) => e.toString()).toList()
+        ? (maintenanceTips).map((e) => e.toString()).toList()
         : maintenanceTips is String
             ? [maintenanceTips]
             : <String>[];
