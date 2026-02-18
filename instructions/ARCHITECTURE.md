@@ -1,5 +1,18 @@
 # Barbcut Flutter App - Clean Architecture Guide
 
+## Overview
+
+This guide outlines the clean architecture structure for the BarberCut Flutter application, following feature-first organization principles with clear separation of concerns.
+
+## Related Documentation
+
+- **[CLEAN_ARCHITECTURE_ROADMAP.md](CLEAN_ARCHITECTURE_ROADMAP.md)** - Complete migration roadmap and progress tracking
+- **[IMPLEMENTATION_EXAMPLES.md](IMPLEMENTATION_EXAMPLES.md)** - Code examples for each architecture layer
+- **[PHASE_1_COMPLETION_REPORT.md](PHASE_1_COMPLETION_REPORT.md)** - Phase 1 status and deliverables
+- **[PHASE_2_GUIDE.md](PHASE_2_GUIDE.md)** - Phase 2 implementation (Atomic Design)
+
+---
+
 ## 📁 Proposed Folder Structure (Feature-First Approach)
 
 ```
@@ -163,3 +176,20 @@ home_page.dart (Screen)
 - [ ] Unit tests for use cases
 - [ ] Repository tests with mock datasources
 - [ ] Widget tests for shared components
+
+---
+
+## Related Resources
+
+### Implementation Guides
+- **[IMPLEMENTATION_EXAMPLES.md](IMPLEMENTATION_EXAMPLES.md)** - Detailed code examples for all layers
+- **[CLEAN_ARCHITECTURE_ROADMAP.md](CLEAN_ARCHITECTURE_ROADMAP.md)** - Migration roadmap with progress tracking
+- **[PHASE_2_GUIDE.md](PHASE_2_GUIDE.md)** - Atomic Design implementation guide
+
+### Feature Documentation
+- **[PAYMENT_SYSTEM_COMPLETE.md](PAYMENT_SYSTEM_COMPLETE.md)** - Payment system following clean architecture
+- **[MULTI_ANGLE_VIEW_GUIDE.md](MULTI_ANGLE_VIEW_GUIDE.md)** - Feature implementation example
+
+### Project Setup
+- **[PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md)** - High-level project context
+- **[RULES.md](RULES.md)** - Development guidelines and best practices
