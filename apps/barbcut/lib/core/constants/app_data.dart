@@ -1,5 +1,6 @@
-import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'dart:developer' as developer;
+import 'package:flutter/services.dart';
 
 /// Centralized data source for all application content
 /// Loads data from JSON files in assets/data/
@@ -89,9 +90,14 @@ class AppData {
       );
       _history = List<Map<String, dynamic>>.from(jsonDecode(historyJson));
 
-      print('✓ AppData loaded successfully');
+      developer.log('✓ AppData loaded successfully', name: 'AppData');
     } catch (e) {
-      print('✗ Error loading AppData: $e');
+      developer.log(
+        '✗ Error loading AppData: $e',
+        name: 'AppData',
+        error: e,
+        level: 1000,
+      );
       rethrow;
     }
   }
