@@ -9,10 +9,7 @@ class PaymentMiddleware {
     _eventBus.emit(
       PaymentEvent(
         type: PaymentEventTypes.purchaseInitiated,
-        data: {
-          'package_id': packageId,
-          'amount': amount,
-        },
+        data: {'package_id': packageId, 'amount': amount},
       ),
     );
   }
@@ -21,9 +18,7 @@ class PaymentMiddleware {
     _eventBus.emit(
       PaymentEvent(
         type: PaymentEventTypes.purchaseCompleted,
-        data: {
-          'package_id': packageId,
-        },
+        data: {'package_id': packageId},
       ),
     );
   }
@@ -32,20 +27,14 @@ class PaymentMiddleware {
     _eventBus.emit(
       PaymentEvent(
         type: PaymentEventTypes.purchaseFailed,
-        data: {
-          'package_id': packageId,
-          'error': error,
-        },
+        data: {'package_id': packageId, 'error': error},
       ),
     );
   }
 
   void logRestoreAttempt() {
     _eventBus.emit(
-      PaymentEvent(
-        type: PaymentEventTypes.restoreInitiated,
-        data: {},
-      ),
+      PaymentEvent(type: PaymentEventTypes.restoreInitiated, data: {}),
     );
   }
 
@@ -53,9 +42,7 @@ class PaymentMiddleware {
     _eventBus.emit(
       PaymentEvent(
         type: PaymentEventTypes.restoreCompleted,
-        data: {
-          'subscription_count': subscriptions.length,
-        },
+        data: {'subscription_count': subscriptions.length},
       ),
     );
   }
@@ -64,10 +51,7 @@ class PaymentMiddleware {
     _eventBus.emit(
       PaymentEvent(
         type: PaymentEventTypes.subscriptionActive,
-        data: {
-          'subscription_id': subscription.id,
-          'title': subscription.title,
-        },
+        data: {'subscription_id': subscription.id, 'title': subscription.title},
       ),
     );
   }
@@ -76,9 +60,7 @@ class PaymentMiddleware {
     _eventBus.emit(
       PaymentEvent(
         type: PaymentEventTypes.subscriptionExpired,
-        data: {
-          'subscription_id': subscription.id,
-        },
+        data: {'subscription_id': subscription.id},
       ),
     );
   }

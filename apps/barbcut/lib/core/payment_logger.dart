@@ -16,7 +16,11 @@ class PaymentLogger {
     print('$_logPrefix [WARNING] $message');
   }
 
-  static void logError(String message, [dynamic error, StackTrace? stackTrace]) {
+  static void logError(
+    String message, [
+    dynamic error,
+    StackTrace? stackTrace,
+  ]) {
     print('$_logPrefix [ERROR] $message');
     if (error != null) print('$_logPrefix Error: $error');
     if (stackTrace != null) print('$_logPrefix Stack: $stackTrace');
@@ -24,10 +28,10 @@ class PaymentLogger {
 
   static void logPurchaseEvent(String packageId, String status) {
     logInfo('Purchase event - Package: $packageId, Status: $status');
-    PaymentAnalyticsTracker().trackEvent('purchase_event', properties: {
-      'package_id': packageId,
-      'status': status,
-    });
+    PaymentAnalyticsTracker().trackEvent(
+      'purchase_event',
+      properties: {'package_id': packageId, 'status': status},
+    );
   }
 
   static void logAPICall(String method) {

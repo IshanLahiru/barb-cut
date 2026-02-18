@@ -19,11 +19,7 @@ class PaymentUIHelper {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            _getStatusIcon(subscription),
-            color: statusColor,
-            size: 16,
-          ),
+          Icon(_getStatusIcon(subscription), color: statusColor, size: 16),
           const SizedBox(width: 6),
           Text(
             statusText,
@@ -45,17 +41,11 @@ class PaymentUIHelper {
       children: [
         Text(
           '\$${package.price.toStringAsFixed(2)}',
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         Text(
           '${package.billingPeriod.toLowerCase()}',
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
+          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
         ),
         if (package.introPrice.isNotEmpty)
           Padding(
@@ -78,20 +68,18 @@ class PaymentUIHelper {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: features
-          .map((feature) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(child: Text(feature)),
-                  ],
-                ),
-              ))
+          .map(
+            (feature) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.green, size: 18),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text(feature)),
+                ],
+              ),
+            ),
+          )
           .toList(),
     );
   }
@@ -100,8 +88,9 @@ class PaymentUIHelper {
   static Color _getStatusColor(SubscriptionModel subscription) {
     if (!subscription.isActive) return Colors.grey;
     if (subscription.expirationDate != null) {
-      final daysRemaining =
-          subscription.expirationDate!.difference(DateTime.now()).inDays;
+      final daysRemaining = subscription.expirationDate!
+          .difference(DateTime.now())
+          .inDays;
       if (daysRemaining < 0) return Colors.red;
       if (daysRemaining <= 7) return Colors.orange;
     }
@@ -111,8 +100,9 @@ class PaymentUIHelper {
   static IconData _getStatusIcon(SubscriptionModel subscription) {
     if (!subscription.isActive) return Icons.block;
     if (subscription.expirationDate != null) {
-      final daysRemaining =
-          subscription.expirationDate!.difference(DateTime.now()).inDays;
+      final daysRemaining = subscription.expirationDate!
+          .difference(DateTime.now())
+          .inDays;
       if (daysRemaining < 0) return Icons.error;
       if (daysRemaining <= 7) return Icons.warning;
     }

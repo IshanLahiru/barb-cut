@@ -88,8 +88,9 @@ void main() {
 
     test('getSubscriptionDaysRemaining calculates days correctly', () {
       final futureDate = DateTime.now().add(const Duration(days: 5));
-      final daysRemaining =
-          PaymentFormatter.getSubscriptionDaysRemaining(futureDate);
+      final daysRemaining = PaymentFormatter.getSubscriptionDaysRemaining(
+        futureDate,
+      );
       expect(daysRemaining, greaterThanOrEqualTo(4));
       expect(daysRemaining, lessThanOrEqualTo(5));
     });

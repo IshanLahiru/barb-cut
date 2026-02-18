@@ -8,13 +8,13 @@ class PaymentResult<T> {
   final bool isSuccess;
 
   PaymentResult.success(this.data)
-      : error = null,
-        exception = null,
-        isSuccess = true;
+    : error = null,
+      exception = null,
+      isSuccess = true;
 
   PaymentResult.failure(this.error, {this.exception})
-      : data = null,
-        isSuccess = false;
+    : data = null,
+      isSuccess = false;
 
   /// Map success to another type
   PaymentResult<U> map<U>(U Function(T) mapper) {
@@ -64,15 +64,15 @@ class PurchaseResult extends PaymentResult<SubscriptionModel> {
     SubscriptionModel subscription, {
     required this.amount,
     required this.packageId,
-  })  : timestamp = DateTime.now(),
-        super.success(subscription);
+  }) : timestamp = DateTime.now(),
+       super.success(subscription);
 
   PurchaseResult.failure(
     String error, {
     required this.amount,
     required this.packageId,
-  })  : timestamp = DateTime.now(),
-        super.failure(error);
+  }) : timestamp = DateTime.now(),
+       super.failure(error);
 
   @override
   String toString() =>
@@ -88,16 +88,14 @@ class RestoreResult extends PaymentResult<List<SubscriptionModel>> {
   RestoreResult.success(
     List<SubscriptionModel> subscriptions, {
     required this.restoredCount,
-  })  : subscribedCount = subscriptions.length,
-        timestamp = DateTime.now(),
-        super.success(subscriptions);
+  }) : subscribedCount = subscriptions.length,
+       timestamp = DateTime.now(),
+       super.success(subscriptions);
 
-  RestoreResult.failure(
-    String error, {
-    this.restoredCount = 0,
-  })  : subscribedCount = 0,
-        timestamp = DateTime.now(),
-        super.failure(error);
+  RestoreResult.failure(String error, {this.restoredCount = 0})
+    : subscribedCount = 0,
+      timestamp = DateTime.now(),
+      super.failure(error);
 
   @override
   String toString() =>

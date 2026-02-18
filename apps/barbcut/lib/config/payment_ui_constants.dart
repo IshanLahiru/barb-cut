@@ -40,15 +40,18 @@ class PaymentUIConstants {
   static const String confirmCancelButton = 'Cancel';
 
   // Error Messages
-  static const String genericErrorMessage = 'Something went wrong. Please try again.';
+  static const String genericErrorMessage =
+      'Something went wrong. Please try again.';
   static const String networkErrorMessage =
       'Network error. Please check your connection.';
-  static const String purchaseFailedMessage = 'Purchase failed. Please try again.';
+  static const String purchaseFailedMessage =
+      'Purchase failed. Please try again.';
   static const String restoreFailedMessage = 'Failed to restore purchases.';
 
   // Success Messages
   static const String purchaseSuccessMessage = 'Purchase successful!';
-  static const String restoreSuccessMessage = 'Purchases restored successfully.';
+  static const String restoreSuccessMessage =
+      'Purchases restored successfully.';
   static const String subscriptionCancelledMessage = 'Subscription cancelled.';
 
   // Loading States

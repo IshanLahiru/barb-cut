@@ -38,7 +38,7 @@ Understanding and implementing clean architecture patterns:
 
 - **[APP_DATA_MIGRATION.md](APP_DATA_MIGRATION.md)** - Data migration to JSON files guide
 - **[README_MIGRATIONS.md](README_MIGRATIONS.md)** - Firebase migrations guide
-- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Migration file upload quick reference
+- **[MIGRATION_FILES_QUICK_REFERENCE.md](MIGRATION_FILES_QUICK_REFERENCE.md)** - Migration file upload quick reference
 - **[FILE_MANAGEMENT_STRATEGY.md](FILE_MANAGEMENT_STRATEGY.md)** - File management strategy for Firebase
 
 ---
@@ -78,14 +78,14 @@ Complete payment integration documentation:
 - **[PAYMENT_ROADMAP.md](PAYMENT_ROADMAP.md)** - Future development roadmap
 - **[PAYMENT_TESTING.md](PAYMENT_TESTING.md)** - Testing guide for payment features
 - **[PAYMENT_IMPLEMENTATION_CHECKLIST.md](PAYMENT_IMPLEMENTATION_CHECKLIST.md)** - Implementation tracking checklist
-- **[LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md)** - Payment system launch checklist
+- **[PAYMENT_LAUNCH_CHECKLIST.md](PAYMENT_LAUNCH_CHECKLIST.md)** - Payment system launch checklist
 
 ### Multi-Angle View
 
 Haircut view feature documentation:
 
 - **[MULTI_ANGLE_VIEW_GUIDE.md](MULTI_ANGLE_VIEW_GUIDE.md)** - Multi-angle haircut view integration guide
-- **[INTEGRATION_COMPLETE.md](INTEGRATION_COMPLETE.md)** - Multi-angle view integration completion report
+- **[MULTI_ANGLE_VIEW_INTEGRATION_COMPLETE.md](MULTI_ANGLE_VIEW_INTEGRATION_COMPLETE.md)** - Multi-angle view integration completion report
 
 ---
 
@@ -93,7 +93,7 @@ Haircut view feature documentation:
 
 ### Firebase Backend
 
-- **[GUIDE.md](GUIDE.md)** - Complete Firebase backend guide (Cloud Functions, Firestore, Storage)
+- **[FIREBASE_BACKEND_GUIDE.md](FIREBASE_BACKEND_GUIDE.md)** - Complete Firebase backend guide (Cloud Functions, Firestore, Storage)
 - **[README_MIGRATIONS.md](README_MIGRATIONS.md)** - Firebase migrations and file management
 - **[FILE_MANAGEMENT_STRATEGY.md](FILE_MANAGEMENT_STRATEGY.md)** - File naming and storage organization
 
@@ -107,7 +107,7 @@ Haircut view feature documentation:
 
 ### Launch & Deployment
 
-- **[LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md)** - Payment system launch checklist
+- **[PAYMENT_LAUNCH_CHECKLIST.md](PAYMENT_LAUNCH_CHECKLIST.md)** - Payment system launch checklist
 - **[LAUNCH_IMAGE_ASSETS_README.md](LAUNCH_IMAGE_ASSETS_README.md)** - Launch screen asset instructions
 
 ---
@@ -141,7 +141,7 @@ Haircut view feature documentation:
 4. [COMPONENT_GALLERY.md](COMPONENT_GALLERY.md) - Component examples
 
 ### For Backend Developers
-1. [GUIDE.md](GUIDE.md) - Firebase backend guide
+1. [FIREBASE_BACKEND_GUIDE.md](FIREBASE_BACKEND_GUIDE.md) - Firebase backend guide
 2. [README_MIGRATIONS.md](README_MIGRATIONS.md) - Migration system
 3. [FILE_MANAGEMENT_STRATEGY.md](FILE_MANAGEMENT_STRATEGY.md) - File management
 

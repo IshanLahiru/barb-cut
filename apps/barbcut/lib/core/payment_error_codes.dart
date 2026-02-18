@@ -44,8 +44,7 @@ class PaymentErrorMessage {
     // Purchase errors
     PaymentErrorCode.purchaseFailed: 'Purchase failed. Please try again.',
     PaymentErrorCode.purchaseCancelled: 'Purchase was cancelled.',
-    PaymentErrorCode.purchaseInvalid:
-        'This purchase is no longer available.',
+    PaymentErrorCode.purchaseInvalid: 'This purchase is no longer available.',
     PaymentErrorCode.purchaseTimeout:
         'Purchase took too long. Please check your internet and try again.',
 
@@ -63,28 +62,21 @@ class PaymentErrorMessage {
         'Request timed out. Please check connection.',
 
     // Package errors
-    PaymentErrorCode.packagesFetchFailed:
-        'Could not load available plans.',
-    PaymentErrorCode.packagesTimeout:
-        'Loading plans took too long.',
-    PaymentErrorCode.invalidPackage:
-        'This plan is not available.',
+    PaymentErrorCode.packagesFetchFailed: 'Could not load available plans.',
+    PaymentErrorCode.packagesTimeout: 'Loading plans took too long.',
+    PaymentErrorCode.invalidPackage: 'This plan is not available.',
 
     // Network errors
     PaymentErrorCode.networkError:
         'Network error. Please check your connection.',
-    PaymentErrorCode.networkTimeout:
-        'Connection timeout. Please try again.',
-    PaymentErrorCode.connectionLost:
-        'Internet connection was lost.',
+    PaymentErrorCode.networkTimeout: 'Connection timeout. Please try again.',
+    PaymentErrorCode.connectionLost: 'Internet connection was lost.',
 
     // RevenueCat SDK errors
     PaymentErrorCode.sdkInitializationFailed:
         'Payment system failed to initialize.',
-    PaymentErrorCode.sdkNotInitialized:
-        'Payment system is not ready yet.',
-    PaymentErrorCode.sdkError:
-        'Payment system error occurred.',
+    PaymentErrorCode.sdkNotInitialized: 'Payment system is not ready yet.',
+    PaymentErrorCode.sdkError: 'Payment system error occurred.',
 
     // Validation errors
     PaymentErrorCode.invalidInput: 'Invalid information provided.',

@@ -67,7 +67,8 @@ extension CustomerInfoExt on CustomerInfo {
 
   /// Check if any subscription needs attention
   bool get needsAttention {
-    return expiringSoonSubscriptions.isNotEmpty || expiredSubscriptions.isNotEmpty;
+    return expiringSoonSubscriptions.isNotEmpty ||
+        expiredSubscriptions.isNotEmpty;
   }
 
   /// Get the subscription with closest expiration date

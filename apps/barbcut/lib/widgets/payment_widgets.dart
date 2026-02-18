@@ -21,11 +21,7 @@ class SubscriptionBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(size / 2),
         border: Border.all(color: Colors.green),
       ),
-      child: Icon(
-        Icons.check_circle,
-        size: size,
-        color: Colors.green,
-      ),
+      child: Icon(Icons.check_circle, size: size, color: Colors.green),
     );
   }
 }
@@ -53,21 +49,14 @@ class PremiumFeatureLock extends StatelessWidget {
 
     return Stack(
       children: [
-        Opacity(
-          opacity: 0.5,
-          child: child,
-        ),
+        Opacity(opacity: 0.5, child: child),
         Positioned.fill(
           child: Container(
             color: Colors.black.withOpacity(0.3),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.lock,
-                  size: 48,
-                  color: Colors.white,
-                ),
+                Icon(Icons.lock, size: 48, color: Colors.white),
                 const SizedBox(height: 12),
                 Text(
                   lockMessage ?? 'Premium feature',
@@ -158,8 +147,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
             const SizedBox(width: 12),
             Text(label),
             const Spacer(),
-            if (isSelected)
-              const Icon(Icons.check_circle, color: Colors.blue),
+            if (isSelected) const Icon(Icons.check_circle, color: Colors.blue),
           ],
         ),
       ),

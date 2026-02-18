@@ -20,8 +20,9 @@ class PaymentStateMachine {
         return stateActiveSubscription;
       }
 
-      final daysUntilExpiration =
-          sub.expirationDate!.difference(DateTime.now()).inDays;
+      final daysUntilExpiration = sub.expirationDate!
+          .difference(DateTime.now())
+          .inDays;
 
       if (daysUntilExpiration <= 0) {
         return stateExpired;

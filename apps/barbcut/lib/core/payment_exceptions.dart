@@ -14,15 +14,16 @@ class PurchaseFailedException extends PaymentException {
   final String packageId;
 
   PurchaseFailedException(this.packageId, String message, [dynamic exception])
-      : super(message, exception);
+    : super(message, exception);
 
   @override
-  String toString() => 'PurchaseFailedException: $message (Package: $packageId)';
+  String toString() =>
+      'PurchaseFailedException: $message (Package: $packageId)';
 }
 
 class RestorePurchasesFailedException extends PaymentException {
   RestorePurchasesFailedException(String message, [dynamic exception])
-      : super(message, exception);
+    : super(message, exception);
 
   @override
   String toString() => 'RestorePurchasesFailedException: $message';
@@ -30,7 +31,7 @@ class RestorePurchasesFailedException extends PaymentException {
 
 class RevenueCatInitializationException extends PaymentException {
   RevenueCatInitializationException(String message, [dynamic exception])
-      : super(message, exception);
+    : super(message, exception);
 
   @override
   String toString() => 'RevenueCatInitializationException: $message';
@@ -38,7 +39,7 @@ class RevenueCatInitializationException extends PaymentException {
 
 class CustomerInfoFetchException extends PaymentException {
   CustomerInfoFetchException(String message, [dynamic exception])
-      : super(message, exception);
+    : super(message, exception);
 
   @override
   String toString() => 'CustomerInfoFetchException: $message';
@@ -46,7 +47,7 @@ class CustomerInfoFetchException extends PaymentException {
 
 class PackagesFetchException extends PaymentException {
   PackagesFetchException(String message, [dynamic exception])
-      : super(message, exception);
+    : super(message, exception);
 
   @override
   String toString() => 'PackagesFetchException: $message';
@@ -56,15 +57,16 @@ class InvalidPackageException extends PaymentException {
   final String packageId;
 
   InvalidPackageException(this.packageId, String message, [dynamic exception])
-      : super(message, exception);
+    : super(message, exception);
 
   @override
-  String toString() => 'InvalidPackageException: $message (Package: $packageId)';
+  String toString() =>
+      'InvalidPackageException: $message (Package: $packageId)';
 }
 
 class NetworkException extends PaymentException {
   NetworkException(String message, [dynamic exception])
-      : super(message, exception);
+    : super(message, exception);
 
   @override
   String toString() => 'NetworkException: $message';
@@ -74,7 +76,7 @@ class TimeoutException extends PaymentException {
   final Duration timeout;
 
   TimeoutException(this.timeout, String message, [dynamic exception])
-      : super(message, exception);
+    : super(message, exception);
 
   @override
   String toString() =>
