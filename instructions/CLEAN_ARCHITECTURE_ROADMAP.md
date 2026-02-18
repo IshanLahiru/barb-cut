@@ -2,7 +2,24 @@
 
 **Project**: Barbcut Flutter App  
 **Status**: Phase 1 Complete ✅ | Phase 2-4 Ready to Execute  
-**Latest Commit**: `4d6d507`
+
+## Overview
+
+Complete migration roadmap for transforming the BarberCut app to follow clean architecture principles with atomic design patterns.
+
+## Related Documentation
+
+### Getting Started
+- **[README.md](README.md)** - Master documentation index
+- **[PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md)** - Project context and goals
+- **[TECH-STACK.md](TECH-STACK.md)** - Technology stack overview
+
+### See Also
+- **[THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md)** - Theme architecture integration
+- **[PAYMENT_SYSTEM_COMPLETE.md](PAYMENT_SYSTEM_COMPLETE.md)** - Example of clean architecture in practice
+- **[FIREBASE_BACKEND_GUIDE.md](FIREBASE_BACKEND_GUIDE.md)** - Backend integration patterns
+
+---
 
 ## 📚 Documentation Available
 
