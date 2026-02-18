@@ -1,7 +1,18 @@
 # Multi-Angle Haircut View - Integration Guide
 
 ## Overview
+
 The multi-angle haircut view implementation provides a complete UI for displaying haircuts with 4 different angles (Front, Left Side, Right Side, Back) along with detailed information about each style.
+
+## Related Documentation
+
+- **[MULTI_ANGLE_VIEW_INTEGRATION_COMPLETE.md](MULTI_ANGLE_VIEW_INTEGRATION_COMPLETE.md)** - Integration completion report
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Clean architecture patterns for feature implementation
+- **[IMPLEMENTATION_EXAMPLES.md](IMPLEMENTATION_EXAMPLES.md)** - Code patterns and best practices
+- **[AI_UI_SYSTEM_GUIDE.md](AI_UI_SYSTEM_GUIDE.md)** - UI components and styling used
+- **[THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md)** - Theme colors and design tokens
+
+---
 
 ## New Components Created
 
