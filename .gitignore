@@ -24,6 +24,9 @@ pubspec.lock
 .env.development.local
 .env.test.local
 .env.production.local
+.env.development
+.env.production
+.env.staging
 
 # Testing
 coverage/
@@ -75,12 +78,29 @@ GoogleService-Info.plist
 google-services.json
 apps/**/google-services.json
 apps/**/GoogleService-Info.plist
+apps/barbcut/ios/Runner/GoogleService-Info.plist
+apps/barbcut/macos/Runner/GoogleService-Info.plist
+apps/barbcut/android/app/google-services.json
 *.key
+*.pem
+.env
+.env.local
+.env.production
+.env.development
+.env.staging
+firebase.json
+**/.firebaserc
 
 # Allow example credential templates
 !GoogleService-Info.plist.example
 !google-services.json.example
 !serviceAccountKey.json.example
+!firebase.json.example
+!.env.example
+!.firebaserc.example
+!apps/barbcut/ios/Runner/GoogleService-Info.plist.example
+!apps/barbcut/macos/Runner/GoogleService-Info.plist.example
+!apps/barbcut/android/app/google-services.json.example
 
 # IDE
 .vscode/

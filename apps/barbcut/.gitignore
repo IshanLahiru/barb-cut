@@ -74,3 +74,39 @@ macos/Runner.xcodeproj/xcuserdata/
 # Linux/Windows
 linux/flutter/ephemeral/
 windows/flutter/ephemeral/
+
+# Firebase & Credentials (NEVER COMMIT THESE)
+GoogleService-Info.plist
+google-services.json
+serviceAccountKey.json
+firebase-key.json
+*.key
+*.pem
+.env
+.env.local
+.env.production
+.env.development
+firebase.json
+
+# Platform-specific Firebase configs (VERY IMPORTANT)
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+android/app/google-services.json
+
+# Allow example credential templates
+!GoogleService-Info.plist.example
+!google-services.json.example
+!serviceAccountKey.json.example
+!firebase.json.example
+!.env.example
+!ios/Runner/GoogleService-Info.plist.example
+!macos/Runner/GoogleService-Info.plist.example
+!android/app/google-services.json.example
+
+# Firebase generated/temporary files
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+**/emulator-data/
+**/firebase-export-*/

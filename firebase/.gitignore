@@ -11,9 +11,18 @@ dist/
 
 # Firebase
 serviceAccountKey.json
+firebase-key.json
+*-key.json
+.firebaserc
 firebase-debug.log
 firestore-debug.log
 pubsub-debug.log
+*.key
+*.pem
+
+# Allow example credential templates
+!serviceAccountKey.json.example
+!.firebaserc.example
 
 # Emulator data
 .runtimeconfig.json
