@@ -1,4 +1,3 @@
-import 'package:barbcut/models/subscription_model.dart';
 
 /// Cache for payment data to reduce API calls
 class PaymentCache {
