@@ -3,6 +3,19 @@
 > **2026 Industry Standard AI Image Generation App UI/UX**  
 > Matches Leonardo AI, Midjourney, and contemporary design trends
 
+## Related Documentation
+
+### Theme & Architecture
+- **[THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md)** - Complete theme system with FlexColorScheme integration
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Clean architecture structure for UI components
+- **[IMPLEMENTATION_EXAMPLES.md](IMPLEMENTATION_EXAMPLES.md)** - Code patterns for all layers
+
+### Getting Started
+- **[PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md)** - Overall project context
+- **[RULES.md](RULES.md)** - Development guidelines and best practices
+
+---
+
 ## 📚 Documentation Guide
 
 Choose your starting point based on your needs:
