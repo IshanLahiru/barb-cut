@@ -10,6 +10,14 @@ This is the complete Firebase backend for the Barbcut haircut visualization app.
 - **Database Migrations** - Version-controlled schema management
 - **Local Emulator** - Full local development environment
 
+## Related Documentation
+
+- **[README_MIGRATIONS.md](README_MIGRATIONS.md)** - Firebase migrations guide with file management
+- **[FILE_MANAGEMENT_STRATEGY.md](FILE_MANAGEMENT_STRATEGY.md)** - File naming and storage organization
+- **[MIGRATION_FILES_QUICK_REFERENCE.md](MIGRATION_FILES_QUICK_REFERENCE.md)** - Quick reference for migration files
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Overall clean architecture structure
+- **[APP_DATA_MIGRATION.md](APP_DATA_MIGRATION.md)** - Data migration to JSON files
+
 ---
 
 ## Project Structure
