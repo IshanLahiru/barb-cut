@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:barbcut/services/payment_analytics_tracker.dart';
 
 /// Handles payment-related logging and debugging
@@ -5,15 +6,19 @@ class PaymentLogger {
   static const String _logPrefix = '[Payment]';
 
   static void logInfo(String message) {
-    print('$_logPrefix [INFO] $message');
+    developer.log('$_logPrefix [INFO] $message', name: 'Payment');
   }
 
   static void logDebug(String message) {
-    print('$_logPrefix [DEBUG] $message');
+    developer.log('$_logPrefix [DEBUG] $message', name: 'Payment');
   }
 
   static void logWarning(String message) {
-    print('$_logPrefix [WARNING] $message');
+    developer.log(
+      '$_logPrefix [WARNING] $message',
+      name: 'Payment',
+      level: 900,
+    );
   }
 
   static void logError(
@@ -21,9 +26,21 @@ class PaymentLogger {
     dynamic error,
     StackTrace? stackTrace,
   ]) {
-    print('$_logPrefix [ERROR] $message');
-    if (error != null) print('$_logPrefix Error: $error');
-    if (stackTrace != null) print('$_logPrefix Stack: $stackTrace');
+    developer.log(
+      '$_logPrefix [ERROR] $message',
+      name: 'Payment',
+      error: error,
+      stackTrace: stackTrace,
+      level: 1000,
+    );
+    if (error != null)
+      developer.log('$_logPrefix Error: $error', name: 'Payment', level: 1000);
+    if (stackTrace != null)
+      developer.log(
+        '$_logPrefix Stack: $stackTrace',
+        name: 'Payment',
+        level: 1000,
+      );
   }
 
   static void logPurchaseEvent(String packageId, String status) {
