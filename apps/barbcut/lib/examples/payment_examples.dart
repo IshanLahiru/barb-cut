@@ -80,7 +80,7 @@ class SubscriptionStatusExample extends StatelessWidget {
             final sub = subscriptions[index];
             return Card(
               child: ListTile(
-                leading: const SubscriptionBadge(),
+                leading: SubscriptionBadge(subscription: sub),
                 title: Text(sub.title),
                 subtitle: Text(sub.description),
                 trailing: Text('\$${sub.price}'),
