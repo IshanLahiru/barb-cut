@@ -72,6 +72,7 @@ firebase/functions/src/data/images/*.jpg
 firebase/functions/src/data/images/*.jpeg
 
 # Firebase Credentials (sensitive - never commit)
+# See SECURITY_SETUP.md for detailed information on credential management
 serviceAccountKey.json
 *-key.json
 GoogleService-Info.plist
@@ -83,15 +84,22 @@ apps/barbcut/macos/Runner/GoogleService-Info.plist
 apps/barbcut/android/app/google-services.json
 *.key
 *.pem
+
+# Environment Variables (contains API keys and secrets)
+# Always copy .env.example and add values locally
+# NEVER commit actual .env files with real credentials
 .env
 .env.local
 .env.production
 .env.development
 .env.staging
+
+# Firebase Configuration
 firebase.json
 **/.firebaserc
 
-# Allow example credential templates
+# Allow example credential templates (safe to commit)
+# These serve as documentation for required environment variables
 !GoogleService-Info.plist.example
 !google-services.json.example
 !serviceAccountKey.json.example
