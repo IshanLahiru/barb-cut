@@ -1,6 +1,17 @@
 # RevenueCat Payments Integration
 
-This document describes the RevenueCat payments implementation for the BarBcut app.
+This document describes the RevenueCat payments implementation for the BarberCut app.
+
+## Related Documentation
+
+- **[PAYMENT_SYSTEM_COMPLETE.md](PAYMENT_SYSTEM_COMPLETE.md)** - Complete payment implementation summary and architecture
+- **[PAYMENT_QUICK_REFERENCE.md](PAYMENT_QUICK_REFERENCE.md)** - Quick API reference for developers
+- **[PAYMENT_TESTING.md](PAYMENT_TESTING.md)** - Testing guide with checklist
+- **[PAYMENT_ROADMAP.md](PAYMENT_ROADMAP.md)** - Future enhancement roadmap
+- **[PAYMENT_LAUNCH_CHECKLIST.md](PAYMENT_LAUNCH_CHECKLIST.md)** - Pre-launch verification checklist
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Clean architecture patterns used in payment system
+
+---
 
 ## Overview
 
