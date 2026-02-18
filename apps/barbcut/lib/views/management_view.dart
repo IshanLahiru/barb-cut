@@ -367,7 +367,7 @@ class _ProfileViewState extends State<ProfileView> {
 
 // ChangePasswordPage - Full screen page for password change
 class ChangePasswordPage extends StatefulWidget {
-  const ChangePasswordPage({Key? key}) : super(key: key);
+  const ChangePasswordPage({super.key});
 
   @override
   State<ChangePasswordPage> createState() => _ChangePasswordPageState();
@@ -570,7 +570,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
 // NotificationsSettingsPage - Full screen page for notification preferences
 class NotificationsSettingsPage extends StatefulWidget {
-  const NotificationsSettingsPage({Key? key}) : super(key: key);
+  const NotificationsSettingsPage({super.key});
 
   @override
   State<NotificationsSettingsPage> createState() =>
