@@ -34,6 +34,10 @@ Understanding and implementing clean architecture patterns:
 - **[PHASE_1_COMPLETION_REPORT.md](PHASE_1_COMPLETION_REPORT.md)** - Phase 1 implementation status
 - **[PHASE_2_GUIDE.md](PHASE_2_GUIDE.md)** - Phase 2 guide (Atomic Design implementation)
 
+### Project Restructuring
+
+- **[PROJECT_RESTRUCTURING_PLAN.md](PROJECT_RESTRUCTURING_PLAN.md)** - **IMPORTANT** - Comprehensive analysis of current structural issues and detailed migration roadmap
+
 ### Migration Guides
 
 - **[APP_DATA_MIGRATION.md](APP_DATA_MIGRATION.md)** - Data migration to JSON files guide
