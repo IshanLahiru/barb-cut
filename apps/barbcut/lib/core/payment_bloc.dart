@@ -155,7 +155,7 @@ class PaymentBloc extends Bloc<PaymentBlocEvent, PaymentBlocState> {
       final customerInfo = await _revenuecatService.fetchCustomerInfo();
       final packages = state is PaymentInitialized
           ? (state as PaymentInitialized).packages
-          : [];
+          : <PackageModel>[];
 
       emit(PaymentInitialized(packages: packages, customerInfo: customerInfo));
     } catch (e) {
