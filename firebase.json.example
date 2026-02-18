@@ -1,0 +1,55 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "your-firebase-project-id",
+          "appId": "1:123456789000:android:YOUR-APP-ID",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "your-firebase-project-id",
+          "appId": "1:123456789000:ios:YOUR-APP-ID",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "your-firebase-project-id",
+          "appId": "1:123456789000:ios:YOUR-APP-ID",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "web": {
+        "default": {
+          "projectId": "your-firebase-project-id",
+          "appId": "1:123456789000:web:YOUR-APP-ID",
+          "fileOutput": "lib/firebase_options.dart"
+        }
+      },
+      "windows": {
+        "default": {
+          "projectId": "your-firebase-project-id",
+          "appId": "1:123456789000:windows:YOUR-APP-ID",
+          "fileOutput": "lib/firebase_options.dart"
+        }
+      }
+    },
+    "dart": {
+      "lib/firebase_options.dart": {
+        "projectId": "your-firebase-project-id",
+        "configurations": {
+          "android": "1:123456789000:android:YOUR-APP-ID",
+          "ios": "1:123456789000:ios:YOUR-APP-ID",
+          "macos": "1:123456789000:ios:YOUR-APP-ID",
+          "web": "1:123456789000:web:YOUR-APP-ID",
+          "windows": "1:123456789000:windows:YOUR-APP-ID"
+        }
+      }
+    }
+  }
+}
