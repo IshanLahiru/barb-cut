@@ -59,13 +59,11 @@ Complete design system with AI-enhanced components:
 
 ### Theme System
 
-Theme implementation and dark mode:
+Complete theme system with FlexColorScheme and dark mode:
 
-- **[THEME_MIGRATION_SUMMARY.md](THEME_MIGRATION_SUMMARY.md)** - Theme migration overview
-- **[FLEXCOLORSCHEME_MIGRATION_GUIDE.md](FLEXCOLORSCHEME_MIGRATION_GUIDE.md)** - FlexColorScheme migration details
-- **[DARK_MODE_IMPLEMENTATION.md](DARK_MODE_IMPLEMENTATION.md)** - Dark mode implementation report
+- **[THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md)** - **Complete Guide** - Theme architecture, color palette, migration guide, and testing
 
-**Related:** See [DESIGN_TOKENS.md](DESIGN_TOKENS.md) for color tokens and theming
+**Related:** See [DESIGN_TOKENS.md](DESIGN_TOKENS.md) for color tokens and AI UI theming
 
 ### Payment System (RevenueCat)
 
