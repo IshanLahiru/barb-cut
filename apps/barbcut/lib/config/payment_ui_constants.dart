@@ -1,4 +1,3 @@
-import 'package:barbcut/models/subscription_model.dart';
 
 /// Provides pre-built UI constants for payment screens
 class PaymentUIConstants {
