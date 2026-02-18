@@ -69,10 +69,9 @@ Complete theme system with FlexColorScheme and dark mode:
 
 Complete payment integration documentation:
 
+- **[PAYMENT_SYSTEM_COMPLETE.md](PAYMENT_SYSTEM_COMPLETE.md)** - **Complete Overview** - Implementation summary, architecture, and changelog
 - **[PAYMENT_QUICK_REFERENCE.md](PAYMENT_QUICK_REFERENCE.md)** - **START HERE** - Quick API reference
 - **[REVENUECAT_INTEGRATION.md](REVENUECAT_INTEGRATION.md)** - Complete RevenueCat setup and usage guide
-- **[PAYMENT_IMPLEMENTATION_SUMMARY.md](PAYMENT_IMPLEMENTATION_SUMMARY.md)** - Final implementation summary with metrics
-- **[CHANGELOG_PAYMENTS.md](CHANGELOG_PAYMENTS.md)** - Payment feature changelog
 - **[PAYMENT_ROADMAP.md](PAYMENT_ROADMAP.md)** - Future development roadmap
 - **[PAYMENT_TESTING.md](PAYMENT_TESTING.md)** - Testing guide for payment features
 - **[PAYMENT_IMPLEMENTATION_CHECKLIST.md](PAYMENT_IMPLEMENTATION_CHECKLIST.md)** - Implementation tracking checklist
