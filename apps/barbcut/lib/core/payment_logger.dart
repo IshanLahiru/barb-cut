@@ -33,14 +33,16 @@ class PaymentLogger {
       stackTrace: stackTrace,
       level: 1000,
     );
-    if (error != null)
+    if (error != null) {
       developer.log('$_logPrefix Error: $error', name: 'Payment', level: 1000);
-    if (stackTrace != null)
+    }
+    if (stackTrace != null) {
       developer.log(
         '$_logPrefix Stack: $stackTrace',
         name: 'Payment',
         level: 1000,
       );
+    }
   }
 
   static void logPurchaseEvent(String packageId, String status) {

@@ -70,6 +70,11 @@ firebase/functions/.eslintrc.js
 firebase/functions/src/data/images/*.png
 firebase/functions/src/data/images/*.jpg
 firebase/functions/src/data/images/*.jpeg
+firebase/data-files/*.png
+firebase/data-files/*.jpg
+firebase/data-files/*.jpeg
+firebase/export-collection/exports/*.json
+firebase/export-collection/exports/*.txt
 
 # Firebase Credentials (sensitive - never commit)
 # See SECURITY_SETUP.md for detailed information on credential management
