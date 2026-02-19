@@ -1,0 +1,38 @@
+{
+  "name": "barb-cut-image-generation",
+  "version": "1.0.0",
+  "description": "ComfyUI integration for Barb Cut image generation",
+  "main": "comfyui-generator.js",
+  "scripts": {
+    "start": "node examples/basic-generation.js",
+    "test": "node examples/test-connection.js",
+    "example:basic": "node examples/basic-generation.js",
+    "example:workflow": "node examples/submit-workflow.js",
+    "example:batch": "node examples/batch-generation.js"
+  },
+  "keywords": [
+    "comfyui",
+    "image-generation",
+    "ai",
+    "barb-cut"
+  ],
+  "author": "Barb Cut Team",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "node-fetch": "^2.7.0",
+    "ws": "^8.14.2",
+    "uuid": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.52.0",
+    "prettier": "^3.0.3",
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
