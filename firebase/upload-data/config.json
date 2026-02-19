@@ -1,0 +1,51 @@
+{
+  "storage": {
+    "enabled": true,
+    "bucketName": "barb-cut.firebasestorage.app",
+    "uploads": [
+      {
+        "name": "Haircut Images",
+        "enabled": true,
+        "sourceDir": "../../apps/barbcut/assets/data/images",
+        "destinationPath": "haircut-images/",
+        "fileTypes": [".png", ".jpg", ".jpeg"],
+        "metadata": {
+          "cacheControl": "public, max-age=31536000"
+        },
+        "makePublic": true
+      }
+    ]
+  },
+  "firestore": {
+    "enabled": true,
+    "collections": [
+      {
+        "name": "haircuts",
+        "enabled": true,
+        "sourceFile": "../../apps/barbcut/assets/data/haircuts.json",
+        "description": "Haircut styles and designs",
+        "idField": "id",
+        "imageUrlPrefix": "https://storage.googleapis.com/barb-cut.firebasestorage.app/haircut-images/"
+      },
+      {
+        "name": "beard_styles",
+        "enabled": true,
+        "sourceFile": "../../apps/barbcut/assets/data/beard_styles.json",
+        "description": "Beard styling options",
+        "idField": "id"
+      },
+      {
+        "name": "services",
+        "enabled": false,
+        "sourceFile": "../../apps/barbcut/assets/data/services.json",
+        "description": "Barber services offered",
+        "idField": "id"
+      }
+    ]
+  },
+  "options": {
+    "overwrite": true,
+    "deletePreviousDocs": false,
+    "verbose": true
+  }
+}
