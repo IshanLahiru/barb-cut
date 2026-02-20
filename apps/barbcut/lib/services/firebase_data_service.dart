@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:developer' as developer;
+import 'firebase_storage_helper.dart';
 
 /// Service for fetching data from Firebase Firestore
 class FirebaseDataService {
@@ -14,6 +15,37 @@ class FirebaseDataService {
   static Map<String, dynamic>? _cachedProfile;
   static List<Map<String, dynamic>>? _cachedHistory;
 
+  static Future<Map<String, dynamic>> _resolveStyleImages(
+    Map<String, dynamic> data,
+  ) async {
+    final resolved = Map<String, dynamic>.from(data);
+    final imagesData = data['images'];
+
+    if (imagesData is Map<String, dynamic>) {
+      final stringMap = imagesData.map(
+        (key, value) => MapEntry(key, value?.toString() ?? ''),
+      );
+      final resolvedMap = await FirebaseStorageHelper.preloadImageUrls(
+        stringMap,
+      );
+      resolved['images'] = resolvedMap;
+    } else if (imagesData is List) {
+      final imageList = imagesData.map((value) => value.toString()).toList();
+      resolved['images'] = await FirebaseStorageHelper.preloadImageList(
+        imageList,
+      );
+    }
+
+    final imageField = data['image'];
+    if (imageField is String && imageField.isNotEmpty) {
+      resolved['image'] = await FirebaseStorageHelper.getDownloadUrl(
+        imageField,
+      );
+    }
+
+    return resolved;
+  }
+
   /// Fetch haircuts from Firestore
   static Future<List<Map<String, dynamic>>> fetchHaircuts({
     bool forceRefresh = false,
@@ -27,26 +59,31 @@ class FirebaseDataService {
     }
 
     try {
-      developer.log('🔄 Fetching haircuts from Firebase...', name: 'FirebaseData');
+      developer.log(
+        '🔄 Fetching haircuts from Firebase...',
+        name: 'FirebaseData',
+      );
       final snapshot = await _firestore.collection('haircuts').get();
-      _cachedHaircuts = snapshot.docs
+      final rawHaircuts = snapshot.docs
           .map((doc) => {'id': doc.id, ...doc.data()})
           .toList();
+      _cachedHaircuts = await Future.wait(rawHaircuts.map(_resolveStyleImages));
       developer.log(
         '✅ Fetched ${_cachedHaircuts!.length} haircuts from Firestore',
         name: 'FirebaseData',
       );
-      
+
       // Log image URLs from first item for debugging
       if (_cachedHaircuts!.isNotEmpty) {
         final firstItem = _cachedHaircuts!.first;
-        final imageUrl = firstItem['image'] ?? firstItem['images']?['front'] ?? 'N/A';
+        final imageUrl =
+            firstItem['image'] ?? firstItem['images']?['front'] ?? 'N/A';
         developer.log(
           '   Sample image URL: ${imageUrl.toString().substring(0, 80)}...',
           name: 'FirebaseData',
         );
       }
-      
+
       return _cachedHaircuts!;
     } catch (e) {
       developer.log(
@@ -73,9 +110,12 @@ class FirebaseDataService {
         name: 'FirebaseData',
       );
       final snapshot = await _firestore.collection('beard_styles').get();
-      _cachedBeardStyles = snapshot.docs
+      final rawBeards = snapshot.docs
           .map((doc) => {'id': doc.id, ...doc.data()})
           .toList();
+      _cachedBeardStyles = await Future.wait(
+        rawBeards.map(_resolveStyleImages),
+      );
       developer.log(
         '✓ Fetched ${_cachedBeardStyles!.length} beard styles',
         name: 'FirebaseData',

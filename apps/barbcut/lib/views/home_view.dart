@@ -29,6 +29,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   final PanelController _panelController = PanelController();
   final ScrollController _mainScrollController = ScrollController();
   final TextEditingController _panelSearchController = TextEditingController();
+  final FocusNode _panelSearchFocus = FocusNode();
   int _selectedHaircutIndex = 0;
   int _selectedBeardIndex = 0;
   int _selectedAngleIndex = 0;
@@ -109,6 +110,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       vsync: this,
     );
     _mainScrollController.addListener(_handleMainScroll);
+    _panelSearchFocus.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
     _haircuts = List<Map<String, dynamic>>.from(_defaultHaircuts);
     _beardStyles = List<Map<String, dynamic>>.from(_defaultBeardStyles);
     _regenerateHeights();
@@ -984,6 +990,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     _arrowAnimationController.dispose();
     _carouselTimer?.cancel();
     _panelSearchController.dispose();
+    _panelSearchFocus.dispose();
     _mainScrollController.dispose();
     super.dispose();
   }
@@ -1090,6 +1097,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         minHeight: minPanelHeight,
         maxHeight: maxPanelHeight,
         borderRadius: BorderRadius.zero,
+        renderPanelSheet: false,
+        boxShadow: const [],
         backdropEnabled: false,
         isDraggable: true,
         parallaxEnabled: true,
@@ -1655,78 +1664,81 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   Widget _buildPanel(ScrollController scrollController) {
     return Container(
-      color: AdaptiveThemeColors.backgroundDark(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Animated draggable arrow indicator
-          GestureDetector(
-            onTap: () {
-              // Toggle between level 2 (peek) and level 4 (full)
-              if (_panelController.isAttached) {
-                if (_panelSlidePosition > 0.3) {
-                  _setPanelLevel(_panelLevel2);
-                } else {
-                  _setPanelLevel(_panelLevel4);
+      color: AdaptiveThemeColors.backgroundDeep(context),
+      child: Container(
+        margin: const EdgeInsets.only(top: 1),
+        color: AdaptiveThemeColors.backgroundDark(context),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Animated draggable arrow indicator
+            GestureDetector(
+              onTap: () {
+                // Toggle between level 2 (peek) and level 4 (full)
+                if (_panelController.isAttached) {
+                  if (_panelSlidePosition > 0.3) {
+                    _setPanelLevel(_panelLevel2);
+                  } else {
+                    _setPanelLevel(_panelLevel4);
+                  }
                 }
-              }
-            },
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 2),
-              child: Center(
-                child: AnimatedBuilder(
-                  animation: _arrowAnimationController,
-                  builder: (context, child) {
-                    return Transform.rotate(
-                      angle: _arrowAnimationController.value * pi,
-                      child: Icon(
-                        Icons.expand_less,
-                        size: 32,
-                        weight: 900,
-                        color: Colors.grey[400],
-                      ),
-                    );
-                  },
+              },
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 2),
+                child: Center(
+                  child: AnimatedBuilder(
+                    animation: _arrowAnimationController,
+                    builder: (context, child) {
+                      return Transform.rotate(
+                        angle: _arrowAnimationController.value * pi,
+                        child: Icon(
+                          Icons.expand_less,
+                          size: 32,
+                          weight: 900,
+                          color: Colors.grey[400],
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: AdaptiveThemeColors.borderLight(context),
-                  width: 1,
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: AdaptiveThemeColors.borderLight(context),
+                    width: 1,
+                  ),
                 ),
               ),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              tabs: const [
-                Tab(text: 'Hair'),
-                Tab(text: 'Beard'),
-              ],
-              labelColor: AdaptiveThemeColors.neonCyan(context),
-              unselectedLabelColor: AdaptiveThemeColors.textSecondary(context),
-              labelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-                fontSize: 16,
-              ),
-              unselectedLabelStyle: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
-              indicatorSize: TabBarIndicatorSize.label,
-              indicator: UnderlineTabIndicator(
-                borderSide: BorderSide(
-                  color: AdaptiveThemeColors.neonCyan(context),
-                  width: 4,
+              child: TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Hair'),
+                  Tab(text: 'Beard'),
+                ],
+                labelColor: AdaptiveThemeColors.neonCyan(context),
+                unselectedLabelColor: AdaptiveThemeColors.textSecondary(context),
+                labelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
                 ),
-                insets: EdgeInsets.symmetric(horizontal: 16),
+                unselectedLabelStyle: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
+                indicatorSize: TabBarIndicatorSize.label,
+                indicator: UnderlineTabIndicator(
+                  borderSide: BorderSide(
+                    color: AdaptiveThemeColors.neonCyan(context),
+                    width: 4,
+                  ),
+                  insets: EdgeInsets.symmetric(horizontal: 16),
+                ),
+                dividerColor: Colors.transparent,
               ),
-              dividerColor: Colors.transparent,
             ),
-          ),
           AnimatedSize(
             duration: const Duration(milliseconds: 450),
             curve: Curves.fastOutSlowIn,
@@ -1744,81 +1756,93 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       AiSpacing.lg,
                       AiSpacing.sm,
                     ),
-                    child: TextField(
-                      controller: _panelSearchController,
-                      onChanged: (value) {
-                        setState(() {
-                          _panelSearchQuery = value;
-                        });
-                      },
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AdaptiveThemeColors.textPrimary(context),
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Fade, buzz cut, pompadour...',
-                        hintStyle: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(
-                              color: AdaptiveThemeColors.textTertiary(context),
-                            ),
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color: AdaptiveThemeColors.textTertiary(context),
-                          size: 20,
-                        ),
-                        suffixIcon: _panelSearchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: Icon(
-                                  Icons.clear,
-                                  color: AdaptiveThemeColors.textTertiary(
-                                    context,
-                                  ),
-                                  size: 20,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _panelSearchController.clear();
-                                    _panelSearchQuery = '';
-                                  });
-                                },
-                              )
-                            : null,
-                        filled: true,
-                        fillColor: AdaptiveThemeColors.backgroundSecondary(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 220),
+                      curve: Curves.easeOutCubic,
+                      decoration: BoxDecoration(
+                        color: AdaptiveThemeColors.backgroundSecondary(
                           context,
+                        ).withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(
+                          AiSpacing.radiusLarge,
                         ),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: AiSpacing.md,
-                          vertical: AiSpacing.md,
+                        border: Border.all(
+                          color: _panelSearchFocus.hasFocus
+                              ? AdaptiveThemeColors.neonCyan(context)
+                                  .withValues(alpha: 0.9)
+                              : AdaptiveThemeColors.borderLight(context)
+                                  .withValues(alpha: 0.5),
+                          width: _panelSearchFocus.hasFocus ? 1.6 : 1.0,
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AiSpacing.radiusLarge,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 10,
+                            offset: Offset(0, 6),
                           ),
-                          borderSide: BorderSide(
-                            color: AdaptiveThemeColors.borderLight(context),
-                            width: 1.5,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AiSpacing.radiusLarge,
-                          ),
-                          borderSide: BorderSide(
-                            color: AdaptiveThemeColors.borderLight(context),
-                            width: 1.5,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AiSpacing.radiusLarge,
-                          ),
-                          borderSide: BorderSide(
-                            color: AdaptiveThemeColors.neonCyan(context),
-                            width: 2,
-                          ),
-                        ),
+                          if (_panelSearchFocus.hasFocus)
+                            BoxShadow(
+                              color: AdaptiveThemeColors.neonCyan(context)
+                                  .withValues(alpha: 0.2),
+                              blurRadius: 16,
+                              offset: Offset(0, 8),
+                            ),
+                        ],
                       ),
-                      cursorColor: AdaptiveThemeColors.neonCyan(context),
+                      child: TextField(
+                        focusNode: _panelSearchFocus,
+                        controller: _panelSearchController,
+                        onChanged: (value) {
+                          setState(() {
+                            _panelSearchQuery = value;
+                          });
+                        },
+                        textInputAction: TextInputAction.search,
+                        keyboardAppearance: Brightness.dark,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AdaptiveThemeColors.textPrimary(context),
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Search styles...',
+                          hintStyle: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: AdaptiveThemeColors.textTertiary(
+                                  context,
+                                ),
+                              ),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: AdaptiveThemeColors.textTertiary(context),
+                            size: 20,
+                          ),
+                          suffixIcon: _panelSearchQuery.isNotEmpty
+                              ? IconButton(
+                                  icon: Icon(
+                                    Icons.close_rounded,
+                                    color: AdaptiveThemeColors.textSecondary(
+                                      context,
+                                    ),
+                                    size: 18,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _panelSearchController.clear();
+                                      _panelSearchQuery = '';
+                                    });
+                                  },
+                                )
+                              : null,
+                          filled: false,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: AiSpacing.md,
+                            vertical: AiSpacing.md,
+                          ),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                        ),
+                        cursorColor: AdaptiveThemeColors.neonCyan(context),
+                      ),
                     ),
                   ),
                 ),

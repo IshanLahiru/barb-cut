@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../features/home/data/datasources/home_local_data_source.dart';
+import '../../features/home/data/datasources/home_remote_data_source.dart';
 import '../../features/home/data/repositories/home_repository_impl.dart';
 import '../../features/home/domain/repositories/home_repository.dart';
 import '../../features/home/domain/usecases/get_beard_styles_usecase.dart';
@@ -39,12 +39,12 @@ Future<void> setupServiceLocator() async {
 // Feature setup functions will go here
 // Example:
 void _setupHomeFeature() {
-  getIt.registerLazySingleton<HomeLocalDataSource>(
-    () => HomeLocalDataSourceImpl(),
+  getIt.registerLazySingleton<HomeRemoteDataSource>(
+    () => HomeRemoteDataSourceImpl(),
   );
 
   getIt.registerLazySingleton<HomeRepository>(
-    () => HomeRepositoryImpl(localDataSource: getIt<HomeLocalDataSource>()),
+    () => HomeRepositoryImpl(remoteDataSource: getIt<HomeRemoteDataSource>()),
   );
 
   getIt.registerLazySingleton<GetHaircutsUseCase>(
