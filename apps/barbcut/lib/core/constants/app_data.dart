@@ -61,36 +61,60 @@ class AppData {
   /// Load all data from Firebase (with JSON fallback)
   static Future<void> loadAppData({bool useJsonFallback = true}) async {
     try {
-      developer.log('Loading data from Firebase...', name: 'AppData');
+      developer.log('═' * 60, name: 'AppData');
+      developer.log('📦 Starting data load...', name: 'AppData');
+      developer.log('═' * 60, name: 'AppData');
 
       // Try to load from Firebase first
       try {
+        developer.log('🔥 Attempting to load from Firebase Firestore...', name: 'AppData');
         await _loadFromFirebase();
-        developer.log('✓ AppData loaded from Firebase', name: 'AppData');
+        developer.log('✅ SUCCESS: AppData loaded from Firebase', name: 'AppData');
+        developer.log('   Haircuts: ${_haircuts?.length ?? 0} items', name: 'AppData');
+        developer.log('   Beard styles: ${_beardStyles?.length ?? 0} items', name: 'AppData');
+        developer.log('   Products: ${_products?.length ?? 0} items', name: 'AppData');
+        developer.log('═' * 60, name: 'AppData');
         return;
       } catch (firebaseError) {
         developer.log(
-          '⚠ Firebase load failed: $firebaseError',
+          '⚠️  Firebase load failed, error details:',
+          name: 'AppData',
+        );
+        developer.log(
+          '   ${firebaseError.toString()}',
           name: 'AppData',
           error: firebaseError,
+          level: 800,
         );
 
         // If Firebase fails and fallback is enabled, load from JSON
         if (useJsonFallback) {
-          developer.log('Falling back to JSON assets...', name: 'AppData');
+          developer.log(
+            '📄 Falling back to JSON assets (bundled data)...',
+            name: 'AppData',
+          );
           await _loadFromJson();
-          developer.log('✓ AppData loaded from JSON fallback', name: 'AppData');
+          developer.log(
+            '✅ SUCCESS: AppData loaded from JSON fallback',
+            name: 'AppData',
+          );
+          developer.log('   ⚠️  Images may be Unsplash URLs instead of Firebase Storage',
+            name: 'AppData');
+          developer.log('   Haircuts: ${_haircuts?.length ?? 0} items', name: 'AppData');
+          developer.log('   Beard styles: ${_beardStyles?.length ?? 0} items', name: 'AppData');
+          developer.log('═' * 60, name: 'AppData');
         } else {
           rethrow;
         }
       }
     } catch (e) {
       developer.log(
-        '✗ Error loading AppData: $e',
+        '❌ FATAL: Error loading AppData: $e',
         name: 'AppData',
         error: e,
         level: 1000,
       );
+      developer.log('═' * 60, name: 'AppData');
       rethrow;
     }
   }

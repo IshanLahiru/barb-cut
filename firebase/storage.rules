@@ -2,15 +2,15 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Styles images - authenticated read only
+    // Styles images - public read (or authenticated)
     match /styles/{styleId}/{allPaths=**} {
-      allow read: if request.auth != null;
+      allow read: if true; // Allow public read for style images
       allow write: if false; // No public write access (only through admin SDK)
     }
     
-    // Haircut images - authenticated read only
+    // Haircut images - public read for app display
     match /haircut-images/{allPaths=**} {
-      allow read: if request.auth != null;
+      allow read: if true; // Allow public read for haircut display images
       allow write: if false; // No public write access (only through admin SDK)
     }
     

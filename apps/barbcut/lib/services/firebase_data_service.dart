@@ -19,23 +19,38 @@ class FirebaseDataService {
     bool forceRefresh = false,
   }) async {
     if (_cachedHaircuts != null && !forceRefresh) {
+      developer.log(
+        '📦 Using cached haircuts (${_cachedHaircuts!.length} items)',
+        name: 'FirebaseData',
+      );
       return _cachedHaircuts!;
     }
 
     try {
-      developer.log('Fetching haircuts from Firebase...', name: 'FirebaseData');
+      developer.log('🔄 Fetching haircuts from Firebase...', name: 'FirebaseData');
       final snapshot = await _firestore.collection('haircuts').get();
       _cachedHaircuts = snapshot.docs
           .map((doc) => {'id': doc.id, ...doc.data()})
           .toList();
       developer.log(
-        '✓ Fetched ${_cachedHaircuts!.length} haircuts',
+        '✅ Fetched ${_cachedHaircuts!.length} haircuts from Firestore',
         name: 'FirebaseData',
       );
+      
+      // Log image URLs from first item for debugging
+      if (_cachedHaircuts!.isNotEmpty) {
+        final firstItem = _cachedHaircuts!.first;
+        final imageUrl = firstItem['image'] ?? firstItem['images']?['front'] ?? 'N/A';
+        developer.log(
+          '   Sample image URL: ${imageUrl.toString().substring(0, 80)}...',
+          name: 'FirebaseData',
+        );
+      }
+      
       return _cachedHaircuts!;
     } catch (e) {
       developer.log(
-        '✗ Error fetching haircuts: $e',
+        '❌ Error fetching haircuts from Firestore: $e',
         name: 'FirebaseData',
         error: e,
         level: 1000,

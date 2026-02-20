@@ -46,10 +46,19 @@ void main() async {
   }
 
   try {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   } catch (e) {
     debugPrint('Firebase init failed: $e');
     // Don't rethrow - allow app to continue
+  }
+
+  // Enable anonymous authentication to access Firebase Storage images
+  try {
+    await AuthService().ensureAuthenticated();
+  } catch (e) {
+    debugPrint('Error setting up authentication: $e');
   }
 
   try {
@@ -97,6 +106,8 @@ class MyAppState extends State<MyApp> {
                     body: Center(child: CircularProgressIndicator()),
                   );
                 }
+                // Show MainScreen if user is authenticated (including anonymous)
+                // Show AuthScreen only if explicitly not authenticated
                 if (snapshot.hasData) {
                   return const MainScreen();
                 }

@@ -48,6 +48,41 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // Haircuts Collection (individual haircut styles)
+    // Public read, only admin write
+    match /haircuts/{haircutId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Beard Styles Collection
+    // Public read, only admin write
+    match /beard_styles/{beardStyleId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Products Collection
+    // Public read, only admin write
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Profile Collection (app configuration)
+    // Public read, only admin write
+    match /profile/{profileDoc} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // History Collection
+    // Public read, only admin write
+    match /history/{historyDoc} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
     // Bookings Collection (Appointments)
     // Public browse, authenticated create, owner/barber/admin manage
     match /bookings/{bookingId} {
