@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../theme/ai_colors.dart';
 import '../../../theme/ai_spacing.dart';
 import '../../../theme/adaptive_theme_colors.dart';
+import '../../../widgets/firebase_image.dart';
 
 class StyleCard extends StatelessWidget {
   final Map<String, dynamic> style;
@@ -50,12 +51,12 @@ class StyleCard extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 12),
                 child: Stack(
                   children: [
-                    Image.network(
+                    FirebaseImage(
                       style['image'] as String,
                       height: 120,
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
+                      errorWidget: Container(
                         height: 120,
                         color: AiColors.backgroundSecondary.withValues(
                           alpha: 0.5,

@@ -6,13 +6,13 @@
       {
         "name": "Haircut Images",
         "enabled": true,
-        "sourceDir": "../../apps/barbcut/assets/data/images",
+        "sourceDir": "../data-files",
         "destinationPath": "haircut-images/",
         "fileTypes": [".png", ".jpg", ".jpeg"],
         "metadata": {
-          "cacheControl": "public, max-age=31536000"
+          "cacheControl": "private, max-age=31536000"
         },
-        "makePublic": true
+        "makePublic": false
       }
     ]
   },
@@ -25,7 +25,7 @@
         "sourceFile": "../../apps/barbcut/assets/data/haircuts.json",
         "description": "Haircut styles and designs",
         "idField": "id",
-        "imageUrlPrefix": "https://storage.googleapis.com/barb-cut.firebasestorage.app/haircut-images/"
+        "imageUrlPrefix": "haircut-images/"
       },
       {
         "name": "beard_styles",

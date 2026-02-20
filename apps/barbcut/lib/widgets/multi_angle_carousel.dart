@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../features/home/domain/entities/style_entity.dart';
 import '../theme/theme.dart';
+import 'firebase_image.dart';
 
 class MultiAngleCarousel extends StatefulWidget {
   final StyleEntity style;
@@ -146,47 +147,38 @@ class _MultiAngleCarouselState extends State<MultiAngleCarousel> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Image
-            Image.network(
+            // Image - automatically handles Firebase Storage URLs with tokens
+            FirebaseImage(
               imageUrl,
               fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Center(
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                        : null,
-                    color: AdaptiveThemeColors.neonCyan(context),
-                  ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: AiColors.backgroundDark,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.broken_image,
-                          size: 64,
+              loadingWidget: Center(
+                child: CircularProgressIndicator(
+                  color: AdaptiveThemeColors.neonCyan(context),
+                ),
+              ),
+              errorWidget: Container(
+                color: AiColors.backgroundDark,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.broken_image,
+                        size: 64,
+                        color: AiColors.textTertiary,
+                      ),
+                      SizedBox(height: AiSpacing.sm),
+                      Text(
+                        'Image not available',
+                        style: TextStyle(
                           color: AiColors.textTertiary,
+                          fontSize: 14,
                         ),
-                        SizedBox(height: AiSpacing.sm),
-                        Text(
-                          'Image not available',
-                          style: TextStyle(
-                            color: AiColors.textTertiary,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                );
-              },
+                ),
+              ),
             ),
 
             // Gradient Overlay

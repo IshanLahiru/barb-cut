@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../theme/theme.dart';
+import '../../../widgets/firebase_image.dart';
 
 class StylePreviewCardInline extends StatelessWidget {
   final Map<String, dynamic> style;
@@ -15,12 +16,12 @@ class StylePreviewCardInline extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-          child: Image.network(
+          child: FirebaseImage(
             style['image'] as String,
             width: 100,
             height: 100,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => Container(
+            errorWidget: Container(
               width: 100,
               height: 100,
               color: ThemeAdapter.getBackgroundSecondary(

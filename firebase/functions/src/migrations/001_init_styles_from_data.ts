@@ -6,7 +6,7 @@ import * as path from "path";
 /**
  * Migration 001: Initialize Styles Collection from app data
  * Loads haircut styles from apps/barbcut/assets/data/images/data.json
- * Uploads images to Firebase Storage and stores public URLs in Firestore
+ * Uploads images to Firebase Storage and stores storage paths in Firestore
  */
 
 // Interface for the style data structure
@@ -29,29 +29,10 @@ interface StyleData {
 }
 
 /**
- * Get public URL for a storage file
- * @param storagePath - Path in Firebase Storage
- * @returns Public download URL
- */
-function getPublicUrl(storagePath: string): string {
-  const bucket = admin.storage().bucket();
-  const isEmulator = process.env.FIRESTORE_EMULATOR_HOST || process.env.FIREBASE_STORAGE_EMULATOR_HOST;
-  
-  if (isEmulator) {
-    // Emulator URL format
-    const storageEmulatorHost = process.env.FIREBASE_STORAGE_EMULATOR_HOST || '127.0.0.1:9199';
-    return `http://${storageEmulatorHost}/v0/b/${bucket.name}/o/${encodeURIComponent(storagePath)}?alt=media`;
-  } else {
-    // Production URL format
-    return `https://storage.googleapis.com/${bucket.name}/${storagePath}`;
-  }
-}
-
-/**
  * Upload an image file to Firebase Storage (with idempotency)
  * @param localPath - Local file path to the image
  * @param storagePath - Destination path in Firebase Storage (e.g., "styles/style-id/front.png")
- * @returns Public download URL
+ * @returns Storage path
  */
 async function uploadImageToStorage(
   localPath: string,
@@ -65,7 +46,7 @@ async function uploadImageToStorage(
   
   if (exists) {
     console.log(`    ⏭️  Skipped (already exists): ${storagePath}`);
-    return getPublicUrl(storagePath);
+    return storagePath;
   }
   
   // Upload file to Storage
@@ -73,18 +54,11 @@ async function uploadImageToStorage(
     destination: storagePath,
     metadata: {
       contentType: "image/png",
-      cacheControl: "public, max-age=31536000", // Cache for 1 year
+      cacheControl: "private, max-age=31536000", // Cache for 1 year
     },
   });
 
-  // Make the file publicly accessible (only in production)
-  const isEmulator = process.env.FIRESTORE_EMULATOR_HOST || process.env.FIREBASE_STORAGE_EMULATOR_HOST;
-  
-  if (!isEmulator) {
-    await file.makePublic();
-  }
-  
-  return getPublicUrl(storagePath);
+  return storagePath;
 }
 
 // Parse price string to number
@@ -161,7 +135,7 @@ export async function up(db: admin.firestore.Firestore) {
           continue;
         }
 
-        // Upload images to Firebase Storage and get public URLs
+        // Upload images to Firebase Storage and store storage paths
         const images: { [key: string]: string } = {};
         
         for (const [angleKey, assetPath] of Object.entries(style.images)) {
@@ -172,8 +146,8 @@ export async function up(db: admin.firestore.Firestore) {
           if (fs.existsSync(localImagePath)) {
             // Upload to Storage: styles/{style-id}/{angle}.png
             const storagePath = `styles/${style.id}/${angleKey}.png`;
-            const publicUrl = await uploadImageToStorage(localImagePath, storagePath);
-            images[angleKey] = publicUrl;
+            const storedPath = await uploadImageToStorage(localImagePath, storagePath);
+            images[angleKey] = storedPath;
             console.log(`    ✓ Uploaded ${angleKey}: ${filename}`);
           } else {
             console.warn(`    ⚠️  Image not found: ${localImagePath}`);
