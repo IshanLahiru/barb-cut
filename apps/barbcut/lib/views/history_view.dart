@@ -9,6 +9,7 @@ import '../features/history/domain/usecases/get_history_usecase.dart';
 import '../features/history/presentation/bloc/history_bloc.dart';
 import '../features/history/presentation/bloc/history_event.dart';
 import '../features/history/presentation/bloc/history_state.dart';
+import '../features/home/presentation/pages/home_page.dart';
 import 'dart:math';
 
 class HistoryView extends StatefulWidget {
@@ -18,16 +19,42 @@ class HistoryView extends StatefulWidget {
   State<HistoryView> createState() => _HistoryViewState();
 }
 
-class _HistoryViewState extends State<HistoryView> {
+class _HistoryViewState extends State<HistoryView>
+    with TickerProviderStateMixin {
   late List<Map<String, dynamic>> _generationHistory;
   final Random _random = Random();
   late List<double> _cardHeights;
+  late AnimationController _generationPulseController;
 
   @override
   void initState() {
     super.initState();
     _generationHistory = [];
     _cardHeights = [];
+    _generationPulseController = AnimationController(
+      duration: const Duration(milliseconds: 1400),
+      vsync: this,
+    )..repeat();
+
+    // Register callback to add new history items
+    HomePage.onAddToHistory = _onAddHistoryItem;
+  }
+
+  @override
+  void dispose() {
+    _generationPulseController.dispose();
+    HomePage.onAddToHistory = null;
+    super.dispose();
+  }
+
+  /// Add a new history item when generation completes
+  void _onAddHistoryItem(Map<String, dynamic> styleData) {
+    if (mounted) {
+      setState(() {
+        _generationHistory.insert(0, styleData);
+        _regenerateHeights();
+      });
+    }
   }
 
   void _regenerateHeights() {
@@ -124,7 +151,7 @@ class _HistoryViewState extends State<HistoryView> {
             surfaceTintColor: Colors.transparent,
           ),
           body: SafeArea(
-            child: _generationHistory.isEmpty
+            child: _generationHistory.isEmpty && !HomePage.isGenerating
                 ? _buildEmptyState(context)
                 : Padding(
                     padding: const EdgeInsets.fromLTRB(
@@ -139,12 +166,20 @@ class _HistoryViewState extends State<HistoryView> {
                           SliverSimpleGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: crossAxisCount,
                           ),
-                      itemCount: _generationHistory.length,
+                      itemCount:
+                          _generationHistory.length +
+                          (HomePage.isGenerating ? 1 : 0),
                       mainAxisSpacing: AiSpacing.md,
                       crossAxisSpacing: AiSpacing.md,
                       itemBuilder: (context, index) {
-                        final item = _generationHistory[index];
-                        final height = _cardHeights[index];
+                        if (HomePage.isGenerating && index == 0) {
+                          return _buildGeneratingTile();
+                        }
+                        final historyIndex = HomePage.isGenerating
+                            ? index - 1
+                            : index;
+                        final item = _generationHistory[historyIndex];
+                        final height = _cardHeights[historyIndex];
                         return _buildHistoryCard(context, item, height);
                       },
                     ),
@@ -395,6 +430,235 @@ class _HistoryViewState extends State<HistoryView> {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
+    );
+  }
+
+  Widget _buildGeneratingTile() {
+    final accent = AdaptiveThemeColors.neonCyan(context);
+    final previewImage = HomePage.generatedStyleData?['image'] as String?;
+    final haircutName = HomePage.generatedStyleData?['haircut'] as String?;
+    final beardName = HomePage.generatedStyleData?['beard'] as String?;
+
+    return GestureDetector(
+      onTap: null,
+      child: Container(
+        height: 280,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+          border: Border.all(color: accent.withValues(alpha: 0.4), width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: accent.withValues(alpha: 0.15),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+          child: Stack(
+            children: [
+              // Preview image in background
+              if (previewImage != null && previewImage.isNotEmpty)
+                Image.network(
+                  previewImage,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: AdaptiveThemeColors.backgroundDark(context),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 60,
+                        color: accent.withValues(alpha: 0.3),
+                      ),
+                    );
+                  },
+                ),
+              // Animated shimmer overlay
+              AnimatedBuilder(
+                animation: _generationPulseController,
+                builder: (context, child) {
+                  final shimmerOpacity =
+                      ((_generationPulseController.value * 2 - 1).abs() - 1)
+                          .abs();
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          accent.withValues(alpha: 0.0),
+                          accent.withValues(
+                            alpha: shimmerOpacity.clamp(0.0, 0.2),
+                          ),
+                          accent.withValues(alpha: 0.0),
+                        ],
+                        stops: const [0.0, 0.5, 1.0],
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // Dark overlay for content readability
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.3),
+                        Colors.black.withValues(alpha: 0.5),
+                        Colors.black.withValues(alpha: 0.7),
+                      ],
+                      stops: const [0.0, 0.5, 1.0],
+                    ),
+                  ),
+                ),
+              ),
+              // Content
+              Positioned.fill(
+                child: Padding(
+                  padding: EdgeInsets.all(AiSpacing.lg),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Animated generating icon
+                      AnimatedBuilder(
+                        animation: _generationPulseController,
+                        builder: (context, child) {
+                          final pulse =
+                              ((_generationPulseController.value * 2 - 1)
+                                  .abs());
+                          final scale = 0.85 + (pulse * 0.25);
+                          final opacity = (0.6 + (pulse * 0.4)).clamp(0.0, 1.0);
+
+                          return Transform.scale(
+                            scale: scale,
+                            child: Opacity(
+                              opacity: opacity,
+                              child: Container(
+                                width: 72,
+                                height: 72,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: accent.withValues(alpha: 0.4),
+                                    width: 2.5,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: accent.withValues(alpha: 0.3),
+                                      blurRadius: 12,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  Icons.auto_awesome_rounded,
+                                  size: 40,
+                                  color: accent,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: AiSpacing.md),
+                      Text(
+                        'Creating your style',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.5,
+                              fontSize: 16,
+                            ),
+                      ),
+                      SizedBox(height: AiSpacing.xs),
+                      // Show selected styles
+                      if (haircutName != null || beardName != null)
+                        Text(
+                          '${haircutName ?? ''} ${beardName ?? ''}'.trim(),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: accent.withValues(alpha: 0.9),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      if (haircutName == null && beardName == null)
+                        Text(
+                          'AI is processing your styles...',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Colors.white.withValues(alpha: 0.7),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                      SizedBox(height: AiSpacing.lg),
+                      // Animated dots
+                      _buildGeneratingStatusDots(),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGeneratingStatusDots() {
+    final accent = AdaptiveThemeColors.neonCyan(context);
+    return AnimatedBuilder(
+      animation: _generationPulseController,
+      builder: (context, child) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(4, (index) {
+            final phase =
+                (_generationPulseController.value + index * 0.15) % 1.0;
+            // Smooth wave animation
+            final distance = (phase - 0.5).abs() * 2;
+            final scale = (0.5 + (0.6 * (1 - distance))).clamp(0.0, 2.0);
+            final opacity = (0.4 + (0.8 * (1 - distance))).clamp(0.0, 1.0);
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: Opacity(
+                opacity: opacity,
+                child: Transform.scale(
+                  scale: scale,
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: accent,
+                      boxShadow: [
+                        BoxShadow(
+                          color: accent.withValues(alpha: opacity * 0.6),
+                          blurRadius: 8,
+                          spreadRadius: 1.5,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
+        );
+      },
     );
   }
 
