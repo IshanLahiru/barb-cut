@@ -15,11 +15,11 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    HomePage(),
-    HistoryPage(),
-    ProductsPage(),
-    ProfilePage(),
+  List<Widget> get _widgetOptions => <Widget>[
+    HomePage(onNavigateToHistory: () => _onItemTapped(1)),
+    const HistoryPage(),
+    const ProductsPage(),
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -35,7 +35,25 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 260),
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
+        transitionBuilder: (child, animation) {
+          final offsetAnimation = Tween<Offset>(
+            begin: const Offset(0.08, 0),
+            end: Offset.zero,
+          ).animate(animation);
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(position: offsetAnimation, child: child),
+          );
+        },
+        child: KeyedSubtree(
+          key: ValueKey<int>(_selectedIndex),
+          child: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+        ),
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AdaptiveThemeColors.backgroundSecondary(context),
