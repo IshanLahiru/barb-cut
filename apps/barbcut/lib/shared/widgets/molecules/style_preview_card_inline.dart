@@ -60,27 +60,7 @@ class StylePreviewCardInline extends StatelessWidget {
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                )
-              else ...[
-                Text(
-                  '₹${style['price']}',
-                  style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? const Color(0xFF00E5FF)
-                        : const Color(0xFF0097A7),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                  ),
                 ),
-                SizedBox(height: 2),
-                Text(
-                  '${style['duration'] ?? 45} mins',
-                  style: TextStyle(
-                    color: ThemeAdapter.getTextTertiary(context),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
             ],
           ),
         ),
