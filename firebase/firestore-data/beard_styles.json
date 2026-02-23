@@ -1,0 +1,458 @@
+[
+  {
+    "id": "full-beard",
+    "name": "Full Beard",
+    "price": "$24",
+    "duration": "30 min",
+    "description": "A classic full beard, well-groomed.",
+    "tips": "Let it grow evenly for 3-4 weeks; ask for a clean neckline two fingers above the Adam's apple.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Square", "Diamond"],
+    "maintenanceTips": [
+      "Brush daily to keep the beard tidy and reduce flyaways.",
+      "Use beard oil after washing to keep the hair soft.",
+      "Trim the neckline every week for a clean outline."
+    ]
+  },
+  {
+    "id": "goatee",
+    "name": "Goatee",
+    "price": "$18",
+    "duration": "20 min",
+    "description": "A stylish goatee, precisely trimmed.",
+    "tips": "Keep the cheeks clean; define the chin outline with a sharp edge.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Round", "Square", "Heart"],
+    "maintenanceTips": [
+      "Keep the chin length consistent with a guard.",
+      "Edge the mustache line for a sharp separation.",
+      "Shave cheeks every 2-3 days for contrast."
+    ]
+  },
+  {
+    "id": "stubble",
+    "name": "Stubble",
+    "price": "$15",
+    "duration": "15 min",
+    "description": "A short, rugged stubble.",
+    "tips": "Agree on a guard length; keep the neckline tidy and follow the jawline.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Round", "Square"],
+    "maintenanceTips": [
+      "Use a consistent guard to keep length even.",
+      "Clean the neckline twice a week for definition.",
+      "Moisturize to reduce itch and dryness."
+    ]
+  },
+  {
+    "id": "van-dyke",
+    "name": "Van Dyke",
+    "price": "$20",
+    "duration": "25 min",
+    "description": "Curled mustache with soul patch",
+    "tips": "Separate the mustache and chin; keep cheeks and jaw clean.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Triangle", "Diamond"],
+    "maintenanceTips": [
+      "Keep the mustache ends shaped with light wax.",
+      "Maintain a clean gap between mustache and chin.",
+      "Edge the soul patch weekly."
+    ]
+  },
+  {
+    "id": "ducktail",
+    "name": "Ducktail",
+    "price": "$26",
+    "duration": "30 min",
+    "description": "Pointed beard shaped like a duck tail",
+    "tips": "Blend the sides toward a point; keep the mustache neat.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Square", "Diamond"],
+    "maintenanceTips": [
+      "Taper the beard toward the chin for a sharp point.",
+      "Brush downward to keep the sides sleek.",
+      "Trim the mustache line every week."
+    ]
+  },
+  {
+    "id": "verdi",
+    "name": "Verdi",
+    "price": "$28",
+    "duration": "35 min",
+    "description": "Full beard with curled mustache tips",
+    "tips": "Maintain length on the beard; curl the tips with wax and keep edges tidy.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Rectangle", "Diamond"],
+    "maintenanceTips": [
+      "Keep the beard fuller on the sides for balance.",
+      "Use mustache wax to style curled tips.",
+      "Clean the cheek line every few days."
+    ]
+  },
+  {
+    "id": "french-fork",
+    "name": "French Fork",
+    "price": "$30",
+    "duration": "40 min",
+    "description": "Long beard split into two points",
+    "tips": "Grow length first; ask for a clean split and tidy sides.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Square", "Rectangle"],
+    "maintenanceTips": [
+      "Use a beard balm to hold the split shape.",
+      "Keep length even and trim the fork lines monthly.",
+      "Brush daily to prevent tangles."
+    ]
+  },
+  {
+    "id": "garibaldi",
+    "name": "Garibaldi",
+    "price": "$32",
+    "duration": "40 min",
+    "description": "Large, rounded, fully grown beard",
+    "tips": "Let it grow full; round the bottom and keep the neckline clean.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Square", "Round"],
+    "maintenanceTips": [
+      "Shape the bottom into a soft curve.",
+      "Keep the sides slightly shorter for structure.",
+      "Deep condition weekly to reduce frizz."
+    ]
+  },
+  {
+    "id": "beardstache",
+    "name": "Beardstache",
+    "price": "$18",
+    "duration": "20 min",
+    "description": "Prominent mustache with minimal chin beard",
+    "tips": "Keep the beard short; let the mustache stay fuller and combed.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Triangle", "Square"],
+    "maintenanceTips": [
+      "Keep chin beard tight to emphasize the mustache.",
+      "Trim the mustache to avoid covering the lip line.",
+      "Use a light wax to set the shape."
+    ]
+  },
+  {
+    "id": "balbo",
+    "name": "Balbo",
+    "price": "$20",
+    "duration": "25 min",
+    "description": "Disconnected mustache with goatee",
+    "tips": "Define the chin strap cleanly; keep the mustache disconnected.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Square", "Heart"],
+    "maintenanceTips": [
+      "Keep the chin strap narrow and sharp.",
+      "Clean the cheek line every few days.",
+      "Maintain the gap between mustache and chin."
+    ]
+  },
+  {
+    "id": "anchor",
+    "name": "Anchor",
+    "price": "$20",
+    "duration": "25 min",
+    "description": "Goatee with soul patch extension",
+    "tips": "Outline the jaw to a point; keep the soul patch connected.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Diamond", "Heart"],
+    "maintenanceTips": [
+      "Define the jawline to a clean point.",
+      "Keep sideburns tight to emphasize the anchor shape.",
+      "Trim the soul patch weekly."
+    ]
+  },
+  {
+    "id": "chevron",
+    "name": "Chevron",
+    "price": "$14",
+    "duration": "15 min",
+    "description": "Full mustache covering upper lip",
+    "tips": "Trim to the lip line; keep thickness even across the width.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Square", "Rectangle"],
+    "maintenanceTips": [
+      "Trim the bottom edge to follow the lip line.",
+      "Brush daily to keep the mustache neat.",
+      "Use scissors for precise edge control."
+    ]
+  },
+  {
+    "id": "handlebar",
+    "name": "Handlebar",
+    "price": "$16",
+    "duration": "20 min",
+    "description": "Distinctive curled upturned mustache",
+    "tips": "Keep the ends longer; use mustache wax and curl upward.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Triangle", "Diamond"],
+    "maintenanceTips": [
+      "Let the ends grow and trim the center lightly.",
+      "Use wax to curl and set the tips.",
+      "Comb outward daily to train the shape."
+    ]
+  },
+  {
+    "id": "pencil-stache",
+    "name": "Pencil Stache",
+    "price": "$12",
+    "duration": "15 min",
+    "description": "Thin, refined mustache line",
+    "tips": "Shave above and below for a thin line; keep edges crisp.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Heart", "Diamond"],
+    "maintenanceTips": [
+      "Shave the edges every other day to keep it thin.",
+      "Use a precision trimmer for clean lines.",
+      "Moisturize the upper lip to prevent irritation."
+    ]
+  },
+  {
+    "id": "hipster",
+    "name": "Hipster",
+    "price": "$30",
+    "duration": "35 min",
+    "description": "Full beard with styled mustache",
+    "tips": "Keep volume on the beard; brush downward and trim cheek lines.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Square", "Rectangle"],
+    "maintenanceTips": [
+      "Keep the mustache styled with light wax.",
+      "Brush the beard downward for a full shape.",
+      "Clean cheek lines to avoid bulk."
+    ]
+  },
+  {
+    "id": "friendly-mutton-chops",
+    "name": "Friendly Mutton Chops",
+    "price": "$24",
+    "duration": "30 min",
+    "description": "Full cheek whiskers with clean chin",
+    "tips": "Keep the chin clean; blend sideburns into cheek whiskers.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Square", "Diamond"],
+    "maintenanceTips": [
+      "Blend the sideburns into the cheek line.",
+      "Keep the chin cleanly shaved for contrast.",
+      "Trim the edges weekly to prevent bulk."
+    ]
+  },
+  {
+    "id": "circle-beard",
+    "name": "Circle Beard",
+    "price": "$18",
+    "duration": "20 min",
+    "description": "Mustache connected to chin beard",
+    "tips": "Connect mustache and chin; keep the circle symmetrical.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Round", "Oval", "Square"],
+    "maintenanceTips": [
+      "Keep the circle shape tight and symmetrical.",
+      "Use a detail trimmer for the outline.",
+      "Trim the chin length to match the mustache."
+    ]
+  },
+  {
+    "id": "pointed-full-beard",
+    "name": "Pointed Full Beard",
+    "price": "$28",
+    "duration": "35 min",
+    "description": "Pointed full beard with clean lines",
+    "tips": "Taper into a point; keep edges sharp and even.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Diamond", "Triangle"],
+    "maintenanceTips": [
+      "Shape the beard into a tapered point.",
+      "Keep the sides slightly shorter for definition.",
+      "Edge the neckline weekly for a sharp finish."
+    ]
+  },
+  {
+    "id": "extended-goatee",
+    "name": "Extended Goatee",
+    "price": "$22",
+    "duration": "30 min",
+    "description": "Long goatee with extended length",
+    "tips": "Extend the chin length; keep cheeks clean and lines sharp.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Square", "Heart"],
+    "maintenanceTips": [
+      "Keep cheeks clean to emphasize length.",
+      "Trim the chin regularly to keep it narrow.",
+      "Use a light balm to prevent frizz."
+    ]
+  },
+  {
+    "id": "short-beard",
+    "name": "Short Beard",
+    "price": "$20",
+    "duration": "25 min",
+    "description": "Light, maintained short facial hair",
+    "tips": "Use a uniform guard length; define cheek and neck lines.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Round", "Square"],
+    "maintenanceTips": [
+      "Trim with a short guard every week.",
+      "Keep the neckline clean for a tidy look.",
+      "Hydrate the skin to avoid dryness."
+    ]
+  },
+  {
+    "id": "designer-stubble",
+    "name": "Designer Stubble",
+    "price": "$16",
+    "duration": "15 min",
+    "description": "Carefully maintained three-day growth",
+    "tips": "Set a consistent guard; clean the neckline for contrast.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Round", "Square"],
+    "maintenanceTips": [
+      "Use a guard to keep length even across the face.",
+      "Clean the neckline for a sharp contrast.",
+      "Moisturize the beard area after trimming."
+    ]
+  },
+  {
+    "id": "ducktail-goatee",
+    "name": "Ducktail Goatee",
+    "price": "$22",
+    "duration": "30 min",
+    "description": "Pointed goatee shaped like duck tail",
+    "tips": "Blend the goatee into a point; keep cheeks clean.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Square", "Diamond"],
+    "maintenanceTips": [
+      "Taper the goatee to a clean point.",
+      "Keep cheeks and sideburns clean for contrast.",
+      "Trim weekly to maintain the shape."
+    ]
+  },
+  {
+    "id": "styled-beard",
+    "name": "Styled Beard",
+    "price": "$28",
+    "duration": "35 min",
+    "description": "Full beard with beard oil and styling",
+    "tips": "Apply beard oil; brush to shape and tame flyaways.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Square", "Rectangle"],
+    "maintenanceTips": [
+      "Apply beard oil daily to keep it healthy.",
+      "Brush downward to shape the beard evenly.",
+      "Trim stray hairs to maintain a polished look."
+    ]
+  },
+  {
+    "id": "trimmed-shaped",
+    "name": "Trimmed & Shaped",
+    "price": "$24",
+    "duration": "30 min",
+    "description": "Neatly trimmed beard with sharp lines",
+    "tips": "Ask for a defined cheek line; keep the neckline crisp.",
+    "images": {
+      "front": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=400&fit=crop",
+      "left_side": "https://images.unsplash.com/photo-1595152452543-e5c9d2e39c2d?w=400&h=400&fit=crop",
+      "right_side": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+    },
+    "suitableFaceShapes": ["Oval", "Square", "Diamond"],
+    "maintenanceTips": [
+      "Keep cheek lines sharp with a trimmer.",
+      "Trim the neckline every week for a clean finish.",
+      "Brush the beard daily to keep the shape."
+    ]
+  }
+]
