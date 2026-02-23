@@ -10,10 +10,12 @@ import 'controllers/auth_controller.dart';
 import 'controllers/theme_controller.dart';
 import 'controllers/style_selection_controller.dart';
 import 'services/auth_service.dart';
+import 'services/onboarding_service.dart';
 import 'auth_screen.dart';
 import 'theme/theme.dart';
 import 'core/di/service_locator.dart';
 import 'core/constants/app_data.dart';
+import 'views/questionnaire_view.dart';
 
 class MyApp extends StatefulWidget {
   final ThemeController themeController;
@@ -109,7 +111,7 @@ class MyAppState extends State<MyApp> {
                 // Show MainScreen if user is authenticated (including anonymous)
                 // Show AuthScreen only if explicitly not authenticated
                 if (snapshot.hasData) {
-                  return const MainScreen();
+                  return const OnboardingGate();
                 }
                 return const AuthScreen();
               },
@@ -117,6 +119,58 @@ class MyAppState extends State<MyApp> {
           );
         },
       ),
+    );
+  }
+}
+
+class OnboardingGate extends StatefulWidget {
+  const OnboardingGate({super.key});
+
+  @override
+  State<OnboardingGate> createState() => _OnboardingGateState();
+}
+
+class _OnboardingGateState extends State<OnboardingGate> {
+  bool? _isCompleted;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCompletionState();
+  }
+
+  Future<void> _loadCompletionState() async {
+    final completed = await OnboardingService().isQuestionnaireCompleted();
+    if (mounted) {
+      setState(() {
+        _isCompleted = completed;
+      });
+    }
+  }
+
+  Future<void> _handleCompleted() async {
+    await OnboardingService().markQuestionnaireCompleted();
+    if (mounted) {
+      setState(() {
+        _isCompleted = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isCompleted == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_isCompleted == true) {
+      return const MainScreen();
+    }
+
+    return QuestionnaireView(
+      isOnboarding: true,
+      allowBack: false,
+      onCompleted: _handleCompleted,
     );
   }
 }

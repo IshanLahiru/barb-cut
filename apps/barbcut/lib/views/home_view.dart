@@ -5,7 +5,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
 import 'dart:async';
-import 'dart:ui';
 import '../theme/theme.dart';
 import '../core/di/service_locator.dart';
 import '../features/home/domain/entities/style_entity.dart';
