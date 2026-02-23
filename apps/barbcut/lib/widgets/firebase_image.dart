@@ -55,10 +55,22 @@ class _FirebaseImageState extends State<FirebaseImage> {
     });
 
     try {
+      if (widget.imageUrl.trim().isEmpty) {
+        if (mounted) {
+          setState(() {
+            _downloadUrl = null;
+            _hasError = true;
+            _isLoading = false;
+          });
+        }
+        return;
+      }
+
       final url = await FirebaseStorageHelper.getDownloadUrl(widget.imageUrl);
       if (mounted) {
         setState(() {
           _downloadUrl = url;
+          _hasError = url.trim().isEmpty;
           _isLoading = false;
         });
       }
@@ -90,7 +102,7 @@ class _FirebaseImageState extends State<FirebaseImage> {
           );
     }
 
-    if (_hasError || _downloadUrl == null) {
+    if (_hasError || _downloadUrl == null || _downloadUrl!.trim().isEmpty) {
       return widget.errorWidget ??
           Center(
             child: Icon(
