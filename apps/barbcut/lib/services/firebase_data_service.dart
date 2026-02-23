@@ -184,7 +184,22 @@ class FirebaseDataService {
           '⚠ Profile not found, using defaults',
           name: 'FirebaseData',
         );
-        _cachedProfile = {'name': 'User', 'email': 'user@barbcut.com'};
+        _cachedProfile = {
+          'userId': 'user_123',
+          'username': 'User',
+          'email': 'user@barbcut.com',
+          'bio': '',
+          'appointmentsCount': 0,
+          'favoritesCount': 0,
+          'averageRating': 0.0,
+          'hairType': 'Straight',
+          'faceShape': 'Oval',
+          'preferredLength': 'Medium',
+          'hasBeard': false,
+          'beardStyle': 'None',
+          'lifestyle': 'Active',
+          'photoPaths': <String>[],
+        };
         return _cachedProfile!;
       }
     } catch (e) {

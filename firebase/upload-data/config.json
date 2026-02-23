@@ -22,7 +22,7 @@
       {
         "name": "haircuts",
         "enabled": true,
-        "sourceFile": "../../apps/barbcut/assets/data/haircuts.json",
+        "sourceFile": "../firestore-data/haircuts.json",
         "description": "Haircut styles and designs",
         "idField": "id",
         "imageUrlPrefix": "haircut-images/"
@@ -30,14 +30,14 @@
       {
         "name": "beard_styles",
         "enabled": true,
-        "sourceFile": "../../apps/barbcut/assets/data/beard_styles.json",
+        "sourceFile": "../firestore-data/beard_styles.json",
         "description": "Beard styling options",
         "idField": "id"
       },
       {
         "name": "services",
         "enabled": false,
-        "sourceFile": "../../apps/barbcut/assets/data/services.json",
+        "sourceFile": "../firestore-data/services.json",
         "description": "Barber services offered",
         "idField": "id"
       }
@@ -45,7 +45,7 @@
   },
   "options": {
     "overwrite": true,
-    "deletePreviousDocs": false,
+    "deletePreviousDocs": true,
     "verbose": true
   }
 }
