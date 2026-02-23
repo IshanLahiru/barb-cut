@@ -79,11 +79,6 @@ flutter:
 
   assets:
     - .env
-    - assets/data/haircuts.json
-    - assets/data/beard_styles.json
-    - assets/data/products.json
-    - assets/data/history.json
-    - assets/data/profile.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:
