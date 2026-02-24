@@ -120,9 +120,11 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
       return;
     }
 
-    for (var index = 0;
-        index < rawPaths.length && index < _photoPaths.length;
-        index++) {
+    for (
+      var index = 0;
+      index < rawPaths.length && index < _photoPaths.length;
+      index++
+    ) {
       final value = rawPaths[index]?.toString().trim() ?? '';
       _photoPaths[index] = value.isEmpty ? null : value;
     }
@@ -321,10 +323,18 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
       final storagePath = 'users/$userId/questionnaire/photo_${index + 1}.jpg';
       final ref = storage.ref(storagePath);
       await ref.putFile(photo);
-      resolvedPaths[index] = ref.fullPath;
+      final downloadUrl = await ref.getDownloadURL();
+      final cacheBustedUrl = _appendCacheBuster(downloadUrl);
+      resolvedPaths[index] = cacheBustedUrl;
+      _photoPaths[index] = cacheBustedUrl;
     }
 
     return resolvedPaths;
+  }
+
+  String _appendCacheBuster(String url) {
+    final separator = url.contains('?') ? '&' : '?';
+    return '$url${separator}v=${DateTime.now().millisecondsSinceEpoch}';
   }
 
   Future<void> _saveProfile() async {
@@ -371,8 +381,8 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
       }
 
       await FirebaseFirestore.instance
-          .collection('profile')
-          .doc('data')
+          .collection('userProfiles')
+          .doc(user.uid)
           .set(profileData, SetOptions(merge: true));
 
       await AppData.refreshFromFirebase();
@@ -652,18 +662,18 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
               borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
               child: hasPhoto
                   ? (_photos[index] != null
-                      ? Image.file(
-                          _photos[index]!,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        )
-                      : FirebaseImage(
-                          storedPath ?? '',
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        ))
+                        ? Image.file(
+                            _photos[index]!,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : FirebaseImage(
+                            storedPath ?? '',
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                          ))
                   : Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
