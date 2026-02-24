@@ -10,7 +10,7 @@
         "destinationPath": "haircut-images/",
         "fileTypes": [".png", ".jpg", ".jpeg"],
         "metadata": {
-          "cacheControl": "private, max-age=31536000"
+          "cacheControl": "private, max-age=3600"
         },
         "makePublic": false
       }
