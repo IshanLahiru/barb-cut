@@ -108,8 +108,8 @@ class MyAppState extends State<MyApp> {
                     body: Center(child: CircularProgressIndicator()),
                   );
                 }
-                // Show MainScreen if user is authenticated (including anonymous)
-                // Show AuthScreen only if explicitly not authenticated
+                // Show MainScreen (via OnboardingGate) if user is authenticated (including anonymous)
+                // If there is no user data (not authenticated), fall through to show AuthScreen below.
                 if (snapshot.hasData) {
                   return const OnboardingGate();
                 }
