@@ -1571,19 +1571,19 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 icon: Icon(
                   Icons.check_circle_outline,
                   size: 20,
-                  color: AdaptiveThemeColors.backgroundDeep(context),
+                  color: Colors.black,
                 ),
                 label: Text(
                   'Try this',
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
-                    color: AdaptiveThemeColors.backgroundDeep(context),
+                    color: Colors.black,
                   ),
                 ),
                 style: FilledButton.styleFrom(
                   backgroundColor: accentColor,
-                  foregroundColor: AdaptiveThemeColors.backgroundDeep(context),
+                  foregroundColor: Colors.black,
                   padding: EdgeInsets.symmetric(vertical: AiSpacing.md),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
@@ -1610,19 +1610,19 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 icon: Icon(
                   Icons.check_circle_outline,
                   size: 20,
-                  color: AdaptiveThemeColors.backgroundDeep(context),
+                  color: Colors.black,
                 ),
                 label: Text(
                   'Try this',
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
-                    color: AdaptiveThemeColors.backgroundDeep(context),
+                    color: Colors.black,
                   ),
                 ),
                 style: FilledButton.styleFrom(
                   backgroundColor: accentColor,
-                  foregroundColor: AdaptiveThemeColors.backgroundDeep(context),
+                  foregroundColor: Colors.black,
                   padding: EdgeInsets.symmetric(vertical: AiSpacing.md),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
@@ -2264,6 +2264,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   );
                 },
               ),
+              // Dark overlay when selected
+              if (isSelected)
+                Positioned.fill(
+                  child: Container(color: Colors.black.withValues(alpha: 0.4)),
+                ),
               // Bottom gradient with name
               Positioned(
                 bottom: 0,
@@ -2323,7 +2328,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               backgroundColor: AdaptiveThemeColors.neonCyan(
                                 context,
                               ),
-                              foregroundColor: Colors.white,
+                              foregroundColor: Colors.black,
                               padding: EdgeInsets.symmetric(vertical: 10),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -2335,6 +2340,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 13,
+                                color: Colors.black,
                               ),
                             ),
                           ),
