@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../controllers/theme_controller.dart';
 import '../theme/theme.dart';
@@ -10,6 +9,7 @@ import '../features/profile/domain/usecases/get_profile_usecase.dart';
 import '../features/profile/presentation/bloc/profile_bloc.dart';
 import '../features/profile/presentation/bloc/profile_event.dart';
 import '../features/profile/presentation/bloc/profile_state.dart';
+import '../services/onboarding_service.dart';
 
 import 'questionnaire_view.dart';
 
@@ -24,6 +24,11 @@ class _ProfileViewState extends State<ProfileView> {
   String _username = 'Loading...';
   String _email = 'Loading...';
   bool _isEmailVerified = false;
+  String _hairType = '-';
+  String _faceShape = '-';
+  String _preferredLength = '-';
+  String _beardStyle = '-';
+  String _lifestyle = '-';
 
   @override
   void initState() {
@@ -44,6 +49,14 @@ class _ProfileViewState extends State<ProfileView> {
   void _updateProfileData(ProfileEntity profile) {
     setState(() {
       _username = profile.username;
+      if (profile.email.isNotEmpty) {
+        _email = profile.email;
+      }
+      _hairType = profile.hairType;
+      _faceShape = profile.faceShape;
+      _preferredLength = profile.preferredLength;
+      _beardStyle = profile.hasBeard ? profile.beardStyle : 'None';
+      _lifestyle = profile.lifestyle;
     });
   }
 
@@ -94,6 +107,23 @@ class _ProfileViewState extends State<ProfileView> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => const QuestionnaireView(),
+                        ),
+                      );
+                    },
+                  ),
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.replay_circle_filled_rounded,
+                    title: 'Test onboarding questionnaire',
+                    onTap: () async {
+                      await OnboardingService().resetQuestionnaireCompletion();
+                      if (!context.mounted) return;
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const QuestionnaireView(
+                            isOnboarding: true,
+                            allowBack: true,
+                          ),
                         ),
                       );
                     },
@@ -257,6 +287,42 @@ class _ProfileViewState extends State<ProfileView> {
               fontWeight: FontWeight.w500,
             ),
           ),
+          SizedBox(height: AiSpacing.md),
+          Divider(
+            color: AdaptiveThemeColors.borderLight(
+              context,
+            ).withValues(alpha: 0.2),
+          ),
+          SizedBox(height: AiSpacing.sm),
+          _buildProfileDetailRow('Hair type', _hairType),
+          _buildProfileDetailRow('Face shape', _faceShape),
+          _buildProfileDetailRow('Preferred length', _preferredLength),
+          _buildProfileDetailRow('Beard style', _beardStyle),
+          _buildProfileDetailRow('Lifestyle', _lifestyle),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileDetailRow(String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: AiSpacing.xs),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AdaptiveThemeColors.textTertiary(context),
+            ),
+          ),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AdaptiveThemeColors.textPrimary(context),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -367,7 +433,7 @@ class _ProfileViewState extends State<ProfileView> {
 
 // ChangePasswordPage - Full screen page for password change
 class ChangePasswordPage extends StatefulWidget {
-  const ChangePasswordPage({Key? key}) : super(key: key);
+  const ChangePasswordPage({super.key});
 
   @override
   State<ChangePasswordPage> createState() => _ChangePasswordPageState();
@@ -570,7 +636,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
 // NotificationsSettingsPage - Full screen page for notification preferences
 class NotificationsSettingsPage extends StatefulWidget {
-  const NotificationsSettingsPage({Key? key}) : super(key: key);
+  const NotificationsSettingsPage({super.key});
 
   @override
   State<NotificationsSettingsPage> createState() =>

@@ -1,4 +1,5 @@
 /// Compatibility wrapper for context-aware colors
+library;
 import 'package:flutter/material.dart';
 import 'ai_colors.dart';
 

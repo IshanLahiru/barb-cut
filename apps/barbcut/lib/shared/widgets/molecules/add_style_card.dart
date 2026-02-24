@@ -21,7 +21,6 @@ class AddStyleCard extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         width: 200,
-        height: 300,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
           border: Border.all(

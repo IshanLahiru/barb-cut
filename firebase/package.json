@@ -18,7 +18,9 @@
     "migrate:down": "npm run build && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 node functions/build/cli.js down",
     "migrate:prod": "npm run copy-assets && npm run build && node functions/build/cli.js",
     "logs": "firebase functions:log",
-    "shell": "firebase functions:shell"
+    "shell": "firebase functions:shell",
+    "export:collection": "node export-collection/index.js",
+    "upload:data": "node upload-data/index.js"
   },
   "dependencies": {
     "firebase-admin": "^12.1.0",

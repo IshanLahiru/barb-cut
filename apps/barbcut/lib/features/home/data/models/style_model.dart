@@ -84,6 +84,12 @@ class StyleModel extends StyleEntity {
     }
 
     final imageUrl = map['image'] as String?;
+    imagesList = imagesList.where((value) => value.trim().isNotEmpty).toList();
+    final resolvedImageUrl =
+        imageUrl ?? (imagesList.isNotEmpty ? imagesList.first : '');
+    if (imagesList.isEmpty && resolvedImageUrl.isNotEmpty) {
+      imagesList = [resolvedImageUrl];
+    }
 
     return StyleModel(
       id:
@@ -102,7 +108,7 @@ class StyleModel extends StyleEntity {
           <String>[],
       maintenanceTips: maintenanceTipsList,
       description: map['description'] as String,
-      imageUrl: imageUrl ?? (imagesList.isNotEmpty ? imagesList.first : ''),
+      imageUrl: resolvedImageUrl,
       type: type,
     );
   }

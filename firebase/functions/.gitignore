@@ -32,3 +32,20 @@ firebase-debug.*.log*
 # Environment
 .env
 .env.local
+.env.production
+.env.development
+.env.staging
+
+# Credentials & Keys (NEVER COMMIT THESE)
+serviceAccountKey.json
+firebase-key.json
+*-key.json
+.firebaserc
+*.key
+*.pem
+.runtimeconfig.json
+
+# Allow example credential templates
+!serviceAccountKey.json.example
+!.firebaserc.example
+!.env.example

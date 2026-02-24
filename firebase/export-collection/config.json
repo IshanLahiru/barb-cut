@@ -1,0 +1,27 @@
+{
+  "collections": [
+    {
+      "name": "users",
+      "enabled": true,
+      "description": "User profiles and account data"
+    },
+    {
+      "name": "products",
+      "enabled": true,
+      "description": "Booking and appointment records"
+    },
+    {
+      "name": "beard_styles",
+      "enabled": false,
+      "description": "Barber professional profiles"
+    },
+    {
+      "name": "haircuts",
+      "enabled": false,
+      "description": "Haircut and service offerings"
+    }
+  ],
+  "exportPath": "./exports",
+  "prettyPrint": true,
+  "includeDocumentIds": true
+}
