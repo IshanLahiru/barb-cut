@@ -12,7 +12,7 @@ class HistoryRepositoryImpl implements HistoryRepository {
   @override
   Future<Either<Failure, List<HistoryEntity>>> getHistory() async {
     try {
-      final history = localDataSource.getHistory();
+      final history = await localDataSource.getHistory();
       return Right(history);
     } catch (e) {
       return Left(UnknownFailure());
