@@ -98,8 +98,10 @@ class AppData {
             '✅ SUCCESS: AppData loaded from JSON fallback',
             name: 'AppData',
           );
-          developer.log('   ⚠️  Images may be Unsplash URLs instead of Firebase Storage',
-            name: 'AppData');
+          developer.log(
+            '   ⚠️  When using JSON fallback, image sources may differ from Firebase Storage.',
+            name: 'AppData',
+          );
           developer.log('   Haircuts: ${_haircuts?.length ?? 0} items', name: 'AppData');
           developer.log('   Beard styles: ${_beardStyles?.length ?? 0} items', name: 'AppData');
           developer.log('═' * 60, name: 'AppData');
