@@ -16,7 +16,7 @@ This is the complete Firebase backend for the Barbcut haircut visualization app.
 - **[FILE_MANAGEMENT_STRATEGY.md](FILE_MANAGEMENT_STRATEGY.md)** - File naming and storage organization
 - **[MIGRATION_FILES_QUICK_REFERENCE.md](MIGRATION_FILES_QUICK_REFERENCE.md)** - Quick reference for migration files
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Overall clean architecture structure
-- **[APP_DATA_MIGRATION.md](APP_DATA_MIGRATION.md)** - Data migration to JSON files
+- **[FIREBASE_DATA_MIGRATION.md](FIREBASE_DATA_MIGRATION.md)** - Data migration to JSON files
 
 ---
 
