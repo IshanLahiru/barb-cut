@@ -76,10 +76,22 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // User Profiles Collection (per-user profile data)
+    match /userProfiles/{userId} {
+      allow read, create, update: if isOwner(userId);
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
     // History Collection
     // Public read, only admin write
     match /history/{historyDoc} {
-      allow read: if true;
+      allow read: if isAuthenticated() && isOwner(resource.data.userId) || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // AI Generation Jobs
+    match /aiJobs/{jobId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId) || isAdmin();
       allow create, update, delete: if isAdmin();
     }
 
@@ -142,6 +154,13 @@ service cloud.firestore {
     match /_migrations/{migrationDoc} {
       allow read: if isAdmin();
       allow write: if false; // Migrations managed by backend only
+    }
+
+    // User Photos Collection
+    match /userPhotos/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId);
+      allow delete: if isOwner(userId) || isAdmin();
     }
 
     // Default deny all
