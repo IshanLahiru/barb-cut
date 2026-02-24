@@ -16,6 +16,9 @@ import '../features/home/presentation/bloc/home_state.dart';
 import '../features/home/presentation/pages/home_page.dart';
 import '../shared/widgets/molecules/style_preview_card_inline.dart';
 import '../controllers/style_selection_controller.dart';
+import '../services/ai_generation_service.dart';
+import '../services/user_photo_service.dart';
+import 'face_photo_upload_view.dart';
 
 class HomeView extends StatefulWidget {
   final VoidCallback? onNavigateToHistory;
@@ -1034,7 +1037,42 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
-  void _startGeneration() {
+  Future<void> _startGeneration() async {
+    // Check if user has uploaded face photos
+    final hasPhotos = await UserPhotoService.hasPhotoUploaded();
+    if (!hasPhotos) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Upload Face Photos First'),
+            content: const Text(
+              'Please upload face photos from different angles (front, left, right, back) before generating styles.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (ctx) => const FacePhotoUploadView(),
+                    ),
+                  );
+                },
+                child: const Text('Upload Photos'),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
+
     setState(() {
       _isGenerating = true;
     });
@@ -1052,6 +1090,32 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       final List<String> images = _extractImages(selectedStyle);
       final String styleImage = images.isNotEmpty ? images[0] : '';
 
+      final haircutName = _haircuts.isNotEmpty
+          ? _haircuts[_selectedHaircutIndex]['name']?.toString()
+          : null;
+      final beardName = _beardStyles.isNotEmpty
+          ? _beardStyles[_selectedBeardIndex]['name']?.toString()
+          : null;
+
+      String jobId = '';
+      try {
+        jobId = await AiGenerationService.createGenerationJob(
+          haircutId: _haircuts.isNotEmpty
+              ? _haircuts[_selectedHaircutIndex]['id']?.toString()
+              : null,
+          beardId: _beardStyles.isNotEmpty
+              ? _beardStyles[_selectedBeardIndex]['id']?.toString()
+              : null,
+        );
+      } catch (e) {
+        debugPrint('Failed to create generation job: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
+      }
+
       // Prepare style data for history
       HomePage.generatedStyleData = {
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
@@ -1059,6 +1123,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         'haircut': currentTab == 0 ? selectedStyle['name'] ?? 'Haircut' : 'N/A',
         'beard': currentTab == 1 ? selectedStyle['name'] ?? 'Beard' : 'N/A',
         'timestamp': DateTime.now(),
+        'jobId': jobId,
+        'status': jobId.isEmpty ? 'error' : 'queued',
       };
     }
 
