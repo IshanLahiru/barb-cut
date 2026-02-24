@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../theme/theme.dart';
 import '../core/di/service_locator.dart';
 import '../features/history/domain/entities/history_entity.dart';
@@ -10,7 +12,10 @@ import '../features/history/presentation/bloc/history_bloc.dart';
 import '../features/history/presentation/bloc/history_event.dart';
 import '../features/history/presentation/bloc/history_state.dart';
 import '../features/home/presentation/pages/home_page.dart';
+import '../features/history/data/models/history_model.dart';
+import '../services/firebase_storage_helper.dart';
 import 'dart:math';
+import 'dart:async';
 
 class HistoryView extends StatefulWidget {
   const HistoryView({super.key});
@@ -25,6 +30,8 @@ class _HistoryViewState extends State<HistoryView>
   final Random _random = Random();
   late List<double> _cardHeights;
   late AnimationController _generationPulseController;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _historySubscription;
+  StreamSubscription<User?>? _authSubscription;
 
   @override
   void initState() {
@@ -38,13 +45,60 @@ class _HistoryViewState extends State<HistoryView>
 
     // Register callback to add new history items
     HomePage.onAddToHistory = _onAddHistoryItem;
+
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        _startHistoryListener(user.uid);
+      }
+    });
+
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      _startHistoryListener(currentUser.uid);
+    }
   }
 
   @override
   void dispose() {
     _generationPulseController.dispose();
+    _historySubscription?.cancel();
+    _authSubscription?.cancel();
     HomePage.onAddToHistory = null;
     super.dispose();
+  }
+
+  void _startHistoryListener(String userId) {
+    _historySubscription?.cancel();
+    _historySubscription = FirebaseFirestore.instance
+        .collection('history')
+        .where('userId', isEqualTo: userId)
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .listen((snapshot) async {
+          final items = await Future.wait(
+            snapshot.docs.map((doc) async {
+              final data = {'id': doc.id, ...doc.data()};
+              final history = HistoryModel.fromMap(data);
+              final resolvedUrl = await FirebaseStorageHelper.getDownloadUrl(
+                history.imageUrl,
+              );
+              return {
+                'id': history.id,
+                'image': resolvedUrl,
+                'haircut': history.haircut,
+                'beard': history.beard,
+                'timestamp': history.timestamp,
+              };
+            }),
+          );
+
+          if (mounted) {
+            setState(() {
+              _generationHistory = items;
+              _regenerateHeights();
+            });
+          }
+        });
   }
 
   /// Add a new history item when generation completes
@@ -62,6 +116,10 @@ class _HistoryViewState extends State<HistoryView>
       _generationHistory.length,
       (_) => 220.0 + _random.nextDouble() * 100,
     );
+  }
+
+  Future<void> _refreshHistory(BuildContext context) async {
+    context.read<HistoryBloc>().add(const HistoryLoadRequested());
   }
 
   List<Map<String, dynamic>> _mapHistory(List<HistoryEntity> history) {
@@ -151,39 +209,48 @@ class _HistoryViewState extends State<HistoryView>
             surfaceTintColor: Colors.transparent,
           ),
           body: SafeArea(
-            child: _generationHistory.isEmpty && !HomePage.isGenerating
-                ? _buildEmptyState(context)
-                : Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AiSpacing.md,
-                      AiSpacing.sm,
-                      AiSpacing.md,
-                      AiSpacing.md,
+            child: RefreshIndicator(
+              onRefresh: () => _refreshHistory(context),
+              child: _generationHistory.isEmpty && !HomePage.isGenerating
+                  ? ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        SizedBox(height: 80),
+                        _buildEmptyState(context),
+                      ],
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AiSpacing.md,
+                        AiSpacing.sm,
+                        AiSpacing.md,
+                        AiSpacing.md,
+                      ),
+                      child: MasonryGridView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        gridDelegate:
+                            SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
+                            ),
+                        itemCount:
+                            _generationHistory.length +
+                            (HomePage.isGenerating ? 1 : 0),
+                        mainAxisSpacing: AiSpacing.md,
+                        crossAxisSpacing: AiSpacing.md,
+                        itemBuilder: (context, index) {
+                          if (HomePage.isGenerating && index == 0) {
+                            return _buildGeneratingTile();
+                          }
+                          final historyIndex = HomePage.isGenerating
+                              ? index - 1
+                              : index;
+                          final item = _generationHistory[historyIndex];
+                          final height = _cardHeights[historyIndex];
+                          return _buildHistoryCard(context, item, height);
+                        },
+                      ),
                     ),
-                    child: MasonryGridView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      gridDelegate:
-                          SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: crossAxisCount,
-                          ),
-                      itemCount:
-                          _generationHistory.length +
-                          (HomePage.isGenerating ? 1 : 0),
-                      mainAxisSpacing: AiSpacing.md,
-                      crossAxisSpacing: AiSpacing.md,
-                      itemBuilder: (context, index) {
-                        if (HomePage.isGenerating && index == 0) {
-                          return _buildGeneratingTile();
-                        }
-                        final historyIndex = HomePage.isGenerating
-                            ? index - 1
-                            : index;
-                        final item = _generationHistory[historyIndex];
-                        final height = _cardHeights[historyIndex];
-                        return _buildHistoryCard(context, item, height);
-                      },
-                    ),
-                  ),
+            ),
           ),
         ),
       ),
