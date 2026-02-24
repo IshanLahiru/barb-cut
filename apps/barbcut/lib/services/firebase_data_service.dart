@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer' as developer;
 import 'firebase_storage_helper.dart';
 
@@ -40,6 +41,27 @@ class FirebaseDataService {
     if (imageField is String && imageField.isNotEmpty) {
       resolved['image'] = await FirebaseStorageHelper.getDownloadUrl(
         imageField,
+      );
+    }
+
+    return resolved;
+  }
+
+  static Future<Map<String, dynamic>> _resolveHistoryImage(
+    Map<String, dynamic> data,
+  ) async {
+    final resolved = Map<String, dynamic>.from(data);
+    final imageUrl = data['imageUrl']?.toString();
+    final imagePath = data['image']?.toString();
+
+    if ((imageUrl == null || imageUrl.isEmpty) && imagePath != null) {
+      resolved['imageUrl'] = imagePath;
+    }
+
+    final storagePath = resolved['imageUrl']?.toString();
+    if (storagePath != null && storagePath.startsWith('gs://')) {
+      resolved['imageUrl'] = await FirebaseStorageHelper.getDownloadUrl(
+        storagePath,
       );
     }
 
@@ -172,7 +194,20 @@ class FirebaseDataService {
 
     try {
       developer.log('Fetching profile from Firebase...', name: 'FirebaseData');
-      final snapshot = await _firestore.collection('profile').doc('data').get();
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        developer.log(
+          '⚠ No authenticated user, using defaults',
+          name: 'FirebaseData',
+        );
+        _cachedProfile = _buildDefaultProfile();
+        return _cachedProfile!;
+      }
+
+      final snapshot = await _firestore
+          .collection('userProfiles')
+          .doc(user.uid)
+          .get();
 
       if (snapshot.exists) {
         _cachedProfile = snapshot.data()!;
@@ -184,22 +219,7 @@ class FirebaseDataService {
           '⚠ Profile not found, using defaults',
           name: 'FirebaseData',
         );
-        _cachedProfile = {
-          'userId': 'user_123',
-          'username': 'User',
-          'email': 'user@barbcut.com',
-          'bio': '',
-          'appointmentsCount': 0,
-          'favoritesCount': 0,
-          'averageRating': 0.0,
-          'hairType': 'Straight',
-          'faceShape': 'Oval',
-          'preferredLength': 'Medium',
-          'hasBeard': false,
-          'beardStyle': 'None',
-          'lifestyle': 'Active',
-          'photoPaths': <String>[],
-        };
+        _cachedProfile = _buildDefaultProfile(userId: user.uid);
         return _cachedProfile!;
       }
     } catch (e) {
@@ -213,9 +233,29 @@ class FirebaseDataService {
     }
   }
 
+  static Map<String, dynamic> _buildDefaultProfile({String? userId}) {
+    return {
+      'userId': userId ?? 'user_123',
+      'username': 'User',
+      'email': 'user@barbcut.com',
+      'bio': '',
+      'appointmentsCount': 0,
+      'favoritesCount': 0,
+      'averageRating': 0.0,
+      'hairType': 'Straight',
+      'faceShape': 'Oval',
+      'preferredLength': 'Medium',
+      'hasBeard': false,
+      'beardStyle': 'None',
+      'lifestyle': 'Active',
+      'photoPaths': [],
+    };
+  }
+
   /// Fetch history from Firestore
   static Future<List<Map<String, dynamic>>> fetchHistory({
     bool forceRefresh = false,
+    String? userId,
   }) async {
     if (_cachedHistory != null && !forceRefresh) {
       return _cachedHistory!;
@@ -223,10 +263,18 @@ class FirebaseDataService {
 
     try {
       developer.log('Fetching history from Firebase...', name: 'FirebaseData');
-      final snapshot = await _firestore.collection('history').get();
-      _cachedHistory = snapshot.docs
+      final resolvedUserId = userId ?? FirebaseAuth.instance.currentUser?.uid;
+
+      Query<Map<String, dynamic>> query = _firestore.collection('history');
+      if (resolvedUserId != null) {
+        query = query.where('userId', isEqualTo: resolvedUserId);
+      }
+
+      final snapshot = await query.orderBy('timestamp', descending: true).get();
+      final rawHistory = snapshot.docs
           .map((doc) => {'id': doc.id, ...doc.data()})
           .toList();
+      _cachedHistory = await Future.wait(rawHistory.map(_resolveHistoryImage));
       developer.log(
         '✓ Fetched ${_cachedHistory!.length} history items',
         name: 'FirebaseData',
