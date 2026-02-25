@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -18,6 +19,7 @@ import '../shared/widgets/molecules/style_preview_card_inline.dart';
 import '../controllers/style_selection_controller.dart';
 import '../services/ai_generation_service.dart';
 import '../services/user_photo_service.dart';
+import '../widgets/generation_error_card.dart';
 import 'face_photo_upload_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -49,6 +51,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   int? _confirmedHaircutIndex;
   int? _confirmedBeardIndex;
   Timer? _carouselTimer;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _jobSubscription;
+  String _activeJobStatus = 'queued';
+  String? _activeJobError;
 
   // NEW: Store StyleEntity objects from the bloc
   late List<StyleEntity> _haircutEntities = [];
@@ -65,6 +70,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     return styles
         .map(
           (style) => {
+            'id': style.id,
             'name': style.name,
             'price': style.price,
             'duration': style.duration,
@@ -1077,6 +1083,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       _isGenerating = true;
     });
 
+    HomePage.isGenerating = true;
+    HomePage.generationNotifier.value = true;
+
     _setPanelLevel(_panelLevel2);
 
     // Capture the selected style data for history
@@ -1089,13 +1098,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       // Get the first image from the style
       final List<String> images = _extractImages(selectedStyle);
       final String styleImage = images.isNotEmpty ? images[0] : '';
-
-      final haircutName = _haircuts.isNotEmpty
-          ? _haircuts[_selectedHaircutIndex]['name']?.toString()
-          : null;
-      final beardName = _beardStyles.isNotEmpty
-          ? _beardStyles[_selectedBeardIndex]['name']?.toString()
-          : null;
 
       String jobId = '';
       try {
@@ -1126,21 +1128,111 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         'jobId': jobId,
         'status': jobId.isEmpty ? 'error' : 'queued',
       };
+      HomePage.generatedStyleNotifier.value = HomePage.generatedStyleData;
+
+      if (jobId.isNotEmpty) {
+        _listenToGenerationJob(jobId);
+      } else {
+        _markGenerationFailed('Unable to create generation job.');
+      }
     }
 
     widget.onNavigateToHistory?.call();
+  }
 
-    // Simulate generation completion after 5 seconds, then hide generating tile
-    Future.delayed(Duration(seconds: 5), () {
-      _carouselTimer?.cancel();
-      if (mounted) {
-        setState(() {
-          _isGenerating = false;
-          _confirmedHaircutIndex = null;
-          _confirmedBeardIndex = null;
+  void _listenToGenerationJob(String jobId) {
+    _jobSubscription?.cancel();
+    _activeJobStatus = 'queued';
+    _activeJobError = null;
+
+    _jobSubscription = FirebaseFirestore.instance
+        .collection('aiJobs')
+        .doc(jobId)
+        .snapshots()
+        .listen((snapshot) {
+          if (!snapshot.exists) {
+            return;
+          }
+          final data = snapshot.data();
+          final status = data?['status']?.toString() ?? 'queued';
+          final errorMessage = data?['errorMessage']?.toString();
+
+          if (!mounted) {
+            return;
+          }
+
+          setState(() {
+            _activeJobStatus = status;
+            _activeJobError = errorMessage;
+          });
+
+          HomePage.generatedStyleData = {
+            ...(HomePage.generatedStyleData ?? {}),
+            'jobId': jobId,
+            'status': status,
+            if (errorMessage != null) 'errorMessage': errorMessage,
+          };
+          HomePage.generatedStyleNotifier.value = HomePage.generatedStyleData;
+
+          if (status == 'completed') {
+            _markGenerationComplete();
+          } else if (status == 'error') {
+            _markGenerationFailed(
+              errorMessage ?? 'Generation failed. Please try again.',
+            );
+          }
         });
-      }
+  }
+
+  void _markGenerationComplete() {
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _isGenerating = false;
+      _confirmedHaircutIndex = null;
+      _confirmedBeardIndex = null;
     });
+    HomePage.isGenerating = false;
+    HomePage.generationNotifier.value = false;
+    HomePage.generatedStyleData = {
+      ...(HomePage.generatedStyleData ?? {}),
+      'status': 'completed',
+    };
+    HomePage.generatedStyleNotifier.value = HomePage.generatedStyleData;
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Your look is ready. Check History to view it.'),
+          action: SnackBarAction(
+            label: 'History',
+            onPressed: widget.onNavigateToHistory ?? () {},
+          ),
+        ),
+      );
+    }
+  }
+
+  void _markGenerationFailed(String message) {
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _isGenerating = false;
+      _confirmedHaircutIndex = null;
+      _confirmedBeardIndex = null;
+    });
+    HomePage.isGenerating = false;
+    HomePage.generationNotifier.value = false;
+    HomePage.generatedStyleData = {
+      ...(HomePage.generatedStyleData ?? {}),
+      'status': 'error',
+      'errorMessage': message,
+    };
+    HomePage.generatedStyleNotifier.value = HomePage.generatedStyleData;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -1149,6 +1241,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     _arrowAnimationController.dispose();
     _generationPulseController.dispose();
     _carouselTimer?.cancel();
+    _jobSubscription?.cancel();
     _panelSearchController.dispose();
     _panelSearchFocus.dispose();
     _mainScrollController.dispose();
@@ -1472,7 +1565,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   ),
                   if (_isGenerating && selectedStyle != null) ...[
                     SizedBox(height: AiSpacing.md),
-                    _buildGenerationScheduledCard(selectedStyle),
+                    if (_activeJobStatus == 'error')
+                      GenerationErrorCard(
+                        errorMessage: _activeJobError,
+                        onRetry: _startGeneration,
+                      )
+                    else
+                      _buildGenerationScheduledCard(selectedStyle),
                   ],
                   SizedBox(height: AiSpacing.md),
                   // Main section: details, face shapes, maintenance tips (scrolls into view; panel retracts on scroll)
@@ -1790,6 +1889,20 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget _buildGenerationScheduledCard(Map<String, dynamic> style) {
     final accent = AdaptiveThemeColors.neonCyan(context);
     final imageUrl = style['image']?.toString() ?? '';
+    final status = _activeJobStatus;
+    final isError = status == 'error';
+    final statusText = switch (status) {
+      'processing' => 'Generating now',
+      'completed' => 'Ready',
+      'error' => 'Failed',
+      _ => 'In queue',
+    };
+    final headlineText = isError
+        ? 'We hit a snag'
+        : 'AI is generating your look';
+    final subText = isError
+        ? (_activeJobError ?? 'Try again when you are ready.')
+        : 'Hang tight, this can take a few minutes.';
 
     return Container(
       decoration: BoxDecoration(
@@ -1836,15 +1949,21 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 Row(
                   children: [
                     Icon(
-                      Icons.schedule_rounded,
+                      isError ? Icons.error_outline : Icons.schedule_rounded,
                       size: 14,
-                      color: AdaptiveThemeColors.textTertiary(context),
+                      color: isError
+                          ? Theme.of(context).colorScheme.error
+                          : AdaptiveThemeColors.textTertiary(context),
                     ),
                     SizedBox(width: 6),
                     Text(
-                      'Scheduled • In queue',
+                      status == 'completed'
+                          ? 'Completed'
+                          : 'Scheduled • $statusText',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AdaptiveThemeColors.textTertiary(context),
+                        color: isError
+                            ? Theme.of(context).colorScheme.error
+                            : AdaptiveThemeColors.textTertiary(context),
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.2,
                       ),
@@ -1853,14 +1972,21 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 ),
                 SizedBox(height: 6),
                 Text(
-                  'AI is generating your look',
+                  headlineText,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     color: AdaptiveThemeColors.textPrimary(context),
                     fontWeight: FontWeight.w700,
                   ),
                 ),
+                SizedBox(height: 8),
+                Text(
+                  subText,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AdaptiveThemeColors.textSecondary(context),
+                  ),
+                ),
                 SizedBox(height: 10),
-                _buildGeneratingDots(),
+                if (!isError) _buildGeneratingDots(),
               ],
             ),
           ),

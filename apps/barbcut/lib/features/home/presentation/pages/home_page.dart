@@ -13,6 +13,9 @@ class HomePage extends StatefulWidget {
   static bool isGenerating = false;
   static Map<String, dynamic>? generatedStyleData;
   static Function(Map<String, dynamic>)? onAddToHistory;
+  static final ValueNotifier<bool> generationNotifier = ValueNotifier(false);
+  static final ValueNotifier<Map<String, dynamic>?> generatedStyleNotifier =
+      ValueNotifier(null);
 }
 
 class _HomePageState extends State<HomePage> {
@@ -22,20 +25,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onNavigateToHistory() {
-    HomePage.isGenerating = true;
     widget.onNavigateToHistory?.call();
-
-    // Create history item after generation "completes" (after animation)
-    Future.delayed(Duration(seconds: 5), () {
-      if (mounted && HomePage.generatedStyleData != null) {
-        // Trigger callback to add to history
-        HomePage.onAddToHistory?.call(HomePage.generatedStyleData!);
-      }
-      if (mounted) {
-        setState(() {
-          HomePage.isGenerating = false;
-        });
-      }
-    });
   }
 }

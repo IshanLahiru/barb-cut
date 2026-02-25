@@ -209,47 +209,57 @@ class _HistoryViewState extends State<HistoryView>
             surfaceTintColor: Colors.transparent,
           ),
           body: SafeArea(
-            child: RefreshIndicator(
-              onRefresh: () => _refreshHistory(context),
-              child: _generationHistory.isEmpty && !HomePage.isGenerating
-                  ? ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: [
-                        SizedBox(height: 80),
-                        _buildEmptyState(context),
-                      ],
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        AiSpacing.md,
-                        AiSpacing.sm,
-                        AiSpacing.md,
-                        AiSpacing.md,
-                      ),
-                      child: MasonryGridView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        gridDelegate:
-                            SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: crossAxisCount,
-                            ),
-                        itemCount:
-                            _generationHistory.length +
-                            (HomePage.isGenerating ? 1 : 0),
-                        mainAxisSpacing: AiSpacing.md,
-                        crossAxisSpacing: AiSpacing.md,
-                        itemBuilder: (context, index) {
-                          if (HomePage.isGenerating && index == 0) {
-                            return _buildGeneratingTile();
-                          }
-                          final historyIndex = HomePage.isGenerating
-                              ? index - 1
-                              : index;
-                          final item = _generationHistory[historyIndex];
-                          final height = _cardHeights[historyIndex];
-                          return _buildHistoryCard(context, item, height);
-                        },
-                      ),
-                    ),
+            child: AnimatedBuilder(
+              animation: Listenable.merge([
+                HomePage.generationNotifier,
+                HomePage.generatedStyleNotifier,
+              ]),
+              builder: (context, child) {
+                final isGenerating = HomePage.generationNotifier.value;
+                final generatedStyle = HomePage.generatedStyleNotifier.value;
+                return RefreshIndicator(
+                  onRefresh: () => _refreshHistory(context),
+                  child: _generationHistory.isEmpty && !isGenerating
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            SizedBox(height: 80),
+                            _buildEmptyState(context),
+                          ],
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            AiSpacing.md,
+                            AiSpacing.sm,
+                            AiSpacing.md,
+                            AiSpacing.md,
+                          ),
+                          child: MasonryGridView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: crossAxisCount,
+                                ),
+                            itemCount:
+                                _generationHistory.length +
+                                (isGenerating ? 1 : 0),
+                            mainAxisSpacing: AiSpacing.md,
+                            crossAxisSpacing: AiSpacing.md,
+                            itemBuilder: (context, index) {
+                              if (isGenerating && index == 0) {
+                                return _buildGeneratingTile(generatedStyle);
+                              }
+                              final historyIndex = isGenerating
+                                  ? index - 1
+                                  : index;
+                              final item = _generationHistory[historyIndex];
+                              final height = _cardHeights[historyIndex];
+                              return _buildHistoryCard(context, item, height);
+                            },
+                          ),
+                        ),
+                );
+              },
             ),
           ),
         ),
@@ -500,11 +510,15 @@ class _HistoryViewState extends State<HistoryView>
     );
   }
 
-  Widget _buildGeneratingTile() {
+  Widget _buildGeneratingTile(Map<String, dynamic>? styleData) {
     final accent = AdaptiveThemeColors.neonCyan(context);
-    final previewImage = HomePage.generatedStyleData?['image'] as String?;
-    final haircutName = HomePage.generatedStyleData?['haircut'] as String?;
-    final beardName = HomePage.generatedStyleData?['beard'] as String?;
+    final previewImage = styleData?['image'] as String?;
+    final haircutName = styleData?['haircut'] as String?;
+    final beardName = styleData?['beard'] as String?;
+    final status = styleData?['status']?.toString() ?? 'queued';
+    final statusLine = status == 'processing'
+        ? 'Generating now. This can take a few minutes.'
+        : 'Queued up. We will start shortly.';
 
     return GestureDetector(
       onTap: null,
@@ -660,7 +674,7 @@ class _HistoryViewState extends State<HistoryView>
                         ),
                       if (haircutName == null && beardName == null)
                         Text(
-                          'AI is processing your styles...',
+                          statusLine,
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
                                 color: Colors.white.withValues(alpha: 0.7),
