@@ -14,6 +14,12 @@ service firebase.storage {
       allow write: if false; // No public write access (only through admin SDK)
     }
     
+    // Beard style images - public read for app display
+    match /beard_styles-images/{allPaths=**} {
+      allow read: if true; // Allow public read for beard style display images
+      allow write: if false; // No public write access (only through admin SDK)
+    }
+    
     // User uploads - private to the user
     match /users/{userId}/{allPaths=**} {
       allow read: if request.auth != null && request.auth.uid == userId;

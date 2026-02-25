@@ -21,6 +21,10 @@ service cloud.firestore {
     // Users Collection
     // Public read for basic info, authenticated users can only modify their own
     match /users/{userId} {
+            // Favourites subcollection: only the owner can read/write
+            match /favourites/{favId} {
+              allow read, write: if isOwner(userId);
+            }
       allow read: if true; // Public read for user profiles
       allow create: if isAuthenticated() && isOwner(userId);
       allow update: if isOwner(userId) || isAdmin();
