@@ -24,11 +24,17 @@ class StyleModel extends StyleEntity {
     final imagesData = map['images'];
 
     if (imagesData is Map<String, dynamic>) {
-      // New format: map with front, left_side, right_side, back
+      // New format: map with front, left_side, right_side, back (haircuts)
+      // or front, left, right, back (beards)
+
+      // Try both naming conventions for left/right images
+      final leftSide = imagesData['left_side'] ?? imagesData['left'] ?? '';
+      final rightSide = imagesData['right_side'] ?? imagesData['right'] ?? '';
+
       styleImages = StyleImages(
         front: imagesData['front'] as String? ?? '',
-        leftSide: imagesData['left_side'] as String? ?? '',
-        rightSide: imagesData['right_side'] as String? ?? '',
+        leftSide: leftSide as String? ?? '',
+        rightSide: rightSide as String? ?? '',
         back: imagesData['back'] as String? ?? '',
       );
       imagesList = styleImages.toList();

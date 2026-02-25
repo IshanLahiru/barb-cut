@@ -15,7 +15,23 @@ class StyleImages {
     required this.back,
   });
 
-  List<String> toList() => [front, leftSide, rightSide, back];
+  List<String> toList() {
+    final images = <String>[];
+    if (front.isNotEmpty) images.add(front);
+    if (leftSide.isNotEmpty) images.add(leftSide);
+    if (rightSide.isNotEmpty) images.add(rightSide);
+    if (back.isNotEmpty) images.add(back);
+    return images;
+  }
+
+  List<String> getAngleLabels() {
+    final labels = <String>[];
+    if (front.isNotEmpty) labels.add('Front');
+    if (leftSide.isNotEmpty) labels.add('Left Side');
+    if (rightSide.isNotEmpty) labels.add('Right Side');
+    if (back.isNotEmpty) labels.add('Back');
+    return labels;
+  }
 
   String getByAngle(ImageAngle angle) {
     switch (angle) {

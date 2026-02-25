@@ -23,26 +23,29 @@ class _MultiAngleCarouselState extends State<MultiAngleCarousel> {
   late PageController _pageController;
   int _currentIndex = 0;
 
-  final List<String> _angleLabels = [
-    'Front',
-    'Left Side',
-    'Right Side',
-    'Back',
-  ];
+  List<String> _angleLabels = [];
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
+    _updateAngleLabels();
+  }
+
+  void _updateAngleLabels() {
+    setState(() {
+      _angleLabels = widget.style.styleImages.getAngleLabels();
+    });
   }
 
   @override
   void didUpdateWidget(MultiAngleCarousel oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Reset carousel when a different style is selected
+    // Reset carousel and update angle labels when a different style is selected
     if (oldWidget.style.id != widget.style.id) {
       _currentIndex = 0;
       _pageController.jumpToPage(0);
+      _updateAngleLabels();
     }
   }
 
@@ -82,7 +85,10 @@ class _MultiAngleCarouselState extends State<MultiAngleCarousel> {
             onPageChanged: _onPageChanged,
             itemCount: images.length,
             itemBuilder: (context, index) {
-              return _buildImageCard(images[index], _angleLabels[index]);
+              final angleLabel = (index < _angleLabels.length)
+                  ? _angleLabels[index]
+                  : '';
+              return _buildImageCard(images[index], angleLabel);
             },
           ),
 
@@ -224,7 +230,7 @@ class _MultiAngleCarouselState extends State<MultiAngleCarousel> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
-        children: List.generate(4, (index) {
+        children: List.generate(_angleLabels.length, (index) {
           final isActive = index == _currentIndex;
           return GestureDetector(
             onTap: () => _navigateToAngle(index),
@@ -290,7 +296,7 @@ class _MultiAngleCarouselState extends State<MultiAngleCarousel> {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(4, (index) {
+        children: List.generate(_angleLabels.length, (index) {
           final isActive = index == _currentIndex;
           return GestureDetector(
             onTap: () => _navigateToAngle(index),
