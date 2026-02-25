@@ -2,7 +2,7 @@
   "indexes": [
     {
       "collectionGroup": "bookings",
-      "queryScope": "Collection",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "userId",
@@ -20,7 +20,7 @@
     },
     {
       "collectionGroup": "bookings",
-      "queryScope": "Collection",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "barberId",
@@ -38,7 +38,7 @@
     },
     {
       "collectionGroup": "bookings",
-      "queryScope": "Collection",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "locationId",
@@ -56,7 +56,7 @@
     },
     {
       "collectionGroup": "ratings",
-      "queryScope": "Collection",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "barberId",
@@ -74,7 +74,7 @@
     },
     {
       "collectionGroup": "payments",
-      "queryScope": "Collection",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "userId",
@@ -87,6 +87,20 @@
         {
           "fieldPath": "createdAt",
           "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "aiJobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
         }
       ]
     }
