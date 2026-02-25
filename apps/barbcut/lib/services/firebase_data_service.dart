@@ -5,6 +5,57 @@ import 'firebase_storage_helper.dart';
 
 /// Service for fetching data from Firebase Firestore
 class FirebaseDataService {
+    /// Initialize user document and favourites subcollection
+    static Future<void> initializeUser({required String userId, Map<String, dynamic>? profileData}) async {
+      final userDoc = _firestore.collection('users').doc(userId);
+      await userDoc.set(profileData ?? {}, SetOptions(merge: true));
+      // Optionally, create an empty favourites subcollection (not strictly needed)
+      // await userDoc.collection('favourites').doc('_init').set({'init': true});
+    }
+  /// Add a style (haircut or beard) to user's favourites
+  static Future<void> addFavourite({
+    required String userId,
+    required Map<String, dynamic> style,
+    required String styleType, // 'haircut' or 'beard'
+  }) async {
+    final favRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favourites')
+        .doc(style['id']);
+    await favRef.set({
+      ...style,
+      'styleType': styleType,
+      'addedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  /// Remove a style from user's favourites
+  static Future<void> removeFavourite({
+    required String userId,
+    required String styleId,
+  }) async {
+    final favRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favourites')
+        .doc(styleId);
+    await favRef.delete();
+  }
+
+  /// Get all favourites for a user
+  static Future<List<Map<String, dynamic>>> getFavourites({
+    required String userId,
+  }) async {
+    final snapshot = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favourites')
+        .orderBy('addedAt', descending: true)
+        .get();
+    return snapshot.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList();
+  }
+
   FirebaseDataService._();
 
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;

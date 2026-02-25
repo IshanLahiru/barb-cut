@@ -55,14 +55,6 @@ void main() async {
       );
     }
   } catch (e) {
-    debugPrint('Firebase init failed: $e');
-    // Don't rethrow - allow app to continue
-  }
-
-  // Enable anonymous authentication to access Firebase Storage images
-  try {
-    await AuthService().ensureAuthenticated();
-  } catch (e) {
     debugPrint('Error setting up authentication: $e');
   }
 

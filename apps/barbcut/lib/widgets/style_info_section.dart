@@ -9,6 +9,12 @@ class StyleInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get userId and favourite state from HomeView if available
+    final homeState = context.findAncestorStateOfType<_HomeViewState>();
+    final userId = homeState?._currentUserId;
+    final isFavourite = homeState?._favouriteIds.contains(style.id) ?? false;
+    final isLoading = homeState?._favouritesLoading ?? false;
+
     return Container(
       padding: EdgeInsets.all(AiSpacing.lg),
       decoration: BoxDecoration(
@@ -23,14 +29,38 @@ class StyleInfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Description Section
-          Text(
-            'Description',
-            style: TextStyle(
-              color: AiColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+          // Description Section with favourite star
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Description',
+                  style: TextStyle(
+                    color: AiColors.textPrimary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              if (userId != null)
+                IconButton(
+                  icon: Icon(
+                    isFavourite ? Icons.star : Icons.star_border,
+                    color: isFavourite ? Colors.amber : AiColors.textTertiary,
+                  ),
+                  tooltip: isFavourite
+                      ? 'Remove from favourites'
+                      : 'Add to favourites',
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          final styleType = style.hasBeard == true
+                              ? 'beard'
+                              : 'haircut';
+                          homeState?._toggleFavourite(style.toMap(), styleType);
+                        },
+                ),
+            ],
           ),
           SizedBox(height: AiSpacing.sm),
           Text(

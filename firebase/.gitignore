@@ -19,6 +19,7 @@ firestore-debug.log
 pubsub-debug.log
 *.key
 *.pem
+data-files/
 
 # Allow example credential templates
 !serviceAccountKey.json.example
