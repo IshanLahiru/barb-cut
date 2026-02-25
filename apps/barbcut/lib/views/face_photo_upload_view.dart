@@ -49,10 +49,13 @@ class _FacePhotoUploadViewState extends State<FacePhotoUploadView> {
     }
   }
 
-  Future<void> _pickImage(String position) async {
+  Future<void> _pickImage(String position, ImageSource source) async {
     try {
       final pickedFile = await _imagePicker.pickImage(
-        source: ImageSource.camera,
+        source: source,
+        maxWidth: 1080,
+        maxHeight: 1080,
+        imageQuality: 85,
       );
       if (pickedFile != null) {
         setState(() {
@@ -172,7 +175,9 @@ class _FacePhotoUploadViewState extends State<FacePhotoUploadView> {
                   selectedImage: _selectedImages[position],
                   isUploaded: isUploaded,
                   isUploading: isUploading,
-                  onPickImage: () => _pickImage(position),
+                  onTakePhoto: () => _pickImage(position, ImageSource.camera),
+                  onPickFromGallery:
+                      () => _pickImage(position, ImageSource.gallery),
                   onUpload: () => _uploadPhoto(position),
                   onDelete: () => _deletePhoto(position),
                 ),
@@ -204,7 +209,8 @@ class PhotoUploadCard extends StatelessWidget {
   final File? selectedImage;
   final bool isUploaded;
   final bool isUploading;
-  final VoidCallback onPickImage;
+  final VoidCallback onTakePhoto;
+  final VoidCallback onPickFromGallery;
   final VoidCallback onUpload;
   final VoidCallback onDelete;
 
@@ -215,7 +221,8 @@ class PhotoUploadCard extends StatelessWidget {
     required this.selectedImage,
     required this.isUploaded,
     required this.isUploading,
-    required this.onPickImage,
+    required this.onTakePhoto,
+    required this.onPickFromGallery,
     required this.onUpload,
     required this.onDelete,
   });
@@ -282,12 +289,24 @@ class PhotoUploadCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: isUploading ? null : onPickImage,
+                    onPressed: isUploading ? null : onTakePhoto,
                     icon: const Icon(Icons.camera_alt),
                     label: const Text('Take Photo'),
                   ),
                 ),
                 const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: isUploading ? null : onPickFromGallery,
+                    icon: const Icon(Icons.photo_library),
+                    label: const Text('Gallery'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: (selectedImage == null || isUploading)
@@ -314,15 +333,18 @@ class PhotoUploadCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (isUploaded)
-                  IconButton(
-                    onPressed: onDelete,
-                    icon: const Icon(Icons.delete),
-                    color: Colors.red,
-                    tooltip: 'Delete photo',
-                  ),
               ],
             ),
+            if (isUploaded)
+              Align(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete),
+                  color: Colors.red,
+                  tooltip: 'Delete photo',
+                ),
+              ),
           ],
         ),
       ),
