@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/lazy_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../theme/theme.dart';
@@ -375,19 +376,17 @@ class _ProductsViewState extends State<ProductsView> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.network(
-                      product['image'] as String,
+                    GridLazyImage(
+                      imageUrl: product['image'] as String,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: accentColor.withValues(alpha: 0.2),
-                          child: Icon(
-                            Icons.image_not_supported,
-                            size: 48,
-                            color: accentColor.withValues(alpha: 0.6),
-                          ),
-                        );
-                      },
+                      customErrorWidget: Container(
+                        color: accentColor.withValues(alpha: 0.2),
+                        child: Icon(
+                          Icons.image_not_supported,
+                          size: 48,
+                          color: accentColor.withValues(alpha: 0.6),
+                        ),
+                      ),
                     ),
                     Positioned.fill(
                       child: Container(
@@ -490,19 +489,17 @@ class _ProductsViewState extends State<ProductsView> {
                     ),
                     child: AspectRatio(
                       aspectRatio: 2 / 3,
-                      child: Image.network(
-                        product['image'] as String,
+                      child: GridLazyImage(
+                        imageUrl: product['image'] as String,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, error, stackTrace) {
-                          return Container(
-                            color: accentColor.withValues(alpha: 0.2),
-                            child: Icon(
-                              Icons.image_not_supported,
-                              size: 64,
-                              color: accentColor.withValues(alpha: 0.6),
-                            ),
-                          );
-                        },
+                        customErrorWidget: Container(
+                          color: accentColor.withValues(alpha: 0.2),
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 64,
+                            color: accentColor.withValues(alpha: 0.6),
+                          ),
+                        ),
                       ),
                     ),
                   ),

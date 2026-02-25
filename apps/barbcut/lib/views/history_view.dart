@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/lazy_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
@@ -373,19 +374,17 @@ class _HistoryViewState extends State<HistoryView>
               fit: StackFit.expand,
               children: [
                 // Image background with fade
-                Image.network(
-                  item['image'] as String,
+                GridLazyImage(
+                  imageUrl: item['image'] as String,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: accentColor.withValues(alpha: 0.2),
-                      child: Icon(
-                        Icons.image_not_supported,
-                        size: 80,
-                        color: accentColor.withValues(alpha: 0.6),
-                      ),
-                    );
-                  },
+                  customErrorWidget: Container(
+                    color: accentColor.withValues(alpha: 0.2),
+                    child: Icon(
+                      Icons.image_not_supported,
+                      size: 80,
+                      color: accentColor.withValues(alpha: 0.6),
+                    ),
+                  ),
                 ),
                 // Enhanced gradient overlay
                 Positioned.fill(
@@ -541,19 +540,17 @@ class _HistoryViewState extends State<HistoryView>
             children: [
               // Preview image in background
               if (previewImage != null && previewImage.isNotEmpty)
-                Image.network(
-                  previewImage,
+                GridLazyImage(
+                  imageUrl: previewImage,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: AdaptiveThemeColors.backgroundDark(context),
-                      child: Icon(
-                        Icons.image_not_supported,
-                        size: 60,
-                        color: accent.withValues(alpha: 0.3),
-                      ),
-                    );
-                  },
+                  customErrorWidget: Container(
+                    color: AdaptiveThemeColors.backgroundDark(context),
+                    child: Icon(
+                      Icons.image_not_supported,
+                      size: 60,
+                      color: accent.withValues(alpha: 0.3),
+                    ),
+                  ),
                 ),
               // Animated shimmer overlay
               AnimatedBuilder(
@@ -1086,26 +1083,24 @@ class _HistoryViewState extends State<HistoryView>
                     child: InteractiveViewer(
                       minScale: 1,
                       maxScale: 3,
-                      child: Image.network(
-                        item['image'] as String,
+                      child: GridLazyImage(
+                        imageUrl: item['image'] as String,
                         fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 320,
-                            width: 240,
-                            decoration: BoxDecoration(
-                              color: accentColor.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(
-                                AiSpacing.radiusLarge,
-                              ),
+                        customErrorWidget: Container(
+                          height: 320,
+                          width: 240,
+                          decoration: BoxDecoration(
+                            color: accentColor.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(
+                              AiSpacing.radiusLarge,
                             ),
-                            child: Icon(
-                              Icons.image_not_supported,
-                              size: 80,
-                              color: accentColor,
-                            ),
-                          );
-                        },
+                          ),
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 80,
+                            color: accentColor,
+                          ),
+                        ),
                       ),
                     ),
                   );
