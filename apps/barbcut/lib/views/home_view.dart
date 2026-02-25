@@ -20,6 +20,10 @@ import '../controllers/style_selection_controller.dart';
 import '../services/ai_generation_service.dart';
 import '../services/user_photo_service.dart';
 import '../widgets/generation_error_card.dart';
+import '../widgets/lazy_network_image.dart';
+import '../widgets/firebase_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../services/firebase_data_service.dart';
 import 'face_photo_upload_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -32,6 +36,66 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
+  // Fetch favourites from a data source (stub implementation)
+  void _fetchFavourites() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    setState(() {
+      _favouritesLoading = true;
+    });
+    // Initialize user document if needed
+    await FirebaseDataService.initializeUser(userId: user.uid);
+    // Fetch favourites from backend
+    final favs = await FirebaseDataService.getFavourites(userId: user.uid);
+    if (!mounted) return;
+    setState(() {
+      _favouriteIds = favs.map((f) => f['id'].toString()).toSet();
+      _favouritesLoading = false;
+    });
+  }
+
+  // Helper to map StyleEntity list to List<Map<String, dynamic>>
+  List<Map<String, dynamic>> _mapStyles(List<StyleEntity> styles) {
+    return styles
+        .map(
+          (e) => {
+            'id': e.id,
+            'name': e.name,
+            'description': e.description,
+            'image': e.imageUrl,
+            'images': e.images,
+            'suitableFaceShapes': e.suitableFaceShapes,
+            'maintenanceTips': e.maintenanceTips,
+          },
+        )
+        .toList();
+  }
+
+  // Toggle favourite for a style (stub implementation)
+  void _toggleFavourite(Map<String, dynamic> item, String styleType) {
+    final id = item['id']?.toString();
+    if (id == null) return;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final userId = user.uid;
+    setState(() {
+      if (_favouriteIds.contains(id)) {
+        _favouriteIds.remove(id);
+        FirebaseDataService.removeFavourite(userId: userId, styleId: id);
+      } else {
+        _favouriteIds.add(id);
+        FirebaseDataService.addFavourite(
+          userId: userId,
+          style: item,
+          styleType: styleType,
+        );
+      }
+    });
+  }
+
+  // Fields
+  Set<String> _favouriteIds = {};
+  bool _favouritesLoading = false;
   final PanelController _panelController = PanelController();
   final ScrollController _mainScrollController = ScrollController();
   final TextEditingController _panelSearchController = TextEditingController();
@@ -54,43 +118,104 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _jobSubscription;
   String _activeJobStatus = 'queued';
   String? _activeJobError;
-
-  // NEW: Store StyleEntity objects from the bloc
   late List<StyleEntity> _haircutEntities = [];
   late List<StyleEntity> _beardEntities = [];
+  late List<Map<String, dynamic>> _haircuts = [];
+  late List<Map<String, dynamic>> _beardStyles = [];
 
-  final List<Map<String, dynamic>> _defaultHaircuts = const [];
+  // Methods
+  Widget _buildRecentGrid(ScrollController scrollController) {
+    return Center(
+      child: Text(
+        'Recently used haircuts and beard styles will appear here.',
+        style: Theme.of(context).textTheme.titleMedium,
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
 
-  final List<Map<String, dynamic>> _defaultBeardStyles = const [];
-
-  late List<Map<String, dynamic>> _haircuts;
-  late List<Map<String, dynamic>> _beardStyles;
-
-  List<Map<String, dynamic>> _mapStyles(List<StyleEntity> styles) {
-    return styles
-        .map(
-          (style) => {
-            'id': style.id,
-            'name': style.name,
-            'price': style.price,
-            'duration': style.duration,
-            'tips': style.tips,
-            'description': style.description,
-            'maintenanceTips': style.maintenanceTips,
-            'suitableFaceShapes': style.suitableFaceShapes,
-            'images': style.images,
-            'image': style.images.isNotEmpty
-                ? style.images.first
-                : style.imageUrl,
-          },
-        )
+  Widget _buildFavouritesGrid(ScrollController scrollController) {
+    final width = MediaQuery.of(context).size.width;
+    int crossAxisCount = 2;
+    if (width >= 1100) {
+      crossAxisCount = 4;
+    } else if (width >= 820) {
+      crossAxisCount = 3;
+    }
+    final favHaircuts = _haircuts
+        .where((h) => _favouriteIds.contains(h['id']))
         .toList();
+    final favBeards = _beardStyles
+        .where((b) => _favouriteIds.contains(b['id']))
+        .toList();
+    final allFavourites = [...favHaircuts, ...favBeards];
+    if (_favouritesLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (allFavourites.isEmpty) {
+      return Center(
+        child: Text(
+          'No favourites yet. Tap the star on a style to add it!',
+          style: Theme.of(context).textTheme.titleMedium,
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AiSpacing.md,
+        AiSpacing.sm,
+        AiSpacing.md,
+        AiSpacing.md,
+      ),
+      child: MasonryGridView.builder(
+        controller: scrollController,
+        physics: const BouncingScrollPhysics(),
+        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+        ),
+        itemCount: allFavourites.length,
+        mainAxisSpacing: AiSpacing.md,
+        crossAxisSpacing: AiSpacing.md,
+        itemBuilder: (context, index) {
+          final item = allFavourites[index];
+          final isSelected = false;
+          // Determine style type for correct toggle logic
+          final isHaircut = _haircuts.any((h) => h['id'] == item['id']);
+          final styleType = isHaircut ? 'haircut' : 'beard';
+          return _buildStyleCard(
+            item: item,
+            itemIndex: index,
+            isSelected: isSelected,
+            height: 220,
+            onTap: () {},
+            showFavouriteIcon: true,
+            onFavouriteToggle: () => _toggleFavourite(item, styleType),
+          );
+        },
+      ),
+    );
   }
 
   List<String> _extractImages(Map<String, dynamic>? style) {
     final images = style?['images'];
     if (images is List) {
       return images.map((value) => value.toString()).toList();
+    }
+    if (images is Map) {
+      final List<String> imageList = [];
+      final front = images['front']?.toString();
+      final left = images['left'] ?? images['left_side'] ?? images['leftSide'];
+      final right =
+          images['right'] ?? images['right_side'] ?? images['rightSide'];
+      final back = images['back']?.toString();
+      if (front != null && front.isNotEmpty) imageList.add(front);
+      if (left != null && left.toString().isNotEmpty)
+        imageList.add(left.toString());
+      if (right != null && right.toString().isNotEmpty)
+        imageList.add(right.toString());
+      if (back != null && back.isNotEmpty) imageList.add(back);
+      if (imageList.isNotEmpty) return imageList;
     }
     final image = style?['image'];
     return image != null ? [image.toString()] : <String>[];
@@ -110,7 +235,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging && mounted) {
         setState(() => _selectedAngleIndex = 0);
@@ -130,25 +255,23 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         setState(() {});
       }
     });
-    _haircuts = List<Map<String, dynamic>>.from(_defaultHaircuts);
-    _beardStyles = List<Map<String, dynamic>>.from(_defaultBeardStyles);
     _regenerateHeights();
   }
 
   double _lastScrollOffset = 0.0;
-  static const double _scrollThresholdToRetractPanel = 40.0;
-  static const double _scrollDeltaMin = 24.0;
-  static const double _scrollOffsetDescriptionVisible = 280.0;
-  static const double _scrollOffsetRevealPanel = 260.0;
+  final double _scrollThresholdToRetractPanel = 40.0;
+  final double _scrollDeltaMin = 24.0;
+  final double _scrollOffsetDescriptionVisible = 280.0;
+  final double _scrollOffsetRevealPanel = 260.0;
 
   // Panel levels: 1 = minimal (reading description), 2 = peek, 4 = full screen
-  static const double _panelLevel1 = 0.0;
-  static const double _panelLevel2 = 0.20; // middle stage — a bit lower
-  static const double _panelLevel4 = 1.0;
+  final double _panelLevel1 = 0.0;
+  final double _panelLevel2 = 0.20; // middle stage — a bit lower
+  final double _panelLevel4 = 1.0;
 
-  static const Duration _panelRevealDuration = Duration(milliseconds: 520);
-  static const Duration _panelSnapDuration = Duration(milliseconds: 320);
-  static const Curve _panelCurve = Curves.fastOutSlowIn;
+  final Duration _panelRevealDuration = const Duration(milliseconds: 520);
+  final Duration _panelSnapDuration = const Duration(milliseconds: 320);
+  final Curve _panelCurve = Curves.fastOutSlowIn;
 
   Future<void> _setPanelLevel(double level, {Duration? duration}) async {
     if (!_panelController.isAttached) return;
@@ -1170,7 +1293,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             ...(HomePage.generatedStyleData ?? {}),
             'jobId': jobId,
             'status': status,
-            if (errorMessage != null) 'errorMessage': errorMessage,
+            'errorMessage': ?errorMessage,
           };
           HomePage.generatedStyleNotifier.value = HomePage.generatedStyleData;
 
@@ -1269,29 +1392,19 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         listener: (context, state) {
           if (state is HomeLoaded) {
             setState(() {
-              // Store both StyleEntity objects and Maps
+              // Only assign correct data to each tab
               _haircutEntities = state.haircuts;
               _beardEntities = state.beardStyles;
               _haircuts = _mapStyles(state.haircuts);
               _beardStyles = _mapStyles(state.beardStyles);
 
-              if (_haircuts.isNotEmpty) {
-                _selectedHaircutIndex = _selectedHaircutIndex.clamp(
-                  0,
-                  _haircuts.length - 1,
-                );
-              } else {
-                _selectedHaircutIndex = 0;
-              }
-
-              if (_beardStyles.isNotEmpty) {
-                _selectedBeardIndex = _selectedBeardIndex.clamp(
-                  0,
-                  _beardStyles.length - 1,
-                );
-              } else {
-                _selectedBeardIndex = 0;
-              }
+              // Clamp indices to valid range
+              _selectedHaircutIndex = _haircuts.isNotEmpty
+                  ? _selectedHaircutIndex.clamp(0, _haircuts.length - 1)
+                  : 0;
+              _selectedBeardIndex = _beardStyles.isNotEmpty
+                  ? _selectedBeardIndex.clamp(0, _beardStyles.length - 1)
+                  : 0;
 
               if (_confirmedHaircutIndex != null &&
                   _confirmedHaircutIndex! >= _haircuts.length) {
@@ -1316,7 +1429,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             );
           }
         },
-        child: _buildScaffold(),
+        child: Builder(
+          builder: (context) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _fetchFavourites();
+            });
+            return _buildScaffold();
+          },
+        ),
       ),
     );
   }
@@ -1843,19 +1963,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               Positioned.fill(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                  child: Image.network(
+                  child: FirebaseImage(
                     imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: accentColor.withValues(alpha: 0.2),
-                        child: Icon(
-                          Icons.image_not_supported,
-                          size: iconSize,
-                          color: accentColor.withValues(alpha: 0.6),
-                        ),
-                      );
-                    },
+                    errorWidget: Container(
+                      color: accentColor.withValues(alpha: 0.2),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: iconSize,
+                        color: accentColor.withValues(alpha: 0.6),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -1924,9 +2042,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
             child: Image.network(
               imageUrl,
+              fit: BoxFit.cover,
               width: 72,
               height: 72,
-              fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
                   width: 72,
@@ -2081,7 +2199,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               ),
               child: TabBar(
                 controller: _tabController,
+                isScrollable: true,
                 tabs: const [
+                  Tab(text: 'Recent'),
+                  Tab(text: 'Favourites'),
                   Tab(text: 'Hair'),
                   Tab(text: 'Beard'),
                 ],
@@ -2226,6 +2347,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 controller: _tabController,
                 physics: const BouncingScrollPhysics(),
                 children: [
+                  _buildRecentGrid(scrollController),
+                  _buildFavouritesGrid(scrollController),
                   _buildHaircutGrid(scrollController),
                   _buildBeardGrid(scrollController),
                 ],
@@ -2238,6 +2361,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildHaircutGrid(ScrollController scrollController) {
+    if (_haircuts.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
     final width = MediaQuery.of(context).size.width;
     int crossAxisCount = 2;
     if (width >= 1100) {
@@ -2290,6 +2416,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         AiSpacing.md,
       ),
       child: MasonryGridView.builder(
+        key: PageStorageKey('haircut_grid'),
         controller: scrollController,
         physics: const BouncingScrollPhysics(),
         gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
@@ -2299,26 +2426,22 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         mainAxisSpacing: AiSpacing.md,
         crossAxisSpacing: AiSpacing.md,
         itemBuilder: (context, index) {
-          final itemIndex = filteredIndices[index];
-          final haircut = _haircuts[itemIndex];
-          final haircutEntity = _haircutEntities[itemIndex];
-          final isSelected = _selectedHaircutIndex == itemIndex;
+          final haircutIndex = filteredIndices[index];
+          final item = _haircuts[haircutIndex];
+          final isSelected = haircutIndex == _selectedHaircutIndex;
           return _buildStyleCard(
-            item: haircut,
-            itemIndex: itemIndex,
+            key: ValueKey(item['id']),
+            item: item,
+            itemIndex: haircutIndex,
             isSelected: isSelected,
-            height: _haircutHeights[itemIndex],
+            height: 220,
             onTap: () {
-              // Select haircut and show its images in the main view
-              context.read<StyleSelectionController>().selectHaircutStyle(
-                haircutEntity,
-              );
               setState(() {
-                _selectedHaircutIndex = itemIndex;
-                _selectedAngleIndex = 0;
+                _selectedHaircutIndex = haircutIndex;
               });
-              _setPanelLevel(_panelLevel2);
             },
+            showFavouriteIcon: true,
+            onFavouriteToggle: () => _toggleFavourite(item, 'haircut'),
           );
         },
       ),
@@ -2414,17 +2537,20 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildStyleCard({
+    Key? key,
     required Map<String, dynamic> item,
     required int itemIndex,
     required bool isSelected,
     required VoidCallback onTap,
     required double height,
+    bool showFavouriteIcon = false,
+    VoidCallback? onFavouriteToggle,
   }) {
-    final Color accentColor =
-        // Using general color:
-        AdaptiveThemeColors.neonCyan(context);
+    final Color accentColor = AdaptiveThemeColors.neonCyan(context);
 
+    final isFavourite = _favouriteIds.contains(item['id']);
     return GestureDetector(
+      key: key,
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 320),
@@ -2442,24 +2568,38 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             fit: StackFit.expand,
             children: [
               // Image
-              Image.network(
-                item['image'],
+              GridLazyImage(
+                imageUrl: item['image'],
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: accentColor.withValues(alpha: 0.2),
-                    child: Icon(
-                      Icons.image_not_supported,
-                      size: 80,
-                      color: accentColor.withValues(alpha: 0.6),
-                    ),
-                  );
-                },
+                customErrorWidget: Container(
+                  color: accentColor.withValues(alpha: 0.2),
+                  child: Icon(
+                    Icons.image_not_supported,
+                    size: 80,
+                    color: accentColor.withValues(alpha: 0.6),
+                  ),
+                ),
               ),
-              // Dark overlay when selected
-              if (isSelected)
-                Positioned.fill(
-                  child: Container(color: Colors.black.withValues(alpha: 0.4)),
+              // Favourite icon (always show in Favourites tab)
+              if (showFavouriteIcon || isSelected)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: GestureDetector(
+                    onTap:
+                        onFavouriteToggle ??
+                        () {
+                          final styleType = _tabController.index == 1
+                              ? 'haircut'
+                              : 'beard';
+                          _toggleFavourite(item, styleType);
+                        },
+                    child: Icon(
+                      isFavourite ? Icons.star : Icons.star_border,
+                      color: isFavourite ? Colors.amber : Colors.white,
+                      size: 28,
+                    ),
+                  ),
                 ),
               // Bottom gradient with name
               Positioned(
@@ -2578,26 +2718,26 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     child: InteractiveViewer(
                       minScale: 1,
                       maxScale: 3,
-                      child: Image.network(
-                        images[index],
+                      child: LazyNetworkImage(
+                        imageUrl: images[index],
                         fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 320,
-                            width: 240,
-                            decoration: BoxDecoration(
-                              color: accentColor.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(
-                                AiSpacing.radiusLarge,
-                              ),
+                        width: 240,
+                        height: 320,
+                        customErrorWidget: Container(
+                          height: 320,
+                          width: 240,
+                          decoration: BoxDecoration(
+                            color: accentColor.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(
+                              AiSpacing.radiusLarge,
                             ),
-                            child: Icon(
-                              Icons.image_not_supported,
-                              size: 80,
-                              color: accentColor,
-                            ),
-                          );
-                        },
+                          ),
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 80,
+                            color: accentColor,
+                          ),
+                        ),
                       ),
                     ),
                   );

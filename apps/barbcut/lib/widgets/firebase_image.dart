@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
 import '../services/firebase_storage_helper.dart';
+import 'lazy_network_image.dart';
 
 /// A widget that automatically handles Firebase Storage URLs with tokens
 /// For regular URLs (e.g., Unsplash), it works like a normal Image.network
+///
+/// Optimized with lazy loading - only fetches URL and loads image when visible
 class FirebaseImage extends StatefulWidget {
   final String imageUrl;
-  final BoxFit? fit;
+  final BoxFit fit;
   final double? width;
   final double? height;
   final Widget? loadingWidget;
   final Widget? errorWidget;
   final Color? color;
   final BlendMode? colorBlendMode;
+  final bool enableLazyLoading;
 
   const FirebaseImage(
     this.imageUrl, {
     super.key,
-    this.fit,
+    this.fit = BoxFit.cover,
     this.width,
     this.height,
     this.loadingWidget,
     this.errorWidget,
     this.color,
     this.colorBlendMode,
+    this.enableLazyLoading = true,
   });
 
   @override
@@ -37,6 +42,26 @@ class _FirebaseImageState extends State<FirebaseImage> {
   @override
   void initState() {
     super.initState();
+    // Defer URL fetching to allow widget to render first
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _checkAndLoadImage();
+      }
+    });
+  }
+
+  void _checkAndLoadImage() {
+    // Check visibility before loading
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null || !renderBox.hasSize) {
+      // Defer loading until size is available
+      Future.delayed(const Duration(milliseconds: 50), () {
+        if (mounted) _checkAndLoadImage();
+      });
+      return;
+    }
+
+    // No viewport logic: just load immediately
     _loadImage();
   }
 
@@ -44,6 +69,9 @@ class _FirebaseImageState extends State<FirebaseImage> {
   void didUpdateWidget(FirebaseImage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.imageUrl != widget.imageUrl) {
+      _downloadUrl = null;
+      _isLoading = true;
+      _hasError = false;
       _loadImage();
     }
   }
@@ -113,40 +141,21 @@ class _FirebaseImageState extends State<FirebaseImage> {
           );
     }
 
-    return Image.network(
-      _downloadUrl!,
+    // Use LazyNetworkImage for optimized loading
+    return LazyNetworkImage(
+      imageUrl: _downloadUrl,
       fit: widget.fit,
       width: widget.width,
       height: widget.height,
-      color: widget.color,
-      colorBlendMode: widget.colorBlendMode,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return widget.loadingWidget ??
-            Center(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                      : null,
-                ),
-              ),
-            );
-      },
-      errorBuilder: (context, error, stackTrace) {
-        return widget.errorWidget ??
-            Center(
-              child: Icon(
-                Icons.broken_image_outlined,
-                size: 48,
-                color: Colors.grey[600],
-              ),
-            );
-      },
+      customErrorWidget:
+          widget.errorWidget ??
+          Center(
+            child: Icon(
+              Icons.broken_image_outlined,
+              size: 48,
+              color: Colors.grey[600],
+            ),
+          ),
     );
   }
 }
