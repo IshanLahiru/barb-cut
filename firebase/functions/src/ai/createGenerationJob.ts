@@ -166,7 +166,7 @@ export const createGenerationJob = functions.https.onCall(
       userId,
       status: "queued", // queued -> processing -> completed
       prompt,
-      model: "imagen-3-fast",
+      model: "imagen3",
       haircutId: data.haircutId ?? null,
       haircutName: haircutData?.name ?? null,
       beardId: data.beardId ?? null,
