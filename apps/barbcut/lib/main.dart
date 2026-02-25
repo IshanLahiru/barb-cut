@@ -48,9 +48,12 @@ void main() async {
   }
 
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    // Check if Firebase is already initialized
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
   } catch (e) {
     debugPrint('Firebase init failed: $e');
     // Don't rethrow - allow app to continue
@@ -64,7 +67,8 @@ void main() async {
   }
 
   try {
-    await AppData.loadAppData();
+    // Load from Firebase only, no JSON fallback (all data is in Firestore)
+    await AppData.loadAppData(useJsonFallback: false);
   } catch (e) {
     debugPrint('AppData load failed: $e');
     // Don't rethrow - use empty defaults
