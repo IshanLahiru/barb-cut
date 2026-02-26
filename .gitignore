@@ -122,6 +122,7 @@ firebase.json
 !apps/barbcut/android/app/google-services.json.example
 
 # IDE
+.cursor/
 .vscode/
 .idea/
 *.swp
