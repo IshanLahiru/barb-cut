@@ -4,4 +4,5 @@ import '../entities/history_entity.dart';
 
 abstract class HistoryRepository {
   Future<Either<Failure, List<HistoryEntity>>> getHistory();
+  Stream<List<HistoryEntity>> watchHistory(String userId);
 }

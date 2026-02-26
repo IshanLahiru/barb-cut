@@ -1,11 +1,6 @@
-/**
- * README for ComfyUI Image Generation Integration
- * 
- * This directory contains scripts to integrate Barb Cut with ComfyUI
- * for professional image generation.
- */
-
 # ComfyUI Image Generation for Barb Cut
+
+This directory contains scripts to integrate Barb Cut with ComfyUI for professional image generation.
 
 ## Overview
 
@@ -77,6 +72,8 @@ image-generation/
 ├── package.json                  # Dependencies
 ├── .env.example                  # Example configuration
 ├── COMFYUI_INTEGRATION_PLAN.md   # Architecture & design
+├── IMPLEMENTATION_GUIDE.md       # Implementation guide
+├── DATA_SCHEMA.md                # Data schemas
 │
 ├── examples/
 │   ├── basic-generation.js       # Simple portrait generation
@@ -315,7 +312,8 @@ To integrate with the Barb Cut Flutter app:
 3. **Image Storage**: Save to Firebase Storage
 4. **User Data**: Load styles from Barb Cut assets
 
-See `COMFYUI_INTEGRATION_PLAN.md` for detailed architecture.
+- **Architecture**: See `COMFYUI_INTEGRATION_PLAN.md`.
+- **Vertex AI / app testing**: See [../docs/features/AI_GENERATION_TESTING_GUIDE.md](../docs/features/AI_GENERATION_TESTING_GUIDE.md) in the repo docs.
 
 ## API Reference
 

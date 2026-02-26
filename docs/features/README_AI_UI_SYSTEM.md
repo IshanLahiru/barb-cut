@@ -7,65 +7,18 @@
 
 ### Theme & Architecture
 - **[THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md)** - Complete theme system with FlexColorScheme integration
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Clean architecture structure for UI components
-- **[IMPLEMENTATION_EXAMPLES.md](IMPLEMENTATION_EXAMPLES.md)** - Code patterns for all layers
+- **[../architecture/ARCHITECTURE.md](../architecture/ARCHITECTURE.md)** - Clean architecture structure for UI components
 
 ### Getting Started
-- **[PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md)** - Overall project context
-- **[RULES.md](RULES.md)** - Development guidelines and best practices
+- **[../architecture/PROJECT-OVERVIEW.md](../architecture/PROJECT-OVERVIEW.md)** - Overall project context
+- **[../architecture/RULES.md](../architecture/RULES.md)** - Development guidelines and best practices
 
 ---
 
 ## 📚 Documentation Guide
 
-Choose your starting point based on your needs:
-
-### 🎯 **I want to understand the overall system**
-→ Start with [AI_SYSTEM_SUMMARY.md](AI_SYSTEM_SUMMARY.md)
-- Complete overview
-- Statistics and metrics
-- File structure
-- Success criteria checklist
-
-### 🎨 **I want to see the design tokens and colors**
-→ Read [DESIGN_TOKENS.md](DESIGN_TOKENS.md)
-- All color values with RGB codes
-- Spacing scale breakdown
-- Typography hierarchy
-- Animation timings
-- Opacity reference
-
-### 🔧 **I want to integrate this into my app**
-→ Follow [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md)
-- Step-by-step instructions
-- Before/after code examples
-- File checklist
-- Performance tips
-- Troubleshooting
-
-### 📖 **I want complete system reference**
-→ Study [AI_UI_SYSTEM_GUIDE.md](AI_UI_SYSTEM_GUIDE.md)
-- Design philosophy
-- Every component documented
-- Usage examples
-- AI-specific states
-- Implementation checklist
-
-### ⚡ **I need quick lookups while coding**
-→ Keep [AI_UI_QUICK_REFERENCE.md](AI_UI_QUICK_REFERENCE.md) handy
-- Color shortcuts
-- Spacing shortcuts
-- Common patterns
-- Animation timing table
-- State colors reference
-
-### 🎬 **I want to see visual mockups**
-→ Check [COMPONENT_GALLERY.md](COMPONENT_GALLERY.md)
-- ASCII art mockups for each component
-- Complete screen layout examples
-- Animation timings visualized
-- Spacing grid reference
-- Responsive breakpoints
+- **Theme system (colors, dark mode, FlexColorScheme)** → [THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md)
+- **Full docs index** → [../README.md](../README.md)
 
 ---
 
@@ -95,16 +48,8 @@ lib/views/
 └── ai_generation_screen.dart       - Full working example
 ```
 
-### 📚 Documentation (1,500+ lines)
-```
-├── AI_SYSTEM_SUMMARY.md            - Overview
-├── DESIGN_TOKENS.md                - Token reference
-├── AI_UI_SYSTEM_GUIDE.md           - Complete guide
-├── AI_UI_QUICK_REFERENCE.md        - Quick lookup
-├── INTEGRATION_GUIDE.md            - Integration steps
-├── COMPONENT_GALLERY.md            - Visual mockups
-└── THIS FILE
-```
+### 📚 Documentation
+- This file, [THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md), and [../README.md](../README.md) (docs index)
 
 ---
 
@@ -313,23 +258,22 @@ AiAspectRatioSelector(
 ## 🎓 Learning Path
 
 ### Phase 1: Understand (30 min)
-1. Read [AI_SYSTEM_SUMMARY.md](AI_SYSTEM_SUMMARY.md)
-2. Look at [COMPONENT_GALLERY.md](COMPONENT_GALLERY.md) mockups
-3. Check [DESIGN_TOKENS.md](DESIGN_TOKENS.md) for visual reference
+1. Read this file and [THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md)
+2. Check the [docs index](../README.md) for related guides
 
 ### Phase 2: Integrate (1 hour)
-1. Follow [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md)
+1. Follow the Quick Start section in this document
 2. Update `main.dart` to use `AiTheme`
 3. Test the example screen
 
 ### Phase 3: Customize (2+ hours)
-1. Reference [AI_UI_SYSTEM_GUIDE.md](AI_UI_SYSTEM_GUIDE.md)
+1. Reference [THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md) and this file
 2. Convert your existing screens
 3. Replace hardcoded colors/spacing with tokens
 4. Test on real devices
 
 ### Phase 4: Extend (Ongoing)
-1. Keep [AI_UI_QUICK_REFERENCE.md](AI_UI_QUICK_REFERENCE.md) handy
+1. Use this file and [THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md) for reference
 2. Add new components following the same patterns
 3. Maintain consistency with the design system
 
@@ -396,12 +340,8 @@ Padding(
 
 ## 📞 Support Resources
 
-- **Color Reference**: [DESIGN_TOKENS.md](DESIGN_TOKENS.md) - Line 1
-- **Spacing Reference**: [DESIGN_TOKENS.md](DESIGN_TOKENS.md) - Line 100
-- **Component Usage**: [AI_UI_SYSTEM_GUIDE.md](AI_UI_SYSTEM_GUIDE.md) - Line 150
-- **Integration Help**: [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md) - Line 1
-- **Visual Mockups**: [COMPONENT_GALLERY.md](COMPONENT_GALLERY.md) - Line 1
-- **Quick Lookup**: [AI_UI_QUICK_REFERENCE.md](AI_UI_QUICK_REFERENCE.md) - Line 1
+- **Theme & colors**: [THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md)
+- **Docs index**: [../README.md](../README.md)
 
 ---
 
@@ -457,7 +397,7 @@ You now have a **complete, production-ready AI app UI system** that:
 - ✅ Fully documented (1,500+ lines)
 - ✅ Ready to integrate (step-by-step guide)
 
-**Start integrating:** [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md)
+**Start integrating:** See the Quick Start section above and [THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md).
 
 ---
 

@@ -348,17 +348,14 @@ testWidgets('Widget respects theme mode', (tester) async {
 ## Related Documentation
 
 ### Design System
-- **[DESIGN_TOKENS.md](DESIGN_TOKENS.md)** - Complete design token reference including theme colors
-- **[AI_UI_SYSTEM_GUIDE.md](AI_UI_SYSTEM_GUIDE.md)** - UI system using theme colors
-- **[AI_UI_QUICK_REFERENCE.md](AI_UI_QUICK_REFERENCE.md)** - Quick reference for theme color usage
+- **[README_AI_UI_SYSTEM.md](README_AI_UI_SYSTEM.md)** - AI UI system overview and components
 
 ### Architecture
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Where theme files fit in clean architecture
-- **[IMPLEMENTATION_EXAMPLES.md](IMPLEMENTATION_EXAMPLES.md)** - Examples of theme usage in code
+- **[../architecture/ARCHITECTURE.md](../architecture/ARCHITECTURE.md)** - Where theme files fit in clean architecture
 
 ### Setup
-- **[PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md)** - High-level project context
-- **[TECH-STACK.md](TECH-STACK.md)** - FlexColorScheme in the tech stack
+- **[../architecture/PROJECT-OVERVIEW.md](../architecture/PROJECT-OVERVIEW.md)** - High-level project context
+- **[../architecture/TECH-STACK.md](../architecture/TECH-STACK.md)** - FlexColorScheme in the tech stack
 
 ---
 

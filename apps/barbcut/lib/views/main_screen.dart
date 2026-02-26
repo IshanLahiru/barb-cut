@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:barbcut/core/di/service_locator.dart';
+import 'package:barbcut/features/ai_generation/domain/repositories/ai_job_repository.dart';
+import 'package:barbcut/features/ai_generation/presentation/cubit/generation_status_cubit.dart';
 import 'package:barbcut/features/home/presentation/pages/home_page.dart';
 import 'package:barbcut/features/history/presentation/pages/history_page.dart';
 import 'package:barbcut/features/products/presentation/pages/products_page.dart';
@@ -34,7 +38,10 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocProvider<GenerationStatusCubit>(
+      create: (_) =>
+          GenerationStatusCubit(aiJobRepository: getIt<AiJobRepository>()),
+      child: Scaffold(
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 260),
         switchInCurve: Curves.easeOutCubic,
@@ -98,6 +105,7 @@ class _MainScreenState extends State<MainScreen> {
           selectedIconTheme: IconThemeData(size: 28),
           unselectedIconTheme: IconThemeData(size: 24),
         ),
+      ),
       ),
     );
   }

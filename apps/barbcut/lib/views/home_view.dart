@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -9,12 +8,18 @@ import 'dart:async';
 import '../theme/theme.dart';
 import '../core/di/service_locator.dart';
 import '../features/home/domain/entities/style_entity.dart';
+import '../features/auth/domain/repositories/auth_repository.dart';
+import '../features/favourites/domain/usecases/add_favourite_usecase.dart';
+import '../features/favourites/domain/usecases/get_favourites_usecase.dart';
+import '../features/favourites/domain/usecases/remove_favourite_usecase.dart';
 import '../features/home/domain/usecases/get_beard_styles_usecase.dart';
+import '../features/home/data/datasources/tab_categories_remote_data_source.dart';
 import '../features/home/domain/usecases/get_haircuts_usecase.dart';
+import '../features/ai_generation/presentation/cubit/generation_status_cubit.dart';
 import '../features/home/presentation/bloc/home_bloc.dart';
 import '../features/home/presentation/bloc/home_event.dart';
 import '../features/home/presentation/bloc/home_state.dart';
-import '../features/home/presentation/pages/home_page.dart';
+import '../features/home/presentation/widgets/home_favourites_empty.dart';
 import '../shared/widgets/molecules/style_preview_card_inline.dart';
 import '../controllers/style_selection_controller.dart';
 import '../services/ai_generation_service.dart';
@@ -22,8 +27,6 @@ import '../services/user_photo_service.dart';
 import '../widgets/generation_error_card.dart';
 import '../widgets/lazy_network_image.dart';
 import '../widgets/firebase_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../services/firebase_data_service.dart';
 import 'face_photo_upload_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -36,45 +39,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
-  // Firestore tab categories stream
-  final Stream<QuerySnapshot<Map<String, dynamic>>> _tabCategoriesStream =
-      FirebaseFirestore.instance
-          .collection('tabCategories')
-          .orderBy('order')
-          .snapshots();
-  // Fetch favourites from a data source (stub implementation)
-  String? _favouritesError;
-  void _fetchFavourites() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      setState(() {
-        _favouritesLoading = false;
-        _favouritesError = 'User not authenticated.';
-      });
-      return;
-    }
-    setState(() {
-      _favouritesLoading = true;
-      _favouritesError = null;
-    });
-    try {
-      await FirebaseDataService.initializeUser(userId: user.uid);
-      final favs = await FirebaseDataService.getFavourites(userId: user.uid);
-      if (!mounted) return;
-      setState(() {
-        _favouriteIds = favs.map((f) => f['id'].toString()).toSet();
-        _favouritesLoading = false;
-        _favouritesError = null;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _favouritesLoading = false;
-        _favouritesError = e.toString();
-      });
-    }
-  }
-
   // Helper to map StyleEntity list to List<Map<String, dynamic>>
   List<Map<String, dynamic>> _mapStyles(List<StyleEntity> styles) {
     return styles
@@ -92,31 +56,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         .toList();
   }
 
-  // Toggle favourite for a style (stub implementation)
   void _toggleFavourite(Map<String, dynamic> item, String styleType) {
-    final id = item['id']?.toString();
-    if (id == null) return;
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    final userId = user.uid;
-    setState(() {
-      if (_favouriteIds.contains(id)) {
-        _favouriteIds.remove(id);
-        FirebaseDataService.removeFavourite(userId: userId, styleId: id);
-      } else {
-        _favouriteIds.add(id);
-        FirebaseDataService.addFavourite(
-          userId: userId,
-          style: item,
-          styleType: styleType,
+    context.read<HomeBloc>().add(
+          FavouriteToggled(item: item, styleType: styleType),
         );
-      }
-    });
   }
 
   // Fields
   Set<String> _favouriteIds = {};
   bool _favouritesLoading = false;
+  String? _favouritesError;
   final PanelController _panelController = PanelController();
   final ScrollController _mainScrollController = ScrollController();
   final ScrollController _panelScrollController = ScrollController();
@@ -131,13 +80,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   late AnimationController _arrowAnimationController;
   late AnimationController _generationPulseController;
   final Random _random = Random();
-  // Removed unused _haircutHeights field
   late List<double> _beardHeights;
   bool _isGenerating = false;
   int? _confirmedHaircutIndex;
   int? _confirmedBeardIndex;
   Timer? _carouselTimer;
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _jobSubscription;
   String _activeJobStatus = 'queued';
   String? _activeJobError;
   late List<StyleEntity> _haircutEntities = [];
@@ -226,13 +173,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         .toList();
     final allFavourites = [...favHaircuts, ...favBeards];
     if (allFavourites.isEmpty) {
-      return Center(
-        child: Text(
-          'No favourites yet. Tap the star on a style to add it!',
-          style: Theme.of(context).textTheme.titleMedium,
-          textAlign: TextAlign.center,
-        ),
-      );
+      return const HomeFavouritesEmpty();
     }
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -297,10 +238,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   void _regenerateHeights() {
-    _haircutHeights = List.generate(
-      _haircuts.length,
-      (_) => 200.0 + _random.nextDouble() * 80,
-    );
     _beardHeights = List.generate(
       _beardStyles.length,
       (_) => 200.0 + _random.nextDouble() * 80,
@@ -325,7 +262,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       }
     });
     _regenerateHeights();
-    _fetchFavourites();
   }
 
   double _lastScrollOffset = 0.0;
@@ -1246,19 +1182,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       _isGenerating = true;
     });
 
-    HomePage.isGenerating = true;
-    HomePage.generationNotifier.value = true;
-
     _setPanelLevel(_panelLevel2);
 
-    // Capture the selected style data for history
     final int currentTab = _tabController?.index ?? 0;
     final Map<String, dynamic>? selectedStyle = currentTab == 0
         ? (_haircuts.isNotEmpty ? _haircuts[_selectedHaircutIndex] : null)
         : (_beardStyles.isNotEmpty ? _beardStyles[_selectedBeardIndex] : null);
 
     if (selectedStyle != null) {
-      // Get the first image from the style
       final List<String> images = _extractImages(selectedStyle);
       final String styleImage = images.isNotEmpty ? images[0] : '';
 
@@ -1275,14 +1206,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       } catch (e) {
         debugPrint('Failed to create generation job: $e');
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+          setState(() => _isGenerating = false);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
+        return;
       }
 
-      // Prepare style data for history
-      HomePage.generatedStyleData = {
+      final styleData = {
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
         'image': styleImage,
         'haircut': currentTab == 0 ? selectedStyle['name'] ?? 'Haircut' : 'N/A',
@@ -1291,111 +1221,22 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         'jobId': jobId,
         'status': jobId.isEmpty ? 'error' : 'queued',
       };
-      HomePage.generatedStyleNotifier.value = HomePage.generatedStyleData;
 
       if (jobId.isNotEmpty) {
-        _listenToGenerationJob(jobId);
+        context.read<GenerationStatusCubit>().startWatchingJob(jobId, styleData);
       } else {
-        _markGenerationFailed('Unable to create generation job.');
+        setState(() => _isGenerating = false);
+        _markGenerationFailedSnackbar('Unable to create generation job.');
       }
     }
 
     widget.onNavigateToHistory?.call();
   }
 
-  void _listenToGenerationJob(String jobId) {
-    _jobSubscription?.cancel();
-    _activeJobStatus = 'queued';
-    _activeJobError = null;
-
-    _jobSubscription = FirebaseFirestore.instance
-        .collection('aiJobs')
-        .doc(jobId)
-        .snapshots()
-        .listen((snapshot) {
-          if (!snapshot.exists) {
-            return;
-          }
-          final data = snapshot.data();
-          final status = data?['status']?.toString() ?? 'queued';
-          final errorMessage = data?['errorMessage']?.toString();
-
-          if (!mounted) {
-            return;
-          }
-
-          setState(() {
-            _activeJobStatus = status;
-            _activeJobError = errorMessage;
-          });
-
-          HomePage.generatedStyleData = {
-            ...(HomePage.generatedStyleData ?? {}),
-            'jobId': jobId,
-            'status': status,
-            'errorMessage': ?errorMessage,
-          };
-          HomePage.generatedStyleNotifier.value = HomePage.generatedStyleData;
-
-          if (status == 'completed') {
-            _markGenerationComplete();
-          } else if (status == 'error') {
-            _markGenerationFailed(
-              errorMessage ?? 'Generation failed. Please try again.',
-            );
-          }
-        });
-  }
-
-  void _markGenerationComplete() {
-    if (!mounted) {
-      return;
-    }
-    setState(() {
-      _isGenerating = false;
-      _confirmedHaircutIndex = null;
-      _confirmedBeardIndex = null;
-    });
-    HomePage.isGenerating = false;
-    HomePage.generationNotifier.value = false;
-    HomePage.generatedStyleData = {
-      ...(HomePage.generatedStyleData ?? {}),
-      'status': 'completed',
-    };
-    HomePage.generatedStyleNotifier.value = HomePage.generatedStyleData;
+  void _markGenerationFailedSnackbar(String message) {
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Your look is ready. Check History to view it.'),
-          action: SnackBarAction(
-            label: 'History',
-            onPressed: widget.onNavigateToHistory ?? () {},
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
-  }
-
-  void _markGenerationFailed(String message) {
-    if (!mounted) {
-      return;
-    }
-    setState(() {
-      _isGenerating = false;
-      _confirmedHaircutIndex = null;
-      _confirmedBeardIndex = null;
-    });
-    HomePage.isGenerating = false;
-    HomePage.generationNotifier.value = false;
-    HomePage.generatedStyleData = {
-      ...(HomePage.generatedStyleData ?? {}),
-      'status': 'error',
-      'errorMessage': message,
-    };
-    HomePage.generatedStyleNotifier.value = HomePage.generatedStyleData;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -1404,7 +1245,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     _arrowAnimationController.dispose();
     _generationPulseController.dispose();
     _carouselTimer?.cancel();
-    _jobSubscription?.cancel();
     _panelSearchController.dispose();
     _panelSearchFocus.dispose();
     _mainScrollController.dispose();
@@ -1424,10 +1264,49 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(
+    return BlocListener<GenerationStatusCubit, GenerationStatusState>(
+      listener: (context, state) {
+        if (!state.isGenerating && state.generatedStyleData != null) {
+          final status = state.generatedStyleData!['status']?.toString();
+          if (status == 'completed') {
+            if (mounted) {
+              setState(() {
+                _isGenerating = false;
+                _confirmedHaircutIndex = null;
+                _confirmedBeardIndex = null;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Your look is ready. Check History to view it.'),
+                  action: SnackBarAction(
+                    label: 'History',
+                    onPressed: widget.onNavigateToHistory ?? () {},
+                  ),
+                ),
+              );
+            }
+          } else if (status == 'error') {
+            if (mounted) {
+              setState(() {
+                _isGenerating = false;
+                _confirmedHaircutIndex = null;
+                _confirmedBeardIndex = null;
+              });
+              final msg = state.generatedStyleData!['errorMessage']?.toString() ?? 'Generation failed.';
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+            }
+          }
+        }
+      },
+      child: BlocProvider<HomeBloc>(
       create: (_) => HomeBloc(
         getHaircutsUseCase: getIt<GetHaircutsUseCase>(),
         getBeardStylesUseCase: getIt<GetBeardStylesUseCase>(),
+        getFavouritesUseCase: getIt<GetFavouritesUseCase>(),
+        addFavouriteUseCase: getIt<AddFavouriteUseCase>(),
+        removeFavouriteUseCase: getIt<RemoveFavouriteUseCase>(),
+        authRepository: getIt<AuthRepository>(),
+        tabCategoriesDataSource: getIt<TabCategoriesRemoteDataSource>(),
       )..add(const HomeLoadRequested()),
       child: BlocListener<HomeBloc, HomeState>(
         listener: (context, state) {
@@ -1437,6 +1316,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               _beardEntities = state.beardStyles;
               _haircuts = _mapStyles(state.haircuts);
               _beardStyles = _mapStyles(state.beardStyles);
+              _favouriteIds = state.favouriteIds;
+              _favouritesLoading = state.favouritesLoading;
+              _favouritesError = state.favouritesError;
               _selectedHaircutIndex = _haircuts.isNotEmpty
                   ? _selectedHaircutIndex.clamp(0, _haircuts.length - 1)
                   : 0;
@@ -1466,13 +1348,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         },
         child: Builder(
           builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _fetchFavourites();
-            });
             return _buildScaffoldDynamicTabs();
           },
         ),
       ),
+    ),
     );
   }
 
@@ -2181,25 +2061,26 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildDynamicPanel(ScrollController scrollController) {
-    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: _tabCategoriesStream,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (prev, curr) {
+        if (curr is! HomeLoaded) return prev.runtimeType != curr.runtimeType;
+        if (prev is! HomeLoaded) return true;
+        return prev.tabCategories != curr.tabCategories;
+      },
+      builder: (context, state) {
+        if (state is! HomeLoaded) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (snapshot.hasError) {
-          return Center(child: Text('Failed to load categories'));
-        }
-        final docs = snapshot.data?.docs ?? [];
-        if (docs.isEmpty) {
-          return Center(child: Text('No categories available'));
+        final categories = state.tabCategories;
+        if (categories.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
         }
 
-        final tabs = docs
-            .map((doc) => Tab(text: doc['title'] ?? 'Tab'))
+        final tabs = categories
+            .map((c) => Tab(text: c.title))
             .toList();
-        final tabTypes = docs
-            .map((doc) => doc['type'] as String? ?? '')
+        final tabTypes = categories
+            .map((c) => c.type)
             .toList();
 
         // (Re)create TabController if needed
@@ -2209,10 +2090,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           _tabController!.addListener(() {
             if (!_tabController!.indexIsChanging && mounted) {
               setState(() => _selectedAngleIndex = 0);
-              // Favourites tab type check
-              if (tabTypes[_tabController!.index] == 'favourites') {
-                _fetchFavourites();
-              }
             }
           });
         }

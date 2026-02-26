@@ -278,6 +278,6 @@ service firebase.storage {
 
 ## Documentation
 
-- [FILE_MANAGEMENT_STRATEGY.md](./FILE_MANAGEMENT_STRATEGY.md) - Detailed file strategy
+- [MIGRATION_FILES_QUICK_REFERENCE.md](./MIGRATION_FILES_QUICK_REFERENCE.md) - Migration and file reference
 - [Firebase Storage Docs](https://firebase.google.com/docs/storage)
 - [Cloud Functions Docs](https://firebase.google.com/docs/functions)

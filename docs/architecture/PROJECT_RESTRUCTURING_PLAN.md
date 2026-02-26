@@ -21,7 +21,7 @@ barb-cut/
 ├── apps/barbcut/          # Flutter application
 ├── firebase/              # Firebase backend (Cloud Functions, Firestore)
 ├── image-generation/      # AI image generation service
-└── instructions/          # Documentation (34 files, ~25,000 lines)
+└── docs/                  # Documentation (see docs/README.md)
 ```
 
 ### Technology Stack
@@ -489,7 +489,7 @@ For each view (`home`, `history`, `profile`, `products`):
 | Widget files | 12 | Split between widgets/ and shared/widgets/ |
 | Payment files | 20+ | Scattered across lib/ |
 | Theme files | 8 | Split between theme/ and core/theme/ |
-| Documentation | 34 | In instructions/ |
+| Documentation | — | In docs/ (see docs/README.md) |
 
 ---
 

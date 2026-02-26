@@ -211,7 +211,7 @@ npm run migrate:up    # Re-uploads all
 ## 📚 Full Documentation
 
 - **[README_MIGRATIONS.md](./README_MIGRATIONS.md)** - Complete guide
-- **[FILE_MANAGEMENT_STRATEGY.md](./FILE_MANAGEMENT_STRATEGY.md)** - Detailed strategy
+- **[README_MIGRATIONS.md](./README_MIGRATIONS.md)** - Migrations and file management
 - **[firebase/functions/src/migrations/](./src/migrations/)** - Migration code
 
 ---

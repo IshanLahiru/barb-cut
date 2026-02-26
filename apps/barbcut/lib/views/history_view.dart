@@ -1,22 +1,22 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import '../widgets/lazy_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../theme/theme.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
 import '../core/di/service_locator.dart';
+import '../features/auth/domain/repositories/auth_repository.dart';
 import '../features/history/domain/entities/history_entity.dart';
+import '../features/history/domain/repositories/history_repository.dart';
 import '../features/history/domain/usecases/get_history_usecase.dart';
 import '../features/history/presentation/bloc/history_bloc.dart';
 import '../features/history/presentation/bloc/history_event.dart';
+import '../features/ai_generation/presentation/cubit/generation_status_cubit.dart';
 import '../features/history/presentation/bloc/history_state.dart';
-import '../features/home/presentation/pages/home_page.dart';
-import '../features/history/data/models/history_model.dart';
-import '../services/firebase_storage_helper.dart';
-import 'dart:math';
-import 'dart:async';
+import '../features/history/presentation/widgets/history_empty_state.dart';
+import '../theme/theme.dart';
+import '../widgets/lazy_network_image.dart';
 
 class HistoryView extends StatefulWidget {
   const HistoryView({super.key});
@@ -31,8 +31,6 @@ class _HistoryViewState extends State<HistoryView>
   final Random _random = Random();
   late List<double> _cardHeights;
   late AnimationController _generationPulseController;
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _historySubscription;
-  StreamSubscription<User?>? _authSubscription;
 
   @override
   void initState() {
@@ -43,73 +41,12 @@ class _HistoryViewState extends State<HistoryView>
       duration: const Duration(milliseconds: 1400),
       vsync: this,
     )..repeat();
-
-    // Register callback to add new history items
-    HomePage.onAddToHistory = _onAddHistoryItem;
-
-    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user != null) {
-        _startHistoryListener(user.uid);
-      }
-    });
-
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser != null) {
-      _startHistoryListener(currentUser.uid);
-    }
   }
 
   @override
   void dispose() {
     _generationPulseController.dispose();
-    _historySubscription?.cancel();
-    _authSubscription?.cancel();
-    HomePage.onAddToHistory = null;
     super.dispose();
-  }
-
-  void _startHistoryListener(String userId) {
-    _historySubscription?.cancel();
-    _historySubscription = FirebaseFirestore.instance
-        .collection('history')
-        .where('userId', isEqualTo: userId)
-        .orderBy('timestamp', descending: true)
-        .snapshots()
-        .listen((snapshot) async {
-          final items = await Future.wait(
-            snapshot.docs.map((doc) async {
-              final data = {'id': doc.id, ...doc.data()};
-              final history = HistoryModel.fromMap(data);
-              final resolvedUrl = await FirebaseStorageHelper.getDownloadUrl(
-                history.imageUrl,
-              );
-              return {
-                'id': history.id,
-                'image': resolvedUrl,
-                'haircut': history.haircut,
-                'beard': history.beard,
-                'timestamp': history.timestamp,
-              };
-            }),
-          );
-
-          if (mounted) {
-            setState(() {
-              _generationHistory = items;
-              _regenerateHeights();
-            });
-          }
-        });
-  }
-
-  /// Add a new history item when generation completes
-  void _onAddHistoryItem(Map<String, dynamic> styleData) {
-    if (mounted) {
-      setState(() {
-        _generationHistory.insert(0, styleData);
-        _regenerateHeights();
-      });
-    }
   }
 
   void _regenerateHeights() {
@@ -181,9 +118,11 @@ class _HistoryViewState extends State<HistoryView>
     }
 
     return BlocProvider(
-      create: (_) =>
-          HistoryBloc(getHistoryUseCase: getIt<GetHistoryUseCase>())
-            ..add(const HistoryLoadRequested()),
+      create: (_) => HistoryBloc(
+        getHistoryUseCase: getIt<GetHistoryUseCase>(),
+        historyRepository: getIt<HistoryRepository>(),
+        authRepository: getIt<AuthRepository>(),
+      )..add(const HistoryLoadRequested()),
       child: BlocListener<HistoryBloc, HistoryState>(
         listener: (context, state) {
           if (state is HistoryLoaded) {
@@ -210,14 +149,10 @@ class _HistoryViewState extends State<HistoryView>
             surfaceTintColor: Colors.transparent,
           ),
           body: SafeArea(
-            child: AnimatedBuilder(
-              animation: Listenable.merge([
-                HomePage.generationNotifier,
-                HomePage.generatedStyleNotifier,
-              ]),
-              builder: (context, child) {
-                final isGenerating = HomePage.generationNotifier.value;
-                final generatedStyle = HomePage.generatedStyleNotifier.value;
+            child: BlocBuilder<GenerationStatusCubit, GenerationStatusState>(
+              builder: (context, genState) {
+                final isGenerating = genState.isGenerating;
+                final generatedStyle = genState.generatedStyleData;
                 return RefreshIndicator(
                   onRefresh: () => _refreshHistory(context),
                   child: _generationHistory.isEmpty && !isGenerating
@@ -225,7 +160,7 @@ class _HistoryViewState extends State<HistoryView>
                           physics: const AlwaysScrollableScrollPhysics(),
                           children: [
                             SizedBox(height: 80),
-                            _buildEmptyState(context),
+                            const HistoryEmptyState(),
                           ],
                         )
                       : Padding(
@@ -248,7 +183,7 @@ class _HistoryViewState extends State<HistoryView>
                             crossAxisSpacing: AiSpacing.md,
                             itemBuilder: (context, index) {
                               if (isGenerating && index == 0) {
-                                return _buildGeneratingTile(generatedStyle);
+                                return _buildGeneratingTile(generatedStyle ?? {});
                               }
                               final historyIndex = isGenerating
                                   ? index - 1
@@ -264,87 +199,6 @@ class _HistoryViewState extends State<HistoryView>
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.0, end: 1.0),
-            duration: const Duration(milliseconds: 800),
-            builder: (context, value, child) {
-              return Transform.scale(
-                scale: 0.8 + (value * 0.2),
-                child: Opacity(opacity: value, child: child),
-              );
-            },
-            child: Container(
-              padding: EdgeInsets.all(AiSpacing.xl),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AdaptiveThemeColors.neonCyan(
-                      context,
-                    ).withValues(alpha: 0.15),
-                    AdaptiveThemeColors.neonPurple(
-                      context,
-                    ).withValues(alpha: 0.15),
-                  ],
-                ),
-                border: Border.all(
-                  color: AdaptiveThemeColors.neonCyan(
-                    context,
-                  ).withValues(alpha: 0.2),
-                  width: 1.5,
-                ),
-              ),
-              child: Icon(
-                Icons.history_rounded,
-                size: 64,
-                color: AdaptiveThemeColors.neonCyan(context),
-              ),
-            ),
-          ),
-          SizedBox(height: AiSpacing.xl),
-          TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.0, end: 1.0),
-            duration: const Duration(milliseconds: 900),
-            builder: (context, value, child) {
-              return Transform.translate(
-                offset: Offset(0, 10 * (1 - value)),
-                child: Opacity(opacity: value, child: child),
-              );
-            },
-            child: Column(
-              children: [
-                Text(
-                  'No generation history yet',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AdaptiveThemeColors.textPrimary(context),
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-                SizedBox(height: AiSpacing.md),
-                Text(
-                  'Generate your first style to see it here',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AdaptiveThemeColors.textTertiary(context),
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

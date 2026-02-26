@@ -1,16 +1,24 @@
-# barbcut
+# Barbcut (Flutter)
 
-A new Flutter project.
+Flutter app for Barbcut – clean architecture, Firebase (Auth, Firestore, Storage).
 
-## Getting Started
+## Prerequisites
 
-This project is a starting point for a Flutter application.
+- Flutter SDK
+- `.env` file in this directory (see project root or `.env.example` for required vars)
 
-A few resources to get you started if this is your first Flutter project:
+## Run
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```bash
+flutter pub get
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Architecture
+
+- **Features**: auth, favourites, home (styles, tab categories), history, products, profile, AI generation
+- **Layers**: domain (entities, repo interfaces, use cases), data (datasources, repo impls), presentation (Bloc/Cubit, pages, widgets)
+- **DI**: GetIt in `lib/core/di/service_locator.dart`
+- **Firebase**: used only inside data-layer datasources; views and main use repositories/use cases only
+
+Full documentation: [../../docs/README.md](../../docs/README.md)

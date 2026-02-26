@@ -2,19 +2,18 @@ import 'package:barbcut/views/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/theme_controller.dart';
 import 'controllers/style_selection_controller.dart';
-import 'services/auth_service.dart';
 import 'services/onboarding_service.dart';
 import 'auth_screen.dart';
 import 'theme/theme.dart';
 import 'core/di/service_locator.dart';
-import 'core/constants/app_data.dart';
+import 'features/auth/domain/entities/auth_user.dart';
+import 'features/auth/domain/repositories/auth_repository.dart';
 import 'views/questionnaire_view.dart';
 
 class MyApp extends StatefulWidget {
@@ -59,14 +58,6 @@ void main() async {
   }
 
   try {
-    // Load from Firebase only, no JSON fallback (all data is in Firestore)
-    await AppData.loadAppData(useJsonFallback: false);
-  } catch (e) {
-    debugPrint('AppData load failed: $e');
-    // Don't rethrow - use empty defaults
-  }
-
-  try {
     await setupServiceLocator();
   } catch (e) {
     debugPrint('Service locator setup failed: $e');
@@ -84,7 +75,9 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthController(AuthService())),
+        ChangeNotifierProvider(
+          create: (_) => AuthController(getIt<AuthRepository>()),
+        ),
         ChangeNotifierProvider.value(value: widget.themeController),
         ChangeNotifierProvider(create: (_) => StyleSelectionController()),
       ],
@@ -96,16 +89,14 @@ class MyAppState extends State<MyApp> {
             darkTheme: BarbCutTheme.darkTheme,
             themeMode: themeController.themeMode,
             debugShowCheckedModeBanner: false,
-            home: StreamBuilder<User?>(
-              stream: FirebaseAuth.instance.authStateChanges(),
+            home: StreamBuilder<AuthUser?>(
+              stream: getIt<AuthRepository>().authStateChanges,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Scaffold(
                     body: Center(child: CircularProgressIndicator()),
                   );
                 }
-                // Show MainScreen (via OnboardingGate) if user is authenticated (including anonymous)
-                // If there is no user data (not authenticated), fall through to show AuthScreen below.
                 if (snapshot.hasData) {
                   return const OnboardingGate();
                 }

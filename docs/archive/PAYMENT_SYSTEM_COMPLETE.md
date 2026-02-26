@@ -550,7 +550,7 @@ All success criteria have been met:
 
 ### Architecture Docs
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Clean architecture structure
-- **[IMPLEMENTATION_EXAMPLES.md](IMPLEMENTATION_EXAMPLES.md)** - Code patterns
+- **[../architecture/ARCHITECTURE.md](../architecture/ARCHITECTURE.md)** - Architecture and patterns
 
 ### Project Setup
 - **[PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md)** - Project context

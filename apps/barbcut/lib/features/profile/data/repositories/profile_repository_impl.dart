@@ -2,18 +2,19 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/errors/failure.dart';
 import '../../domain/entities/profile_entity.dart';
 import '../../domain/repositories/profile_repository.dart';
-import '../datasources/profile_local_data_source.dart';
+import '../datasources/profile_remote_data_source.dart';
+import '../models/profile_model.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
-  final ProfileLocalDataSource localDataSource;
+  final ProfileRemoteDataSource remoteDataSource;
 
-  ProfileRepositoryImpl({required this.localDataSource});
+  ProfileRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<Either<Failure, ProfileEntity>> getProfile() async {
     try {
-      final profile = localDataSource.getProfile();
-      return Right(profile);
+      final map = await remoteDataSource.getProfile();
+      return Right(ProfileModel.fromMap(map));
     } catch (e) {
       return Left(UnknownFailure());
     }

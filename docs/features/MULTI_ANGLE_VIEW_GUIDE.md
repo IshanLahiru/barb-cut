@@ -8,8 +8,8 @@ The multi-angle haircut view implementation provides a complete UI for displayin
 
 - **[MULTI_ANGLE_VIEW_INTEGRATION_COMPLETE.md](MULTI_ANGLE_VIEW_INTEGRATION_COMPLETE.md)** - Integration completion report
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Clean architecture patterns for feature implementation
-- **[IMPLEMENTATION_EXAMPLES.md](IMPLEMENTATION_EXAMPLES.md)** - Code patterns and best practices
-- **[AI_UI_SYSTEM_GUIDE.md](AI_UI_SYSTEM_GUIDE.md)** - UI components and styling used
+- **[README_AI_UI_SYSTEM.md](README_AI_UI_SYSTEM.md)** - UI components and styling
+- **[../architecture/ARCHITECTURE.md](../architecture/ARCHITECTURE.md)** - Code patterns and architecture
 - **[THEME_SYSTEM_GUIDE.md](THEME_SYSTEM_GUIDE.md)** - Theme colors and design tokens
 
 ---

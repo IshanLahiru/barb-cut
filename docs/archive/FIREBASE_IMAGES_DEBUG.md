@@ -166,6 +166,6 @@ Check the terminal logs for specific error messages and create an issue with:
 4. Output of `firebase storage:list` command
 
 ## Related Files
-- [FIREBASE_STORAGE_IMAGES.md](instructions/FIREBASE_STORAGE_IMAGES.md) - Overview of image handling
+- [FIREBASE_STORAGE_IMAGES.md](../backend/FIREBASE_STORAGE_IMAGES.md) - Overview of image handling
 - [storage.rules](firebase/storage.rules) - Firebase Storage security rules
 - [firestore.rules](firebase/firestore.rules) - Firestore rules (already allowed public read)

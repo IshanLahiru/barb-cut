@@ -6,9 +6,9 @@ This guide outlines the clean architecture structure for the BarberCut Flutter a
 
 ## Related Documentation
 
-- **[IMPLEMENTATION_EXAMPLES.md](IMPLEMENTATION_EXAMPLES.md)** - Code examples for each architecture layer
 - **[PHASE_1_COMPLETION_REPORT.md](PHASE_1_COMPLETION_REPORT.md)** - Phase 1 status and deliverables
 - **[PHASE_2_GUIDE.md](PHASE_2_GUIDE.md)** - Phase 2 implementation (Atomic Design)
+- **[PROJECT_RESTRUCTURING_PLAN.md](PROJECT_RESTRUCTURING_PLAN.md)** - Restructuring and migration roadmap
 
 ---
 
@@ -181,8 +181,8 @@ home_page.dart (Screen)
 ## Related Resources
 
 ### Implementation Guides
-- **[IMPLEMENTATION_EXAMPLES.md](IMPLEMENTATION_EXAMPLES.md)** - Detailed code examples for all layers
-- **[CLEAN_ARCHITECTURE_ROADMAP.md](CLEAN_ARCHITECTURE_ROADMAP.md)** - Migration roadmap with progress tracking
+- **[PHASE_1_COMPLETION_REPORT.md](PHASE_1_COMPLETION_REPORT.md)** - Phase 1 deliverables and examples
+- **[PROJECT_RESTRUCTURING_PLAN.md](PROJECT_RESTRUCTURING_PLAN.md)** - Migration roadmap and progress
 - **[PHASE_2_GUIDE.md](PHASE_2_GUIDE.md)** - Atomic Design implementation guide
 
 ### Feature Documentation
