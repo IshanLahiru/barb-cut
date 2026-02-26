@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "name": "repo",
+      "path": "."
+    },
+    {
+      "name": "barbcut (Flutter)",
+      "path": "apps/barbcut"
+    }
+  ],
+  "settings": {}
+}
