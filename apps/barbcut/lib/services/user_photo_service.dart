@@ -105,4 +105,25 @@ class UserPhotoService {
       return false;
     }
   }
+
+  /// Upload profile avatar image. Updates Firestore userProfiles.photoURL (gs:// path).
+  /// Returns the gs:// URL stored in Firestore (use FirebaseStorageHelper.getDownloadUrl for display).
+  static Future<String> uploadProfilePhoto(File imageFile) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('User not authenticated');
+    }
+
+    try {
+      final ref = _storage.ref('profile-photos/${user.uid}/avatar.jpg');
+      await ref.putFile(imageFile);
+      final gsUrl = 'gs://${ref.bucket}/${ref.fullPath}';
+      await _firestore.collection('userProfiles').doc(user.uid).set({
+        'photoURL': gsUrl,
+      }, SetOptions(merge: true));
+      return gsUrl;
+    } catch (e) {
+      throw Exception('Failed to upload profile photo: $e');
+    }
+  }
 }

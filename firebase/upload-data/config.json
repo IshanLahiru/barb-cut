@@ -46,6 +46,13 @@
         "idField": "id"
       },
       {
+        "name": "products",
+        "enabled": true,
+        "sourceFile": "../firestore-data/products.json",
+        "description": "Shop products",
+        "idField": "id"
+      },
+      {
         "name": "services",
         "enabled": false,
         "sourceFile": "../firestore-data/services.json",

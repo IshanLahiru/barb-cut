@@ -308,8 +308,25 @@ class FirebaseDataService {
       'beardStyle': 'None',
       'lifestyle': 'Active',
       'photoPaths': [],
+      'photoURL': '',
       'points': 0,
     };
+  }
+
+  /// Update user profile fields in Firestore (userProfiles). Merges with existing.
+  static Future<void> updateUserProfile(Map<String, dynamic> data) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception('User not authenticated');
+    await _firestore
+        .collection('userProfiles')
+        .doc(user.uid)
+        .set(data, SetOptions(merge: true));
+    clearProfileCache();
+  }
+
+  /// Clears the profile cache so the next fetch returns fresh data (e.g. after photo update).
+  static void clearProfileCache() {
+    _cachedProfile = null;
   }
 
   /// Stream of current user's points (from users/{uid}.points). Use for display only.

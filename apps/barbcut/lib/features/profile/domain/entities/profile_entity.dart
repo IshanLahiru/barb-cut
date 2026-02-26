@@ -13,6 +13,8 @@ class ProfileEntity {
   final String beardStyle;
   final String lifestyle;
   final List<String> photoPaths;
+  /// Profile avatar URL (Firebase Storage gs:// or download URL).
+  final String profilePhotoUrl;
   /// Credits/points for AI generations (read-only from Firestore users doc).
   final int points;
 
@@ -31,6 +33,7 @@ class ProfileEntity {
     this.beardStyle = 'None',
     this.lifestyle = 'Active',
     this.photoPaths = const [],
+    this.profilePhotoUrl = '',
     this.points = 0,
   });
 }

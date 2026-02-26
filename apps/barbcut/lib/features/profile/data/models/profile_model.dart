@@ -16,6 +16,7 @@ class ProfileModel extends ProfileEntity {
     super.beardStyle,
     super.lifestyle,
     super.photoPaths,
+    super.profilePhotoUrl = '',
     super.points,
   });
 
@@ -46,6 +47,7 @@ class ProfileModel extends ProfileEntity {
       beardStyle: map['beardStyle'] as String? ?? 'None',
       lifestyle: map['lifestyle'] as String? ?? 'Active',
       photoPaths: photoPaths,
+      profilePhotoUrl: map['photoURL'] as String? ?? map['profilePhotoUrl'] as String? ?? '',
       points: points,
     );
   }
