@@ -5,13 +5,17 @@ import 'firebase_storage_helper.dart';
 
 /// Service for fetching data from Firebase Firestore
 class FirebaseDataService {
-    /// Initialize user document and favourites subcollection
-    static Future<void> initializeUser({required String userId, Map<String, dynamic>? profileData}) async {
-      final userDoc = _firestore.collection('users').doc(userId);
-      await userDoc.set(profileData ?? {}, SetOptions(merge: true));
-      // Optionally, create an empty favourites subcollection (not strictly needed)
-      // await userDoc.collection('favourites').doc('_init').set({'init': true});
-    }
+  /// Initialize user document and favourites subcollection
+  static Future<void> initializeUser({
+    required String userId,
+    Map<String, dynamic>? profileData,
+  }) async {
+    final userDoc = _firestore.collection('users').doc(userId);
+    await userDoc.set(profileData ?? {}, SetOptions(merge: true));
+    // Optionally, create an empty favourites subcollection (not strictly needed)
+    // await userDoc.collection('favourites').doc('_init').set({'init': true});
+  }
+
   /// Add a style (haircut or beard) to user's favourites
   static Future<void> addFavourite({
     required String userId,
