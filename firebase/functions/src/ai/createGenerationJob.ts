@@ -1,6 +1,9 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
+/** Cost in points per generation job (one job = multiple images). */
+const COST_PER_GENERATION = 1;
+
 type CreateGenerationJobInput = {
   haircutId?: string;
   beardId?: string;
@@ -160,35 +163,52 @@ export const createGenerationJob = functions.https.onCall(
     // Build prompt from fetched data
     const prompt = buildPrompt(haircutData, beardData);
     const now = admin.firestore.FieldValue.serverTimestamp();
+    const userRef = db.collection("users").doc(userId);
 
-    // Create job with all reference images stored
-    const jobDoc = await db.collection("aiJobs").add({
-      userId,
-      status: "queued", // queued -> processing -> completed
-      prompt,
-      model: "imagen3",
-      haircutId: data.haircutId ?? null,
-      haircutName: haircutData?.name ?? null,
-      beardId: data.beardId ?? null,
-      beardName: beardData?.name ?? null,
-      // Store all 4 reference images for the scheduler to use
-      referenceImages: {
-        front: userPhotos.front,
-        left: userPhotos.left,
-        right: userPhotos.right,
-        back: userPhotos.back,
-      },
-      // Track how many images will be generated
-      imageCount: photoUrls.length,
-      generatedImages: [], // Will be populated by scheduler
-      createdAt: now,
-      updatedAt: now,
-      scheduledAt: now,
+    // Deduct points and create job in one transaction (idempotent: no double-deduct)
+    const jobId = await db.runTransaction(async (tx) => {
+      const userSnap = await tx.get(userRef);
+      const currentPoints = (userSnap.data()?.points ?? 0) as number;
+      if (currentPoints < COST_PER_GENERATION) {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          "Insufficient points. Please purchase more credits to generate."
+        );
+      }
+      const newPoints = currentPoints - COST_PER_GENERATION;
+      tx.update(userRef, {
+        points: newPoints,
+        updatedAt: now,
+      });
+
+      const jobRef = db.collection("aiJobs").doc();
+      tx.set(jobRef, {
+        userId,
+        status: "queued",
+        prompt,
+        model: "imagen3",
+        haircutId: data.haircutId ?? null,
+        haircutName: haircutData?.name ?? null,
+        beardId: data.beardId ?? null,
+        beardName: beardData?.name ?? null,
+        referenceImages: {
+          front: userPhotos.front,
+          left: userPhotos.left,
+          right: userPhotos.right,
+          back: userPhotos.back,
+        },
+        imageCount: photoUrls.length,
+        generatedImages: [],
+        createdAt: now,
+        updatedAt: now,
+        scheduledAt: now,
+      });
+      return jobRef.id;
     });
 
     return {
       success: true,
-      jobId: jobDoc.id,
+      jobId,
       status: "queued",
       imageCount: photoUrls.length,
     };
