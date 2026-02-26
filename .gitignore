@@ -82,6 +82,12 @@ serviceAccountKey.json
 *-key.json
 GoogleService-Info.plist
 google-services.json
+# Root-level Firebase credentials
+/serviceAccountKey.json
+/*-key.json
+/GoogleService-Info.plist
+/google-services.json
+/.firebaserc
 apps/**/google-services.json
 apps/**/GoogleService-Info.plist
 apps/barbcut/ios/Runner/GoogleService-Info.plist
