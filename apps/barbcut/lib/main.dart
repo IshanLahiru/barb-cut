@@ -47,11 +47,19 @@ void main() async {
   }
 
   try {
-    // Check if Firebase is already initialized
+    // Initialize only if not already initialized (e.g. by native iOS/Android
+    // auto-init from GoogleService-Info.plist / google-services.json).
     if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
+    }
+  } on FirebaseException catch (e) {
+    // Native may have already created [DEFAULT]; code can be 'duplicate-app' or 'core/duplicate-app'
+    if (e.code == 'duplicate-app' || e.code == 'core/duplicate-app') {
+      // Already initialized; ignore.
+    } else {
+      debugPrint('Error setting up authentication: $e');
     }
   } catch (e) {
     debugPrint('Error setting up authentication: $e');
@@ -127,11 +135,19 @@ class _OnboardingGateState extends State<OnboardingGate> {
   }
 
   Future<void> _loadCompletionState() async {
-    final completed = await OnboardingService().isQuestionnaireCompleted();
-    if (mounted) {
-      setState(() {
-        _isCompleted = completed;
-      });
+    try {
+      final completed = await OnboardingService()
+          .isQuestionnaireCompleted()
+          .timeout(const Duration(seconds: 5), onTimeout: () => false);
+      if (mounted) {
+        setState(() {
+          _isCompleted = completed;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isCompleted = false);
+      }
     }
   }
 

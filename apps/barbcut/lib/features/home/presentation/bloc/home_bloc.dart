@@ -37,15 +37,38 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<_TabCategoriesUpdated>(_onTabCategoriesUpdated);
   }
 
+  static const Duration _loadTimeout = Duration(seconds: 45);
+
   Future<void> _onLoadRequested(
     HomeLoadRequested event,
     Emitter<HomeState> emit,
   ) async {
     emit(const HomeLoading());
 
-    final haircutsResult = await getHaircutsUseCase();
-    final beardsResult = await getBeardStylesUseCase();
+    final user = authRepository.currentUser;
 
+    // Load haircuts, beards, and (when logged in) favourites in parallel
+    final styleFutures = <Future>[
+      getHaircutsUseCase(),
+      getBeardStylesUseCase(),
+    ];
+    if (user != null) {
+      styleFutures.add(getFavouritesUseCase(user.id));
+    }
+
+    List<dynamic> results;
+    try {
+      results = await Future.wait(styleFutures).timeout(
+        _loadTimeout,
+        onTimeout: () => throw TimeoutException('Styles failed to load'),
+      );
+    } on TimeoutException catch (e) {
+      emit(HomeFailure(e.message ?? 'Request timed out. Check your connection.'));
+      return;
+    }
+
+    final haircutsResult = results[0];
+    final beardsResult = results[1];
     final haircuts = haircutsResult.fold((failure) => null, (data) => data);
     final beards = beardsResult.fold((failure) => null, (data) => data);
 
@@ -63,10 +86,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     Set<String> favouriteIds = {};
     String? favouritesError;
-    final user = authRepository.currentUser;
-    if (user != null) {
+    if (user != null && results.length >= 3) {
       try {
-        final favs = await getFavouritesUseCase(user.id);
+        final favs = results[2] as List<Map<String, dynamic>>;
         favouriteIds = favs.map((f) => f['id'].toString()).toSet();
       } catch (e) {
         favouritesError = e.toString();
@@ -150,7 +172,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
 class _TabCategoriesUpdated extends HomeEvent {
   final List<TabCategoryEntity> categories;
-  _TabCategoriesUpdated(this.categories);
+  const _TabCategoriesUpdated(this.categories);
   @override
   List<Object?> get props => [categories];
 }
