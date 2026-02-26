@@ -215,7 +215,10 @@ class FirebaseDataService {
   static Future<List<Map<String, dynamic>>> fetchProducts({
     bool forceRefresh = false,
   }) async {
-    if (_cachedProducts != null && !forceRefresh) {
+    final useCache = _cachedProducts != null &&
+        !forceRefresh &&
+        _cachedProducts!.isNotEmpty;
+    if (useCache) {
       return _cachedProducts!;
     }
 
