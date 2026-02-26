@@ -1,4 +1,7 @@
+import 'dart:developer' as developer;
+
 import 'package:dartz/dartz.dart';
+
 import '../../../../core/errors/failure.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/repositories/products_repository.dart';
@@ -15,8 +18,14 @@ class ProductsRepositoryImpl implements ProductsRepository {
     try {
       final list = await remoteDataSource.getProducts();
       return Right(list.map((m) => ProductModel.fromMap(m)).toList());
-    } catch (e) {
-      return Left(UnknownFailure());
+    } catch (e, stackTrace) {
+      developer.log(
+        'getProducts failed',
+        name: 'ProductsRepository',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return Left(UnknownFailure(e.toString()));
     }
   }
 }

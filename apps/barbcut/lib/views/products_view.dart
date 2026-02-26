@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/lazy_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../widgets/lazy_network_image.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../theme/theme.dart';
 import '../core/di/service_locator.dart';
@@ -75,7 +75,7 @@ class _ProductsViewState extends State<ProductsView> {
       create: (_) =>
           ProductsBloc(getProductsUseCase: getIt<GetProductsUseCase>())
             ..add(const ProductsLoadRequested()),
-      child: BlocListener<ProductsBloc, ProductsState>(
+      child: BlocConsumer<ProductsBloc, ProductsState>(
         listener: (context, state) {
           if (state is ProductsLoaded) {
             setState(() {
@@ -83,180 +83,165 @@ class _ProductsViewState extends State<ProductsView> {
             });
           }
         },
-        child: Scaffold(
-          backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
-          appBar: AppBar(
-            backgroundColor: AdaptiveThemeColors.backgroundDark(context),
-            elevation: 0,
-            toolbarHeight: 48,
-            title: Text(
-              'Shop',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: AdaptiveThemeColors.textPrimary(context),
-                fontWeight: FontWeight.w800,
+        buildWhen: (previous, current) => true,
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
+            appBar: AppBar(
+              backgroundColor: AdaptiveThemeColors.backgroundDark(context),
+              elevation: 0,
+              toolbarHeight: 48,
+              title: Text(
+                'Shop',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: AdaptiveThemeColors.textPrimary(context),
+                  fontWeight: FontWeight.w800,
+                ),
               ),
+              centerTitle: true,
+              surfaceTintColor: Colors.transparent,
             ),
-            centerTitle: true,
-            surfaceTintColor: Colors.transparent,
-          ),
-          body: SafeArea(
-            child: Column(
-              children: [
-                // Modern search header
-                Container(
-                  padding: EdgeInsets.all(AiSpacing.lg),
-                  decoration: BoxDecoration(
-                    color: AdaptiveThemeColors.backgroundDark(context),
-                    border: Border(
-                      bottom: BorderSide(
-                        color: AdaptiveThemeColors.borderLight(
-                          context,
-                        ).withValues(alpha: 0.2),
-                        width: 1,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  // Modern search header
+                  Container(
+                    padding: EdgeInsets.all(AiSpacing.lg),
+                    decoration: BoxDecoration(
+                      color: AdaptiveThemeColors.backgroundDark(context),
+                      border: Border(
+                        bottom: BorderSide(
+                          color: AdaptiveThemeColors.borderLight(
+                            context,
+                          ).withValues(alpha: 0.2),
+                          width: 1,
+                        ),
                       ),
                     ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Search field
-                      TextField(
-                        controller: _searchController,
-                        onChanged: (value) {
-                          setState(() {
-                            _searchQuery = value;
-                          });
-                        },
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AdaptiveThemeColors.textPrimary(context),
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Search products...',
-                          hintStyle: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: AdaptiveThemeColors.textTertiary(
-                                  context,
-                                ),
-                              ),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: AdaptiveThemeColors.textTertiary(context),
-                            size: 20,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Search field
+                        TextField(
+                          controller: _searchController,
+                          onChanged: (value) {
+                            setState(() {
+                              _searchQuery = value;
+                            });
+                          },
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AdaptiveThemeColors.textPrimary(context),
                           ),
-                          suffixIcon: _searchQuery.isNotEmpty
-                              ? IconButton(
-                                  icon: Icon(
-                                    Icons.clear,
-                                    color: AdaptiveThemeColors.textTertiary(
-                                      context,
-                                    ),
-                                    size: 20,
+                          decoration: InputDecoration(
+                            hintText: 'Search products...',
+                            hintStyle: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: AdaptiveThemeColors.textTertiary(
+                                    context,
                                   ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _searchController.clear();
-                                      _searchQuery = '';
-                                    });
-                                  },
-                                )
-                              : null,
-                          filled: true,
-                          fillColor: AdaptiveThemeColors.backgroundSecondary(
-                            context,
-                          ),
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: AiSpacing.md,
-                            vertical: AiSpacing.md,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              AiSpacing.radiusLarge,
-                            ),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              AiSpacing.radiusLarge,
-                            ),
-                            borderSide: BorderSide(
-                              color: AdaptiveThemeColors.borderLight(
-                                context,
-                              ).withValues(alpha: 0.2),
-                              width: 1,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              AiSpacing.radiusLarge,
-                            ),
-                            borderSide: BorderSide(
-                              color: AdaptiveThemeColors.neonCyan(context),
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                        cursorColor: AdaptiveThemeColors.neonCyan(context),
-                      ),
-                      SizedBox(height: AiSpacing.md),
-                      // Category chips
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: _categories.map((category) {
-                            final isSelected = _selectedCategory == category;
-                            final Color accentColor = category == 'Hair Care'
-                                ? AdaptiveThemeColors.neonCyan(context)
-                                : category == 'Beard Care'
-                                ? AdaptiveThemeColors.sunsetCoral(context)
-                                : category == 'Tools'
-                                ? AdaptiveThemeColors.neonPurple(context)
-                                : AdaptiveThemeColors.neonCyan(context);
-
-                            return Padding(
-                              padding: EdgeInsets.only(right: AiSpacing.sm),
-                              child: _buildCategoryChip(
-                                category,
-                                isSelected,
-                                accentColor,
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Products list
-                Expanded(
-                  child: filteredProducts.isEmpty
-                      ? _buildEmptyState(context)
-                      : Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                            AiSpacing.md,
-                            AiSpacing.sm,
-                            AiSpacing.md,
-                            AiSpacing.md,
-                          ),
-                          child: MasonryGridView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            gridDelegate:
-                                SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: crossAxisCount,
                                 ),
-                            itemCount: filteredProducts.length,
-                            mainAxisSpacing: AiSpacing.md,
-                            crossAxisSpacing: AiSpacing.md,
-                            itemBuilder: (context, index) {
-                              final product = filteredProducts[index];
-                              return _buildProductTile(context, product, index);
-                            },
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: AdaptiveThemeColors.textTertiary(context),
+                              size: 20,
+                            ),
+                            suffixIcon: _searchQuery.isNotEmpty
+                                ? IconButton(
+                                    icon: Icon(
+                                      Icons.clear,
+                                      color: AdaptiveThemeColors.textTertiary(
+                                        context,
+                                      ),
+                                      size: 20,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _searchController.clear();
+                                        _searchQuery = '';
+                                      });
+                                    },
+                                  )
+                                : null,
+                            filled: true,
+                            fillColor: AdaptiveThemeColors.backgroundSecondary(
+                              context,
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: AiSpacing.md,
+                              vertical: AiSpacing.md,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusLarge,
+                              ),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusLarge,
+                              ),
+                              borderSide: BorderSide(
+                                color: AdaptiveThemeColors.borderLight(
+                                  context,
+                                ).withValues(alpha: 0.2),
+                                width: 1,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusLarge,
+                              ),
+                              borderSide: BorderSide(
+                                color: AdaptiveThemeColors.neonCyan(context),
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          cursorColor: AdaptiveThemeColors.neonCyan(context),
+                        ),
+                        SizedBox(height: AiSpacing.md),
+                        // Category chips
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: _categories.map((category) {
+                              final isSelected = _selectedCategory == category;
+                              final Color accentColor = category == 'Hair Care'
+                                  ? AdaptiveThemeColors.neonCyan(context)
+                                  : category == 'Beard Care'
+                                  ? AdaptiveThemeColors.sunsetCoral(context)
+                                  : category == 'Tools'
+                                  ? AdaptiveThemeColors.neonPurple(context)
+                                  : AdaptiveThemeColors.neonCyan(context);
+
+                              return Padding(
+                                padding: EdgeInsets.only(right: AiSpacing.sm),
+                                child: _buildCategoryChip(
+                                  category,
+                                  isSelected,
+                                  accentColor,
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ),
-                ),
-              ],
+                      ],
+                    ),
+                  ),
+                  // Products list: loading, error, or content
+                  Expanded(
+                    child: _buildProductsBody(
+                      context,
+                      state,
+                      filteredProducts,
+                      crossAxisCount,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -298,6 +283,166 @@ class _ProductsViewState extends State<ProductsView> {
             fontSize: 13,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildProductsBody(
+    BuildContext context,
+    ProductsState state,
+    List<Map<String, dynamic>> filteredProducts,
+    int crossAxisCount,
+  ) {
+    if (state is ProductsLoading || state is ProductsInitial) {
+      return _buildProductsLoadingSkeleton(context, crossAxisCount);
+    }
+    if (state is ProductsFailure) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.all(AiSpacing.xl),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: AdaptiveThemeColors.sunsetCoral(context),
+              ),
+              SizedBox(height: AiSpacing.md),
+              Text(
+                'Could not load products',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AdaptiveThemeColors.textPrimary(context),
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: AiSpacing.sm),
+              Text(
+                state.message,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AdaptiveThemeColors.textTertiary(context),
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: AiSpacing.lg),
+              FilledButton.icon(
+                onPressed: () {
+                  context.read<ProductsBloc>().add(const ProductsLoadRequested());
+                },
+                icon: const Icon(Icons.refresh_rounded, size: 20),
+                label: const Text('Retry'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AdaptiveThemeColors.neonCyan(context),
+                  foregroundColor: AdaptiveThemeColors.backgroundDeep(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    if (filteredProducts.isEmpty) {
+      return _buildEmptyState(context);
+    }
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AiSpacing.md,
+        AiSpacing.sm,
+        AiSpacing.md,
+        AiSpacing.md,
+      ),
+      child: MasonryGridView.builder(
+        physics: const BouncingScrollPhysics(),
+        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+        ),
+        itemCount: filteredProducts.length,
+        mainAxisSpacing: AiSpacing.md,
+        crossAxisSpacing: AiSpacing.md,
+        itemBuilder: (context, index) {
+          final product = filteredProducts[index];
+          return _buildProductTile(context, product, index);
+        },
+      ),
+    );
+  }
+
+  /// Skeleton grid matching the shop product layout (same as home page style).
+  Widget _buildProductsLoadingSkeleton(
+    BuildContext context,
+    int crossAxisCount,
+  ) {
+    final baseColor = Colors.white.withValues(alpha: 0.06);
+    final highlightColor = Colors.white.withValues(alpha: 0.14);
+    const skeletonItemCount = 6;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AiSpacing.md,
+        AiSpacing.sm,
+        AiSpacing.md,
+        AiSpacing.md,
+      ),
+      child: MasonryGridView.builder(
+        physics: const BouncingScrollPhysics(),
+        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+        ),
+        itemCount: skeletonItemCount,
+        mainAxisSpacing: AiSpacing.md,
+        crossAxisSpacing: AiSpacing.md,
+        itemBuilder: (context, index) {
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+              color: AdaptiveThemeColors.backgroundDark(context),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final w = constraints.maxWidth;
+                  final imageHeight = w * 1.5; // 2/3 aspect ratio
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ShimmerPlaceholder(
+                        width: w,
+                        height: imageHeight,
+                        baseColor: baseColor,
+                        highlightColor: highlightColor,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(AiSpacing.md),
+                        child: Row(
+                          children: [
+                            ShimmerPlaceholder(
+                              width: 56,
+                              height: 14,
+                              baseColor: baseColor,
+                              highlightColor: highlightColor,
+                            ),
+                            const Spacer(),
+                            ShimmerPlaceholder(
+                              width: 28,
+                              height: 14,
+                              baseColor: baseColor,
+                              highlightColor: highlightColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          );
+        },
       ),
     );
   }
