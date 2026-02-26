@@ -9,6 +9,7 @@ import '../features/profile/domain/usecases/get_profile_usecase.dart';
 import '../features/profile/presentation/bloc/profile_bloc.dart';
 import '../features/profile/presentation/bloc/profile_event.dart';
 import '../features/profile/presentation/bloc/profile_state.dart';
+import '../services/firebase_data_service.dart';
 
 import 'questionnaire_view.dart';
 
@@ -20,13 +21,13 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
-  String _username = 'Loading...';
   String _email = 'Loading...';
+  int _points = 0;
 
   void _updateProfileData(ProfileEntity profile) {
     setState(() {
-      _username = profile.username;
       _email = profile.email;
+      _points = profile.points;
     });
   }
 
@@ -63,6 +64,8 @@ class _ProfileViewState extends State<ProfileView> {
             padding: EdgeInsets.all(AiSpacing.lg),
             children: [
               _buildProfileCard(context),
+              SizedBox(height: AiSpacing.lg),
+              _buildCreditsSection(context),
               SizedBox(height: AiSpacing.lg),
               _buildSectionLabel(context, 'Other settings'),
               SizedBox(height: AiSpacing.sm),
@@ -174,33 +177,87 @@ class _ProfileViewState extends State<ProfileView> {
           ),
           SizedBox(width: AiSpacing.md),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _username,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AdaptiveThemeColors.textPrimary(context),
-                    fontWeight: FontWeight.w700,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: 2),
-                Text(
-                  _email,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AdaptiveThemeColors.textTertiary(context),
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+            child: Text(
+              _email,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AdaptiveThemeColors.textPrimary(context),
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: AdaptiveThemeColors.textTertiary(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCreditsSection(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(AiSpacing.lg),
+      decoration: BoxDecoration(
+        color: AdaptiveThemeColors.surface(context),
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.auto_awesome_rounded,
+                size: 22,
+                color: AdaptiveThemeColors.primary(context),
+              ),
+              SizedBox(width: AiSpacing.sm),
+              Text(
+                'Credits',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AdaptiveThemeColors.textPrimary(context),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: AiSpacing.md),
+          StreamBuilder<int>(
+            stream: FirebaseDataService.watchUserPoints(),
+            builder: (context, snapshot) {
+              final points = snapshot.data ?? _points;
+              return Text(
+                '$points',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: AdaptiveThemeColors.primary(context),
+                  fontWeight: FontWeight.w800,
+                ),
+              );
+            },
+          ),
+          SizedBox(height: AiSpacing.xs),
+          Text(
+            '1 credit per AI generation',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AdaptiveThemeColors.textTertiary(context),
+            ),
+          ),
+          SizedBox(height: AiSpacing.md),
+          _buildSettingsTile(
+            context,
+            icon: Icons.add_circle_outline_rounded,
+            title: 'Get more credits',
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('In-app purchases coming soon.'),
+                ),
+              );
+            },
           ),
         ],
       ),

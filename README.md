@@ -26,6 +26,22 @@ flutter run
 
 Use `flutter run -d <device-id>` to pick a device. Run `flutter doctor` if you have setup issues.
 
+### Run on your iPhone
+
+1. **Connect your iPhone** with a USB cable and tap **Trust** if prompted.
+2. **Unlock the phone** and keep it awake (iOS may not show the device when locked).
+3. From the repo root or from `apps/barbcut`:
+
+   ```bash
+   cd apps/barbcut
+   flutter pub get
+   flutter run -d "iPhone"   # or your device name, e.g. "Ishan’s iPhone"
+   ```
+
+   To see exact device IDs: `flutter devices`, then run e.g. `flutter run -d 00008103-001A...`.
+4. **First time only:** On the iPhone, go to **Settings → General → VPN & Device Management** and trust your developer certificate for the app to open.
+5. If Xcode signing fails, open `apps/barbcut/ios/Runner.xcworkspace` in Xcode, select the **Runner** target → **Signing & Capabilities**, and set your **Team** (your Apple ID).
+
 ## Monorepo scripts (root)
 
 - `npm run dev` – Turborepo dev (if configured for this app)

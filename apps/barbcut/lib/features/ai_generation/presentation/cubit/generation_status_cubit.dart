@@ -28,7 +28,7 @@ class GenerationStatusCubit extends Cubit<GenerationStatusState> {
     _jobSubscription?.cancel();
     emit(GenerationStatusState(
       isGenerating: true,
-      generatedStyleData: {...?initialStyleData, 'jobId': jobId},
+      generatedStyleData: {...initialStyleData, 'jobId': jobId},
     ));
     _jobSubscription = _aiJobRepository.watchJobStatus(jobId).listen(
       (status) {

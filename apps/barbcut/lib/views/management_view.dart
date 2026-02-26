@@ -10,6 +10,7 @@ import '../features/profile/presentation/bloc/profile_bloc.dart';
 import '../features/profile/presentation/bloc/profile_event.dart';
 import '../features/profile/presentation/bloc/profile_state.dart';
 import '../services/onboarding_service.dart';
+import '../services/firebase_data_service.dart';
 
 import 'questionnaire_view.dart';
 
@@ -24,11 +25,7 @@ class _ProfileViewState extends State<ProfileView> {
   String _username = 'Loading...';
   String _email = 'Loading...';
   bool _isEmailVerified = false;
-  String _hairType = '-';
-  String _faceShape = '-';
-  String _preferredLength = '-';
-  String _beardStyle = '-';
-  String _lifestyle = '-';
+  int _points = 0;
 
   @override
   void initState() {
@@ -52,11 +49,7 @@ class _ProfileViewState extends State<ProfileView> {
       if (profile.email.isNotEmpty) {
         _email = profile.email;
       }
-      _hairType = profile.hairType;
-      _faceShape = profile.faceShape;
-      _preferredLength = profile.preferredLength;
-      _beardStyle = profile.hasBeard ? profile.beardStyle : 'None';
-      _lifestyle = profile.lifestyle;
+      _points = profile.points;
     });
   }
 
@@ -93,6 +86,8 @@ class _ProfileViewState extends State<ProfileView> {
             padding: EdgeInsets.all(AiSpacing.lg),
             children: [
               _buildProfileCard(context),
+              SizedBox(height: AiSpacing.lg),
+              _buildCreditsSection(context),
               SizedBox(height: AiSpacing.lg),
               _buildSectionLabel(context, 'Other settings'),
               SizedBox(height: AiSpacing.sm),
@@ -287,41 +282,79 @@ class _ProfileViewState extends State<ProfileView> {
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: AiSpacing.md),
-          Divider(
-            color: AdaptiveThemeColors.borderLight(
-              context,
-            ).withValues(alpha: 0.2),
-          ),
-          SizedBox(height: AiSpacing.sm),
-          _buildProfileDetailRow('Hair type', _hairType),
-          _buildProfileDetailRow('Face shape', _faceShape),
-          _buildProfileDetailRow('Preferred length', _preferredLength),
-          _buildProfileDetailRow('Beard style', _beardStyle),
-          _buildProfileDetailRow('Lifestyle', _lifestyle),
         ],
       ),
     );
   }
 
-  Widget _buildProfileDetailRow(String label, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: AiSpacing.xs),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildCreditsSection(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(AiSpacing.lg),
+      decoration: BoxDecoration(
+        color: AdaptiveThemeColors.surface(context),
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            children: [
+              Icon(
+                Icons.auto_awesome_rounded,
+                size: 22,
+                color: AdaptiveThemeColors.primary(context),
+              ),
+              SizedBox(width: AiSpacing.sm),
+              Text(
+                'Credits',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AdaptiveThemeColors.textPrimary(context),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: AiSpacing.md),
+          StreamBuilder<int>(
+            stream: FirebaseDataService.watchUserPoints(),
+            builder: (context, snapshot) {
+              final points = snapshot.data ?? _points;
+              return Text(
+                '$points',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: AdaptiveThemeColors.primary(context),
+                  fontWeight: FontWeight.w800,
+                ),
+              );
+            },
+          ),
+          SizedBox(height: AiSpacing.xs),
           Text(
-            label,
+            '1 credit per AI generation',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AdaptiveThemeColors.textTertiary(context),
             ),
           ),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AdaptiveThemeColors.textPrimary(context),
-              fontWeight: FontWeight.w600,
-            ),
+          SizedBox(height: AiSpacing.md),
+          _buildSettingsTile(
+            context,
+            icon: Icons.add_circle_outline_rounded,
+            title: 'Get more credits',
+            onTap: () {
+              // TODO: Navigate to in-app purchase (RevenueCat) when integrated
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('In-app purchases coming soon.'),
+                ),
+              );
+            },
           ),
         ],
       ),

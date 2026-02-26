@@ -13,6 +13,8 @@ class ProfileEntity {
   final String beardStyle;
   final String lifestyle;
   final List<String> photoPaths;
+  /// Credits/points for AI generations (read-only from Firestore users doc).
+  final int points;
 
   const ProfileEntity({
     required this.userId,
@@ -29,5 +31,6 @@ class ProfileEntity {
     this.beardStyle = 'None',
     this.lifestyle = 'Active',
     this.photoPaths = const [],
+    this.points = 0,
   });
 }

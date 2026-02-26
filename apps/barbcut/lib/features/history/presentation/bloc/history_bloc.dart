@@ -69,14 +69,14 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
 
 class _HistoryStreamUpdated extends HistoryEvent {
   final List<HistoryEntity> history;
-  _HistoryStreamUpdated(this.history);
+  const _HistoryStreamUpdated(this.history);
   @override
   List<Object> get props => [history];
 }
 
 class _HistoryStreamError extends HistoryEvent {
   final String message;
-  _HistoryStreamError(this.message);
+  const _HistoryStreamError(this.message);
   @override
   List<Object> get props => [message];
 }

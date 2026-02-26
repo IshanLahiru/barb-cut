@@ -32,8 +32,14 @@ npm run copy-assets
 # 3. Deploy functions (includes pre-deploy asset copy)
 npm run deploy
 
-# 4. Run migrations on production
-npm run migrate:prod up
+# 4. Run migrations on production (use one of these)
+npm run migrate:prod:up
+# Or pass the command explicitly:
+npm run migrate:prod -- up
+
+# Check migration status
+npm run migrate:prod:status
+# Or: npm run migrate:prod -- status
 ```
 
 ## File Management
@@ -122,7 +128,7 @@ npm run copy-assets
 npm run deploy
 
 # Run migration
-npm run migrate:prod up
+npm run migrate:prod:up
 ```
 
 ## Migration Features
@@ -160,7 +166,9 @@ npm run migrate:down  # Removes styles and deletes uploaded images
 | `npm run migrate:up` | Run pending migrations (emulator) |
 | `npm run migrate:down` | Rollback last migration (emulator) |
 | `npm run migrate:status` | Check migration version |
-| `npm run migrate:prod` | Run migrations in production |
+| `npm run migrate:prod:up` | Run pending migrations (production) |
+| `npm run migrate:prod -- up` | Same, passing command explicitly |
+| `npm run migrate:prod:status` | Check migration status (production) |
 
 ## Production Deployment Checklist
 
@@ -168,7 +176,7 @@ npm run migrate:down  # Removes styles and deletes uploaded images
 - [ ] **Assets**: Run `npm run copy-assets` (or use `predeploy`)
 - [ ] **Build**: Run `npm run build`
 - [ ] **Deploy Functions**: `npm run deploy`
-- [ ] **Run Migrations**: `npm run migrate:prod up`
+- [ ] **Run Migrations**: `npm run migrate:prod:up` (from `firebase/functions` or `firebase`)
 - [ ] **Verify**: Check Firestore and Storage in Firebase Console
 - [ ] **Test**: Verify URLs are accessible
 

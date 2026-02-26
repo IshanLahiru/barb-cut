@@ -123,9 +123,12 @@ class FirebaseDataService {
     return resolved;
   }
 
-  /// Fetch haircuts from Firestore
+  /// Fetch haircuts from Firestore.
+  /// When [resolveImageUrls] is false (default), returns raw data so the UI can
+  /// resolve Storage paths lazily (FirebaseImage). This makes initial load fast.
   static Future<List<Map<String, dynamic>>> fetchHaircuts({
     bool forceRefresh = false,
+    bool resolveImageUrls = false,
   }) async {
     if (_cachedHaircuts != null && !forceRefresh) {
       developer.log(
@@ -144,23 +147,15 @@ class FirebaseDataService {
       final rawHaircuts = snapshot.docs
           .map((doc) => {'id': doc.id, ...doc.data()})
           .toList();
-      _cachedHaircuts = await Future.wait(rawHaircuts.map(_resolveStyleImages));
+      if (resolveImageUrls) {
+        _cachedHaircuts = await Future.wait(rawHaircuts.map(_resolveStyleImages));
+      } else {
+        _cachedHaircuts = rawHaircuts;
+      }
       developer.log(
         '✅ Fetched ${_cachedHaircuts!.length} haircuts from Firestore',
         name: 'FirebaseData',
       );
-
-      // Log image URLs from first item for debugging
-      if (_cachedHaircuts!.isNotEmpty) {
-        final firstItem = _cachedHaircuts!.first;
-        final imageUrl =
-            firstItem['image'] ?? firstItem['images']?['front'] ?? 'N/A';
-        developer.log(
-          '   Sample image URL: ${imageUrl.toString().substring(0, 80)}...',
-          name: 'FirebaseData',
-        );
-      }
-
       return _cachedHaircuts!;
     } catch (e) {
       developer.log(
@@ -173,9 +168,12 @@ class FirebaseDataService {
     }
   }
 
-  /// Fetch beard styles from Firestore
+  /// Fetch beard styles from Firestore.
+  /// When [resolveImageUrls] is false (default), returns raw data so the UI can
+  /// resolve Storage paths lazily (FirebaseImage). This makes initial load fast.
   static Future<List<Map<String, dynamic>>> fetchBeardStyles({
     bool forceRefresh = false,
+    bool resolveImageUrls = false,
   }) async {
     if (_cachedBeardStyles != null && !forceRefresh) {
       return _cachedBeardStyles!;
@@ -190,9 +188,13 @@ class FirebaseDataService {
       final rawBeards = snapshot.docs
           .map((doc) => {'id': doc.id, ...doc.data()})
           .toList();
-      _cachedBeardStyles = await Future.wait(
-        rawBeards.map(_resolveStyleImages),
-      );
+      if (resolveImageUrls) {
+        _cachedBeardStyles = await Future.wait(
+          rawBeards.map(_resolveStyleImages),
+        );
+      } else {
+        _cachedBeardStyles = rawBeards;
+      }
       developer.log(
         '✓ Fetched ${_cachedBeardStyles!.length} beard styles',
         name: 'FirebaseData',
@@ -259,22 +261,24 @@ class FirebaseDataService {
         return _cachedProfile!;
       }
 
-      final snapshot = await _firestore
+      final profileSnap = await _firestore
           .collection('userProfiles')
           .doc(user.uid)
           .get();
 
-      if (snapshot.exists) {
-        _cachedProfile = snapshot.data()!;
+      final usersSnap = await _firestore.collection('users').doc(user.uid).get();
+      final points = (usersSnap.data()?['points'] as num?)?.toInt() ?? 0;
+
+      if (profileSnap.exists) {
+        _cachedProfile = {...profileSnap.data()!, 'points': points};
         developer.log('✓ Fetched profile data', name: 'FirebaseData');
         return _cachedProfile!;
       } else {
-        // Return default profile if not found
         developer.log(
           '⚠ Profile not found, using defaults',
           name: 'FirebaseData',
         );
-        _cachedProfile = _buildDefaultProfile(userId: user.uid);
+        _cachedProfile = _buildDefaultProfile(userId: user.uid)..['points'] = points;
         return _cachedProfile!;
       }
     } catch (e) {
@@ -304,7 +308,17 @@ class FirebaseDataService {
       'beardStyle': 'None',
       'lifestyle': 'Active',
       'photoPaths': [],
+      'points': 0,
     };
+  }
+
+  /// Stream of current user's points (from users/{uid}.points). Use for display only.
+  static Stream<int> watchUserPoints() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return Stream.value(0);
+    return _firestore.collection('users').doc(uid).snapshots().map((s) {
+      return (s.data()?['points'] as num?)?.toInt() ?? 0;
+    });
   }
 
   /// Fetch history from Firestore
