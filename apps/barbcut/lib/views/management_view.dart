@@ -5,9 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import '../controllers/theme_controller.dart';
 import '../theme/theme.dart';
-import '../core/di/service_locator.dart';
 import '../features/profile/domain/entities/profile_entity.dart';
-import '../features/profile/domain/usecases/get_profile_usecase.dart';
 import '../features/profile/presentation/bloc/profile_bloc.dart';
 import '../features/profile/presentation/bloc/profile_event.dart';
 import '../features/profile/presentation/bloc/profile_state.dart';
@@ -205,11 +203,7 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          ProfileBloc(getProfileUseCase: getIt<GetProfileUseCase>())
-            ..add(const ProfileLoadRequested()),
-      child: BlocListener<ProfileBloc, ProfileState>(
+    return BlocListener<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileLoaded) {
             _updateProfileData(state.profile);
@@ -349,7 +343,6 @@ class _ProfileViewState extends State<ProfileView> {
             ],
           ),
         ),
-      ),
     );
   }
 

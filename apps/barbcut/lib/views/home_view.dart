@@ -53,8 +53,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   int _selectedHaircutIndex = 0;
   int _selectedBeardIndex = 0;
   int _selectedAngleIndex = 0;
-  final ValueNotifier<String> _panelSearchQueryNotifier =
-      ValueNotifier<String>('');
+  final ValueNotifier<String> _panelSearchQueryNotifier = ValueNotifier<String>(
+    '',
+  );
   double _panelSlidePosition = 0.0;
   final ValueNotifier<double> _panelSlidePositionNotifier =
       ValueNotifier<double>(0.0);
@@ -192,8 +193,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               showFavouriteIcon: true,
               onFavouriteToggle: () {
                 context.read<HomeBloc>().add(
-                      FavouriteToggled(item: item, styleType: styleType),
-                    );
+                  FavouriteToggled(item: item, styleType: styleType),
+                );
               },
               styleType: styleType,
             );
@@ -247,15 +248,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       // Fallback to any of the side images if front is missing.
       final left = images['left'] ?? images['left_side'] ?? images['leftSide'];
       if (left != null && left.toString().isNotEmpty) {
-        final largeLeft =
-            _buildSizedImageUrl(left.toString(), 'large');
+        final largeLeft = _buildSizedImageUrl(left.toString(), 'large');
         return <String>[largeLeft];
       }
       final right =
           images['right'] ?? images['right_side'] ?? images['rightSide'];
       if (right != null && right.toString().isNotEmpty) {
-        final largeRight =
-            _buildSizedImageUrl(right.toString(), 'large');
+        final largeRight = _buildSizedImageUrl(right.toString(), 'large');
         return <String>[largeRight];
       }
       final back = images['back']?.toString();
@@ -1247,23 +1246,30 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     _setPanelLevel(_panelLevel2);
 
     final String tabType = _getCurrentTabType(context);
-    final Map<String, dynamic>? selectedStyle =
-        _getSelectedStyleForMainContent(context);
+    final Map<String, dynamic>? selectedStyle = _getSelectedStyleForMainContent(
+      context,
+    );
 
     if (selectedStyle != null) {
       final List<String> images = _extractImages(selectedStyle);
       final String styleImage = images.isNotEmpty ? images[0] : '';
 
-      final bool hasHaircut = _confirmedHaircutIndex != null || (tabType == 'hair' && _haircuts.isNotEmpty);
-      final bool hasBeard = _confirmedBeardIndex != null || (tabType == 'beard' && _beardStyles.isNotEmpty);
+      final bool hasHaircut =
+          _confirmedHaircutIndex != null ||
+          (tabType == 'hair' && _haircuts.isNotEmpty);
+      final bool hasBeard =
+          _confirmedBeardIndex != null ||
+          (tabType == 'beard' && _beardStyles.isNotEmpty);
       String jobId = '';
       try {
         jobId = await AiGenerationService.createGenerationJob(
           haircutId: hasHaircut
-              ? _haircuts[_confirmedHaircutIndex ?? _selectedHaircutIndex]['id']?.toString()
+              ? _haircuts[_confirmedHaircutIndex ?? _selectedHaircutIndex]['id']
+                    ?.toString()
               : null,
           beardId: hasBeard
-              ? _beardStyles[_confirmedBeardIndex ?? _selectedBeardIndex]['id']?.toString()
+              ? _beardStyles[_confirmedBeardIndex ?? _selectedBeardIndex]['id']
+                    ?.toString()
               : null,
         );
       } catch (e) {
@@ -1275,11 +1281,15 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               (e.message?.toLowerCase().contains('insufficient') ?? false)) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Insufficient credits. Get more in Settings or purchase more.'),
+                content: Text(
+                  'Insufficient credits. Get more in Settings or purchase more.',
+                ),
               ),
             );
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Error: $e')));
           }
         }
         return;
@@ -1287,10 +1297,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
       final String haircutName = _confirmedHaircutIndex != null
           ? _haircuts[_confirmedHaircutIndex!]['name']?.toString() ?? 'N/A'
-          : (tabType == 'hair' ? selectedStyle['name']?.toString() ?? 'Haircut' : 'N/A');
+          : (tabType == 'hair'
+                ? selectedStyle['name']?.toString() ?? 'Haircut'
+                : 'N/A');
       final String beardName = _confirmedBeardIndex != null
           ? _beardStyles[_confirmedBeardIndex!]['name']?.toString() ?? 'N/A'
-          : (tabType == 'beard' ? selectedStyle['name']?.toString() ?? 'Beard' : 'N/A');
+          : (tabType == 'beard'
+                ? selectedStyle['name']?.toString() ?? 'Beard'
+                : 'N/A');
       final styleData = {
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
         'image': styleImage,
@@ -1302,7 +1316,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       };
 
       if (jobId.isNotEmpty) {
-        context.read<GenerationStatusCubit>().startWatchingJob(jobId, styleData);
+        context.read<GenerationStatusCubit>().startWatchingJob(
+          jobId,
+          styleData,
+        );
       } else {
         setState(() => _isGenerating = false);
         _markGenerationFailedSnackbar('Unable to create generation job.');
@@ -1314,7 +1331,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   void _markGenerationFailedSnackbar(String message) {
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -1359,7 +1378,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('Your look is ready. Check History to view it.'),
+                  content: const Text(
+                    'Your look is ready. Check History to view it.',
+                  ),
                   action: SnackBarAction(
                     label: 'History',
                     onPressed: widget.onNavigateToHistory ?? () {},
@@ -1374,76 +1395,80 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 _confirmedHaircutIndex = null;
                 _confirmedBeardIndex = null;
               });
-              final msg = state.generatedStyleData!['errorMessage']?.toString() ?? 'Generation failed.';
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+              final msg =
+                  state.generatedStyleData!['errorMessage']?.toString() ??
+                  'Generation failed.';
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(msg)));
             }
           }
         }
       },
       child: BlocProvider<HomeBloc>(
-      create: (_) => HomeBloc(
-        getHaircutsUseCase: getIt<GetHaircutsUseCase>(),
-        getBeardStylesUseCase: getIt<GetBeardStylesUseCase>(),
-        getFavouritesUseCase: getIt<GetFavouritesUseCase>(),
-        addFavouriteUseCase: getIt<AddFavouriteUseCase>(),
-        removeFavouriteUseCase: getIt<RemoveFavouriteUseCase>(),
-        authRepository: getIt<AuthRepository>(),
-        tabCategoriesDataSource: getIt<TabCategoriesRemoteDataSource>(),
-      )..add(const HomeLoadRequested()),
-      child: BlocListener<HomeBloc, HomeState>(
-        listener: (context, state) {
-          if (state is HomeLoaded) {
-            final haircuts = state.haircutMaps;
-            final beardStyles = state.beardStyleMaps;
-            setState(() {
-              _haircutEntities = state.haircuts;
-              _beardEntities = state.beardStyles;
-              _haircuts = haircuts;
-              _beardStyles = beardStyles;
-              _favouriteIds = state.favouriteIds;
-              _favouritesLoading = state.favouritesLoading;
-              _favouritesError = state.favouritesError;
-              _selectedHaircutIndex = _haircuts.isNotEmpty
-                  ? _selectedHaircutIndex.clamp(0, _haircuts.length - 1)
-                  : 0;
-              _selectedBeardIndex = _beardStyles.isNotEmpty
-                  ? _selectedBeardIndex.clamp(0, _beardStyles.length - 1)
-                  : 0;
-              if (_confirmedHaircutIndex != null &&
-                  _confirmedHaircutIndex! >= _haircuts.length) {
-                _confirmedHaircutIndex = null;
-              }
-              if (_confirmedBeardIndex != null &&
-                  _confirmedBeardIndex! >= _beardStyles.length) {
-                _confirmedBeardIndex = null;
-              }
-              _selectedAngleIndex = 0;
-              _regenerateHeights();
-            });
-          }
-          if (state is HomeFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AdaptiveThemeColors.error(context),
-              ),
-            );
-          }
-        },
-        child: BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (prev, curr) =>
-              prev.runtimeType != curr.runtimeType ||
-              curr is HomeLoading ||
-              curr is HomeInitial,
-          builder: (context, state) {
-            if (state is HomeLoading || state is HomeInitial) {
-              return _buildScaffoldWithLoadingBody();
+        create: (_) => HomeBloc(
+          getHaircutsUseCase: getIt<GetHaircutsUseCase>(),
+          getBeardStylesUseCase: getIt<GetBeardStylesUseCase>(),
+          getFavouritesUseCase: getIt<GetFavouritesUseCase>(),
+          addFavouriteUseCase: getIt<AddFavouriteUseCase>(),
+          removeFavouriteUseCase: getIt<RemoveFavouriteUseCase>(),
+          authRepository: getIt<AuthRepository>(),
+          tabCategoriesDataSource: getIt<TabCategoriesRemoteDataSource>(),
+        )..add(const HomeLoadRequested()),
+        child: BlocListener<HomeBloc, HomeState>(
+          listener: (context, state) {
+            if (state is HomeLoaded) {
+              final haircuts = state.haircutMaps;
+              final beardStyles = state.beardStyleMaps;
+              setState(() {
+                _haircutEntities = state.haircuts;
+                _beardEntities = state.beardStyles;
+                _haircuts = haircuts;
+                _beardStyles = beardStyles;
+                _favouriteIds = state.favouriteIds;
+                _favouritesLoading = state.favouritesLoading;
+                _favouritesError = state.favouritesError;
+                _selectedHaircutIndex = _haircuts.isNotEmpty
+                    ? _selectedHaircutIndex.clamp(0, _haircuts.length - 1)
+                    : 0;
+                _selectedBeardIndex = _beardStyles.isNotEmpty
+                    ? _selectedBeardIndex.clamp(0, _beardStyles.length - 1)
+                    : 0;
+                if (_confirmedHaircutIndex != null &&
+                    _confirmedHaircutIndex! >= _haircuts.length) {
+                  _confirmedHaircutIndex = null;
+                }
+                if (_confirmedBeardIndex != null &&
+                    _confirmedBeardIndex! >= _beardStyles.length) {
+                  _confirmedBeardIndex = null;
+                }
+                _selectedAngleIndex = 0;
+                _regenerateHeights();
+              });
             }
-            return _buildScaffoldDynamicTabs();
+            if (state is HomeFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: AdaptiveThemeColors.error(context),
+                ),
+              );
+            }
           },
+          child: BlocBuilder<HomeBloc, HomeState>(
+            buildWhen: (prev, curr) =>
+                prev.runtimeType != curr.runtimeType ||
+                curr is HomeLoading ||
+                curr is HomeInitial,
+            builder: (context, state) {
+              if (state is HomeLoading || state is HomeInitial) {
+                return _buildScaffoldWithLoadingBody();
+              }
+              return _buildScaffoldDynamicTabs();
+            },
+          ),
         ),
       ),
-    ),
     );
   }
 
@@ -1474,7 +1499,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget _buildHomeLoadingAnimation() {
     final media = MediaQuery.of(context);
     final contentWidth = media.size.width - 2 * AiSpacing.lg;
-    final carouselHeight = (media.size.height -
+    final carouselHeight =
+        (media.size.height -
             media.padding.top -
             kBottomNavigationBarHeight -
             22) *
@@ -1488,9 +1514,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final double slideWidth = contentWidth * viewportFraction;
     final double peekWidth = (contentWidth - slideWidth) / 2;
     final double slideHorizontalPadding = peekWidth;
-    const double slideGap = AiSpacing.sm * 2; // margin left + margin right between adjacent cards
-    final double peekCardWidth = peekWidth - slideGap; // peek minus one gap so total = contentWidth
-    final double peekCardHeight = cardHeight * 0.88; // side slides slightly shorter (enlargeCenterPage effect)
+    const double slideGap =
+        AiSpacing.sm * 2; // margin left + margin right between adjacent cards
+    final double peekCardWidth =
+        peekWidth - slideGap; // peek minus one gap so total = contentWidth
+    final double peekCardHeight =
+        cardHeight *
+        0.88; // side slides slightly shorter (enlargeCenterPage effect)
 
     // Dark skeleton colors: subtle grey so shimmer reads clearly
     final baseColor = Colors.white.withValues(alpha: 0.06);
@@ -1617,8 +1647,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 Row(
                   children: [
                     ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(AiSpacing.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        AiSpacing.radiusMedium,
+                      ),
                       child: ShimmerPlaceholder(
                         width: 72,
                         height: 28,
@@ -1628,8 +1659,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     ),
                     SizedBox(width: 8),
                     ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(AiSpacing.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        AiSpacing.radiusMedium,
+                      ),
                       child: ShimmerPlaceholder(
                         width: 64,
                         height: 28,
@@ -1639,8 +1671,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     ),
                     SizedBox(width: 8),
                     ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(AiSpacing.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        AiSpacing.radiusMedium,
+                      ),
                       child: ShimmerPlaceholder(
                         width: 80,
                         height: 28,
@@ -1652,8 +1685,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 ),
                 SizedBox(height: AiSpacing.xl),
                 ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(AiSpacing.radiusMedium),
+                  borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
                   child: ShimmerPlaceholder(
                     width: slideWidth,
                     height: 48,
@@ -1737,7 +1769,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         final String currentTabType = _getCurrentTabType(context);
         final Map<String, dynamic>? selectedStyle =
             _getSelectedStyleForMainContent(context);
-        final bool isStyleTab = currentTabType == 'hair' || currentTabType == 'beard';
+        final bool isStyleTab =
+            currentTabType == 'hair' || currentTabType == 'beard';
         final List<String> carouselImages = _extractImages(selectedStyle);
         final List<String> activeImages = carouselImages.isNotEmpty
             ? carouselImages
@@ -1805,135 +1838,135 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     SizedBox(height: carouselHeight * 0.35),
                     _buildHomeEmptyState(carouselHeight),
                   ] else ...[
-                  // Style name: starts at left edge of slide, similar spacing above and below
-                  SizedBox(
-                    height: headerAreaHeight,
-                    width: double.infinity,
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        slideHorizontalPadding,
-                        nameTopPadding,
-                        slideHorizontalPadding,
-                        nameBottomPadding,
-                      ),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          selectedStyle['name']?.toString() ?? '',
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(
-                                color: AdaptiveThemeColors.textPrimary(
-                                  context,
+                    // Style name: starts at left edge of slide, similar spacing above and below
+                    SizedBox(
+                      height: headerAreaHeight,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          slideHorizontalPadding,
+                          nameTopPadding,
+                          slideHorizontalPadding,
+                          nameBottomPadding,
+                        ),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            selectedStyle['name']?.toString() ?? '',
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(
+                                  color: AdaptiveThemeColors.textPrimary(
+                                    context,
+                                  ),
+                                  fontWeight: FontWeight.w800,
                                 ),
-                                fontWeight: FontWeight.w800,
-                              ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: carouselHeight,
-                    child: RepaintBoundary(
-                      child: Stack(
-                        children: [
-                          FlutterCarousel(
-                            key: ValueKey(
-                              'style-carousel-$currentTabType-${isStyleTab && currentTabType == 'hair' ? _selectedHaircutIndex : _selectedBeardIndex}',
-                            ),
-                            options: CarouselOptions(
-                              height: carouselHeight,
-                              viewportFraction: (constraints.maxWidth < 360)
-                                  ? 0.88
-                                  : (constraints.maxWidth < 600 ? 0.8 : 0.7),
-                              enlargeCenterPage: true,
-                              enableInfiniteScroll: false,
-                              autoPlay: false,
-                              showIndicator: false,
-                              onPageChanged: (index, reason) {
-                                setState(() {
-                                  _selectedAngleIndex = index;
-                                });
-                              },
-                            ),
-                            items: [
-                              // Image slides (n)
-                              ...activeImages.asMap().entries.map((entry) {
-                                final int itemIndex = entry.key;
-                                final String imageUrl = entry.value;
-                                final Color accentColor =
-                                    AdaptiveThemeColors.neonCyan(context);
+                    SizedBox(
+                      height: carouselHeight,
+                      child: RepaintBoundary(
+                        child: Stack(
+                          children: [
+                            FlutterCarousel(
+                              key: ValueKey(
+                                'style-carousel-$currentTabType-${isStyleTab && currentTabType == 'hair' ? _selectedHaircutIndex : _selectedBeardIndex}',
+                              ),
+                              options: CarouselOptions(
+                                height: carouselHeight,
+                                viewportFraction: (constraints.maxWidth < 360)
+                                    ? 0.88
+                                    : (constraints.maxWidth < 600 ? 0.8 : 0.7),
+                                enlargeCenterPage: true,
+                                enableInfiniteScroll: false,
+                                autoPlay: false,
+                                showIndicator: false,
+                                onPageChanged: (index, reason) {
+                                  setState(() {
+                                    _selectedAngleIndex = index;
+                                  });
+                                },
+                              ),
+                              items: [
+                                // Image slides (n)
+                                ...activeImages.asMap().entries.map((entry) {
+                                  final int itemIndex = entry.key;
+                                  final String imageUrl = entry.value;
+                                  final Color accentColor =
+                                      AdaptiveThemeColors.neonCyan(context);
 
-                                return Align(
-                                  alignment: Alignment.center,
-                                  child: _buildCarouselCard(
-                                    imageUrl: imageUrl,
-                                    title: '',
-                                    accentColor: accentColor,
-                                    itemIndex: itemIndex,
-                                    iconSize: iconSize,
-                                    allImages: activeImages,
-                                  ),
-                                );
-                              }),
-                            ],
-                          ),
-                        ],
+                                  return Align(
+                                    alignment: Alignment.center,
+                                    child: _buildCarouselCard(
+                                      imageUrl: imageUrl,
+                                      title: '',
+                                      accentColor: accentColor,
+                                      itemIndex: itemIndex,
+                                      iconSize: iconSize,
+                                      allImages: activeImages,
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 2),
-                  // Carousel indicators — smooth transition when changing angle
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(activeImages.length, (index) {
-                        final isActive = _selectedAngleIndex == index;
-                        final accent = AdaptiveThemeColors.neonCyan(context);
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 220),
-                            curve: Curves.easeOutCubic,
-                            width: isActive ? 10 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isActive
-                                  ? accent
-                                  : Colors.white.withValues(alpha: 0.4),
-                              boxShadow: isActive
-                                  ? [
-                                      BoxShadow(
-                                        color: accent.withValues(alpha: 0.5),
-                                        blurRadius: 4,
-                                        spreadRadius: 0,
-                                      ),
-                                    ]
-                                  : null,
+                    SizedBox(height: 2),
+                    // Carousel indicators — smooth transition when changing angle
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(activeImages.length, (index) {
+                          final isActive = _selectedAngleIndex == index;
+                          final accent = AdaptiveThemeColors.neonCyan(context);
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 220),
+                              curve: Curves.easeOutCubic,
+                              width: isActive ? 10 : 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: isActive
+                                    ? accent
+                                    : Colors.white.withValues(alpha: 0.4),
+                                boxShadow: isActive
+                                    ? [
+                                        BoxShadow(
+                                          color: accent.withValues(alpha: 0.5),
+                                          blurRadius: 4,
+                                          spreadRadius: 0,
+                                        ),
+                                      ]
+                                    : null,
+                              ),
                             ),
-                          ),
-                        );
-                      }),
+                          );
+                        }),
+                      ),
                     ),
-                  ),
-                  if (_isGenerating) ...[
+                    if (_isGenerating) ...[
+                      SizedBox(height: AiSpacing.md),
+                      if (_activeJobStatus == 'error')
+                        GenerationErrorCard(
+                          errorMessage: _activeJobError,
+                          onRetry: _startGeneration,
+                        )
+                      else
+                        _buildGenerationScheduledCard(selectedStyle),
+                    ],
                     SizedBox(height: AiSpacing.md),
-                    if (_activeJobStatus == 'error')
-                      GenerationErrorCard(
-                        errorMessage: _activeJobError,
-                        onRetry: _startGeneration,
-                      )
-                    else
-                      _buildGenerationScheduledCard(selectedStyle),
-                  ],
-                  SizedBox(height: AiSpacing.md),
-                  // Main section: details, face shapes, maintenance tips (scrolls into view; panel retracts on scroll)
-                  _buildMainSection(
-                    selectedStyle,
-                    slideHorizontalPadding,
-                    isHaircut: currentTabType == 'hair',
-                  ),
+                    // Main section: details, face shapes, maintenance tips (scrolls into view; panel retracts on scroll)
+                    _buildMainSection(
+                      selectedStyle,
+                      slideHorizontalPadding,
+                      isHaircut: currentTabType == 'hair',
+                    ),
                   ],
                 ],
               ),
@@ -1970,17 +2003,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             Text(
               'Swipe up to choose a style',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: textPrimary,
-                    fontWeight: FontWeight.w700,
-                  ),
+                color: textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: AiSpacing.sm),
             Text(
               'Pick a haircut or beard style from the panel to preview it here',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: textSecondary),
               textAlign: TextAlign.center,
             ),
           ],
@@ -2247,8 +2280,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     fit: BoxFit.cover,
                     enableLazyLoading: true,
                     loadingWidget: ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(AiSpacing.radiusLarge),
+                      borderRadius: BorderRadius.circular(
+                        AiSpacing.radiusLarge,
+                      ),
                       child: ShimmerPlaceholder(
                         baseColor: accentColor.withValues(alpha: 0.12),
                         highlightColor: accentColor.withValues(alpha: 0.28),
@@ -2458,17 +2492,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             Text(
               'Styles didn\'t load',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AdaptiveThemeColors.textPrimary(context),
-                    fontWeight: FontWeight.w700,
-                  ),
+                color: AdaptiveThemeColors.textPrimary(context),
+                fontWeight: FontWeight.w700,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AiSpacing.sm),
             Text(
               message,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AdaptiveThemeColors.textSecondary(context),
-                  ),
+                color: AdaptiveThemeColors.textSecondary(context),
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AiSpacing.xl),
@@ -2494,9 +2528,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required List<TabCategoryEntity> categories,
     required Widget Function() contentBuilder,
   }) {
-    final tabs = categories
-        .map((c) => Tab(text: c.title))
-        .toList();
+    final tabs = categories.map((c) => Tab(text: c.title)).toList();
     if (_tabController == null || _tabController!.length != tabs.length) {
       _tabController?.dispose();
       _tabController = TabController(length: tabs.length, vsync: this);
@@ -2559,13 +2591,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 isScrollable: true,
                 tabs: tabs,
                 labelColor: AdaptiveThemeColors.neonCyan(context),
-                unselectedLabelColor: AdaptiveThemeColors.textSecondary(context),
-                labelStyle: Theme.of(context).textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w800, fontSize: 16),
-                unselectedLabelStyle: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w500),
+                unselectedLabelColor: AdaptiveThemeColors.textSecondary(
+                  context,
+                ),
+                labelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                ),
+                unselectedLabelStyle: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
                 indicatorSize: TabBarIndicatorSize.label,
                 indicator: UnderlineTabIndicator(
                   borderSide: BorderSide(
@@ -2605,7 +2640,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         if (state is HomeFailure) {
           return _buildPanelWithTabs(
             categories: TabCategoryEntity.defaultPanelTabs,
-            contentBuilder: () => _buildPanelFailureContent(context, state.message),
+            contentBuilder: () =>
+                _buildPanelFailureContent(context, state.message),
           );
         }
         if (state is! HomeLoaded) {
@@ -2617,12 +2653,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             ? state.tabCategories
             : TabCategoryEntity.defaultPanelTabs;
 
-        final tabs = categories
-            .map((c) => Tab(text: c.title))
-            .toList();
-        final tabTypes = categories
-            .map((c) => c.type)
-            .toList();
+        final tabs = categories.map((c) => Tab(text: c.title)).toList();
+        final tabTypes = categories.map((c) => c.type).toList();
 
         // (Re)create TabController if needed
         if (_tabController == null || _tabController!.length != tabs.length) {
@@ -2773,12 +2805,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                   },
                                   textInputAction: TextInputAction.search,
                                   keyboardAppearance: Brightness.dark,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
+                                  style: Theme.of(context).textTheme.bodyMedium
                                       ?.copyWith(
-                                        color:
-                                            AdaptiveThemeColors.textPrimary(
+                                        color: AdaptiveThemeColors.textPrimary(
                                           context,
                                         ),
                                       ),
@@ -2790,13 +2819,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                         ?.copyWith(
                                           color:
                                               AdaptiveThemeColors.textTertiary(
-                                            context,
-                                          ),
+                                                context,
+                                              ),
                                         ),
                                     prefixIcon: Icon(
                                       Icons.search,
-                                      color:
-                                          AdaptiveThemeColors.textTertiary(
+                                      color: AdaptiveThemeColors.textTertiary(
                                         context,
                                       ),
                                       size: 20,
@@ -2805,10 +2833,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                         ? IconButton(
                                             icon: Icon(
                                               Icons.close_rounded,
-                                              color: AdaptiveThemeColors
-                                                  .textSecondary(
-                                                context,
-                                              ),
+                                              color:
+                                                  AdaptiveThemeColors.textSecondary(
+                                                    context,
+                                                  ),
                                               size: 18,
                                             ),
                                             onPressed: () {
@@ -2858,8 +2886,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         case 'beard':
                           return ValueListenableBuilder<String>(
                             valueListenable: _panelSearchQueryNotifier,
-                            builder: (context, _, __) =>
-                                _buildBeardGrid(null),
+                            builder: (context, _, __) => _buildBeardGrid(null),
                           );
                         default:
                           return const Center(child: Text('Unknown tab'));
@@ -2959,8 +2986,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               showFavouriteIcon: true,
               onFavouriteToggle: () {
                 context.read<HomeBloc>().add(
-                      FavouriteToggled(item: item, styleType: 'haircut'),
-                    );
+                  FavouriteToggled(item: item, styleType: 'haircut'),
+                );
               },
               styleType: 'haircut',
             );
@@ -3056,8 +3083,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               showFavouriteIcon: true,
               onFavouriteToggle: () {
                 context.read<HomeBloc>().add(
-                      FavouriteToggled(item: beard, styleType: 'beard'),
-                    );
+                  FavouriteToggled(item: beard, styleType: 'beard'),
+                );
               },
               styleType: 'beard',
             );
@@ -3083,8 +3110,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final isFavourite = _favouriteIds.contains(item['id']);
     final String baseImageUrl = item['image']?.toString() ?? '';
     final String smallImageUrl = _buildSizedImageUrl(baseImageUrl, 'small');
-    final String thumbnailUrl =
-        smallImageUrl.isNotEmpty ? smallImageUrl : baseImageUrl;
+    final String thumbnailUrl = smallImageUrl.isNotEmpty
+        ? smallImageUrl
+        : baseImageUrl;
     return GestureDetector(
       key: key,
       onTap: onTap,
@@ -3131,11 +3159,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         onFavouriteToggle();
                       } else if (styleType != null) {
                         context.read<HomeBloc>().add(
-                              FavouriteToggled(
-                                item: item,
-                                styleType: styleType,
-                              ),
-                            );
+                          FavouriteToggled(item: item, styleType: styleType),
+                        );
                       }
                     },
                     child: Icon(

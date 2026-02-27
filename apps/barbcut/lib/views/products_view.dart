@@ -4,9 +4,7 @@ import '../widgets/firebase_image.dart';
 import '../widgets/lazy_network_image.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../theme/theme.dart';
-import '../core/di/service_locator.dart';
 import '../features/products/domain/entities/product_entity.dart';
-import '../features/products/domain/usecases/get_products_usecase.dart';
 import '../features/products/presentation/bloc/products_bloc.dart';
 import '../features/products/presentation/bloc/products_event.dart';
 import '../features/products/presentation/bloc/products_state.dart';
@@ -72,11 +70,7 @@ class _ProductsViewState extends State<ProductsView> {
       crossAxisCount = 3;
     }
 
-    return BlocProvider(
-      create: (_) =>
-          ProductsBloc(getProductsUseCase: getIt<GetProductsUseCase>())
-            ..add(const ProductsLoadRequested()),
-      child: BlocConsumer<ProductsBloc, ProductsState>(
+    return BlocConsumer<ProductsBloc, ProductsState>(
         listener: (context, state) {
           if (state is ProductsLoaded) {
             setState(() {
@@ -243,7 +237,6 @@ class _ProductsViewState extends State<ProductsView> {
             ),
           );
         },
-      ),
     );
   }
 

@@ -183,7 +183,9 @@ class _HistoryViewState extends State<HistoryView>
                             crossAxisSpacing: AiSpacing.md,
                             itemBuilder: (context, index) {
                               if (isGenerating && index == 0) {
-                                return _buildGeneratingTile(generatedStyle ?? {});
+                                return _buildGeneratingTile(
+                                  generatedStyle ?? {},
+                                );
                               }
                               final historyIndex = isGenerating
                                   ? index - 1

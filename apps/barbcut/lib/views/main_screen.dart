@@ -42,70 +42,70 @@ class _MainScreenState extends State<MainScreen> {
       create: (_) =>
           GenerationStatusCubit(aiJobRepository: getIt<AiJobRepository>()),
       child: Scaffold(
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 260),
-        switchInCurve: Curves.easeOutCubic,
-        switchOutCurve: Curves.easeInCubic,
-        transitionBuilder: (child, animation) {
-          final offsetAnimation = Tween<Offset>(
-            begin: const Offset(0.08, 0),
-            end: Offset.zero,
-          ).animate(animation);
-          return FadeTransition(
-            opacity: animation,
-            child: SlideTransition(position: offsetAnimation, child: child),
-          );
-        },
-        child: KeyedSubtree(
-          key: ValueKey<int>(_selectedIndex),
-          child: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+        body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 260),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            final offsetAnimation = Tween<Offset>(
+              begin: const Offset(0.08, 0),
+              end: Offset.zero,
+            ).animate(animation);
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(position: offsetAnimation, child: child),
+            );
+          },
+          child: KeyedSubtree(
+            key: ValueKey<int>(_selectedIndex),
+            child: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+          ),
         ),
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: AdaptiveThemeColors.backgroundSecondary(context),
-          boxShadow: [
-            BoxShadow(
-              color: AdaptiveThemeColors.neonCyan(
-                context,
-              ).withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, -2),
-            ),
-          ],
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: AdaptiveThemeColors.backgroundSecondary(context),
+            boxShadow: [
+              BoxShadow(
+                color: AdaptiveThemeColors.neonCyan(
+                  context,
+                ).withValues(alpha: 0.1),
+                blurRadius: 8,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: BottomNavigationBar(
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: _buildNavIcon(Icons.home, 0),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: _buildNavIcon(Icons.history, 1),
+                label: 'History',
+              ),
+              BottomNavigationBarItem(
+                icon: _buildNavIcon(Icons.shopping_bag, 2),
+                label: 'Products',
+              ),
+              BottomNavigationBarItem(
+                icon: _buildNavIcon(Icons.manage_accounts, 3),
+                label: 'Manage',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: AdaptiveThemeColors.neonCyan(context),
+            unselectedItemColor: AdaptiveThemeColors.textSecondary(context),
+            backgroundColor: AdaptiveThemeColors.backgroundSecondary(context),
+            onTap: _onItemTapped,
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
+            type: BottomNavigationBarType.fixed,
+            elevation: 0,
+            selectedIconTheme: IconThemeData(size: 28),
+            unselectedIconTheme: IconThemeData(size: 24),
+          ),
         ),
-        child: BottomNavigationBar(
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: _buildNavIcon(Icons.home, 0),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: _buildNavIcon(Icons.history, 1),
-              label: 'History',
-            ),
-            BottomNavigationBarItem(
-              icon: _buildNavIcon(Icons.shopping_bag, 2),
-              label: 'Products',
-            ),
-            BottomNavigationBarItem(
-              icon: _buildNavIcon(Icons.manage_accounts, 3),
-              label: 'Manage',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: AdaptiveThemeColors.neonCyan(context),
-          unselectedItemColor: AdaptiveThemeColors.textSecondary(context),
-          backgroundColor: AdaptiveThemeColors.backgroundSecondary(context),
-          onTap: _onItemTapped,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          type: BottomNavigationBarType.fixed,
-          elevation: 0,
-          selectedIconTheme: IconThemeData(size: 28),
-          unselectedIconTheme: IconThemeData(size: 24),
-        ),
-      ),
       ),
     );
   }
