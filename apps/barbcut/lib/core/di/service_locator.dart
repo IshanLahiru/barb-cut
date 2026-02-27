@@ -16,6 +16,7 @@ import '../../features/favourites/domain/usecases/add_favourite_usecase.dart';
 import '../../features/favourites/domain/usecases/get_favourites_usecase.dart';
 import '../../features/favourites/domain/usecases/remove_favourite_usecase.dart';
 import '../../features/home/data/datasources/home_remote_data_source.dart';
+import '../../features/home/data/datasources/home_local_data_source.dart';
 import '../../features/home/data/datasources/tab_categories_remote_data_source.dart';
 import '../../features/home/data/datasources/tab_categories_remote_data_source_impl.dart';
 import '../../features/home/data/repositories/home_repository_impl.dart';
@@ -102,12 +103,18 @@ void _setupHomeFeature() {
   getIt.registerLazySingleton<HomeRemoteDataSource>(
     () => HomeRemoteDataSourceImpl(),
   );
+  getIt.registerLazySingleton<HomeLocalDataSource>(
+    () => HomeLocalDataSourceImpl(),
+  );
   getIt.registerLazySingleton<TabCategoriesRemoteDataSource>(
     () => TabCategoriesRemoteDataSourceImpl(),
   );
 
   getIt.registerLazySingleton<HomeRepository>(
-    () => HomeRepositoryImpl(remoteDataSource: getIt<HomeRemoteDataSource>()),
+    () => HomeRepositoryImpl(
+      remoteDataSource: getIt<HomeRemoteDataSource>(),
+      localDataSource: getIt<HomeLocalDataSource>(),
+    ),
   );
 
   getIt.registerLazySingleton<GetHaircutsUseCase>(
