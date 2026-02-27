@@ -9,11 +9,13 @@ class StyleInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get userId and favourite state from HomeView if available
-    final homeState = context.findAncestorStateOfType<_HomeViewState>();
-    final userId = homeState?._currentUserId;
-    final isFavourite = homeState?._favouriteIds.contains(style.id) ?? false;
-    final isLoading = homeState?._favouritesLoading ?? false;
+    // Get userId and favourite state from HomeView if available.
+    // Use dynamic here so we don't need to reference the private state type.
+    final dynamic homeState = context.findAncestorStateOfType();
+    final String? userId = homeState?._currentUserId as String?;
+    final bool isFavourite =
+        (homeState?._favouriteIds.contains(style.id) as bool?) ?? false;
+    final bool isLoading = (homeState?._favouritesLoading as bool?) ?? false;
 
     return Container(
       padding: EdgeInsets.all(AiSpacing.lg),
@@ -54,10 +56,17 @@ class StyleInfoSection extends StatelessWidget {
                   onPressed: isLoading
                       ? null
                       : () {
-                          final styleType = style.hasBeard == true
-                              ? 'beard'
-                              : 'haircut';
-                          homeState?._toggleFavourite(style.toMap(), styleType);
+                          final styleType =
+                              style.type == StyleType.beard ? 'beard' : 'haircut';
+                          homeState?._toggleFavourite(<String, dynamic>{
+                            'id': style.id,
+                            'name': style.name,
+                            'description': style.description,
+                            'image': style.imageUrl,
+                            'images': style.images,
+                            'suitableFaceShapes': style.suitableFaceShapes,
+                            'maintenanceTips': style.maintenanceTips,
+                          }, styleType);
                         },
                 ),
             ],

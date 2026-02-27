@@ -41,12 +41,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
-  void _toggleFavourite(Map<String, dynamic> item, String styleType) {
-    context.read<HomeBloc>().add(
-          FavouriteToggled(item: item, styleType: styleType),
-        );
-  }
-
   // Fields
   Set<String> _favouriteIds = {};
   bool _favouritesLoading = false;
@@ -82,6 +76,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   // Methods
   Widget _buildRecentGrid(ScrollController? scrollController) {
+    // TODO: Backend-backed recents can be implemented here by
+    // loading a user-specific recent list and rendering it similarly
+    // to the favourites grid. For now, show a friendly placeholder.
     return Center(
       child: Text(
         'Recently used haircuts and beard styles will appear here.',
@@ -193,7 +190,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               height: 220,
               onTap: () {},
               showFavouriteIcon: true,
-              onFavouriteToggle: () => _toggleFavourite(item, styleType),
+              onFavouriteToggle: () {
+                context.read<HomeBloc>().add(
+                      FavouriteToggled(item: item, styleType: styleType),
+                    );
+              },
+              styleType: styleType,
             );
           },
         ),
@@ -224,30 +226,77 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     return null;
   }
 
+  /// Extract images for the hero / swipe-up view.
+  /// Only returns the *primary* (front) image so we don't
+  /// eagerly load all angles when the user opens a style.
   List<String> _extractImages(Map<String, dynamic>? style) {
     final images = style?['images'];
-    if (images is List) {
-      return images.map((value) => value.toString()).toList();
+    if (images is List && images.isNotEmpty) {
+      // Use only the first image in the list (front/primary).
+      final primary = images.first.toString();
+      final largePrimary = _buildSizedImageUrl(primary, 'large');
+      return <String>[largePrimary];
     }
     if (images is Map) {
-      final List<String> imageList = [];
+      // Prefer explicit front image if available.
       final front = images['front']?.toString();
+      if (front != null && front.isNotEmpty) {
+        final largeFront = _buildSizedImageUrl(front, 'large');
+        return <String>[largeFront];
+      }
+      // Fallback to any of the side images if front is missing.
       final left = images['left'] ?? images['left_side'] ?? images['leftSide'];
+      if (left != null && left.toString().isNotEmpty) {
+        final largeLeft =
+            _buildSizedImageUrl(left.toString(), 'large');
+        return <String>[largeLeft];
+      }
       final right =
           images['right'] ?? images['right_side'] ?? images['rightSide'];
-      final back = images['back']?.toString();
-      if (front != null && front.isNotEmpty) imageList.add(front);
-      if (left != null && left.toString().isNotEmpty) {
-        imageList.add(left.toString());
-      }
       if (right != null && right.toString().isNotEmpty) {
-        imageList.add(right.toString());
+        final largeRight =
+            _buildSizedImageUrl(right.toString(), 'large');
+        return <String>[largeRight];
       }
-      if (back != null && back.isNotEmpty) imageList.add(back);
-      if (imageList.isNotEmpty) return imageList;
+      final back = images['back']?.toString();
+      if (back != null && back.isNotEmpty) {
+        final largeBack = _buildSizedImageUrl(back, 'large');
+        return <String>[largeBack];
+      }
     }
     final image = style?['image'];
-    return image != null ? [image.toString()] : <String>[];
+    if (image != null && image.toString().isNotEmpty) {
+      final largeImage = _buildSizedImageUrl(image.toString(), 'large');
+      return <String>[largeImage];
+    }
+    return <String>[];
+  }
+
+  /// Build a sized variant of a storage path or download URL.
+  /// Example: 'haircuts/afro_front.png' -> 'haircuts/afro_front_small.png'.
+  String _buildSizedImageUrl(String urlOrPath, String sizeSuffix) {
+    if (urlOrPath.isEmpty) return urlOrPath;
+
+    // If this looks like a full URL, rewrite only the path segment.
+    try {
+      final uri = Uri.parse(urlOrPath);
+      if (uri.scheme.isNotEmpty && uri.host.isNotEmpty) {
+        final path = uri.path;
+        final dotIndex = path.lastIndexOf('.');
+        final newPath = dotIndex == -1
+            ? '$path\_$sizeSuffix'
+            : '${path.substring(0, dotIndex)}\_$sizeSuffix${path.substring(dotIndex)}';
+        return uri.replace(path: newPath).toString();
+      }
+    } catch (_) {
+      // Fall through to plain string handling if parsing fails.
+    }
+
+    final dotIndex = urlOrPath.lastIndexOf('.');
+    if (dotIndex == -1) {
+      return '${urlOrPath}_$sizeSuffix';
+    }
+    return '${urlOrPath.substring(0, dotIndex)}_$sizeSuffix${urlOrPath.substring(dotIndex)}';
   }
 
   void _regenerateHeights() {
@@ -2393,7 +2442,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildPanelFailureContent(String message) {
+  Widget _buildPanelFailureContent(BuildContext context, String message) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AiSpacing.xl),
@@ -2425,9 +2474,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             const SizedBox(height: AiSpacing.xl),
             FilledButton.icon(
               onPressed: () {
-                BlocProvider.of<HomeBloc>(context).add(
-                  const HomeLoadRequested(),
-                );
+                context.read<HomeBloc>().add(const HomeLoadRequested());
               },
               icon: const Icon(Icons.refresh_rounded, size: 20),
               label: const Text('Retry'),
@@ -2558,7 +2605,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         if (state is HomeFailure) {
           return _buildPanelWithTabs(
             categories: TabCategoryEntity.defaultPanelTabs,
-            contentBuilder: () => _buildPanelFailureContent(state.message),
+            contentBuilder: () => _buildPanelFailureContent(context, state.message),
           );
         }
         if (state is! HomeLoaded) {
@@ -2910,7 +2957,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 });
               },
               showFavouriteIcon: true,
-              onFavouriteToggle: () => _toggleFavourite(item, 'haircut'),
+              onFavouriteToggle: () {
+                context.read<HomeBloc>().add(
+                      FavouriteToggled(item: item, styleType: 'haircut'),
+                    );
+              },
+              styleType: 'haircut',
             );
           },
         ),
@@ -3001,6 +3053,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 });
                 _setPanelLevel(_panelLevel2);
               },
+              showFavouriteIcon: true,
+              onFavouriteToggle: () {
+                context.read<HomeBloc>().add(
+                      FavouriteToggled(item: beard, styleType: 'beard'),
+                    );
+              },
+              styleType: 'beard',
             );
           },
         ),
@@ -3017,10 +3076,15 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     required double height,
     bool showFavouriteIcon = false,
     VoidCallback? onFavouriteToggle,
+    String? styleType,
   }) {
     final Color accentColor = AdaptiveThemeColors.neonCyan(context);
 
     final isFavourite = _favouriteIds.contains(item['id']);
+    final String baseImageUrl = item['image']?.toString() ?? '';
+    final String smallImageUrl = _buildSizedImageUrl(baseImageUrl, 'small');
+    final String thumbnailUrl =
+        smallImageUrl.isNotEmpty ? smallImageUrl : baseImageUrl;
     return GestureDetector(
       key: key,
       onTap: onTap,
@@ -3041,7 +3105,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             children: [
               // Image (FirebaseImage resolves Storage paths to download URLs)
               FirebaseImage(
-                item['image']?.toString() ?? '',
+                thumbnailUrl,
                 fit: BoxFit.cover,
                 loadingWidget: ShimmerPlaceholder(
                   baseColor: accentColor.withValues(alpha: 0.12),
@@ -3062,14 +3126,18 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   top: 8,
                   right: 8,
                   child: GestureDetector(
-                    onTap:
-                        onFavouriteToggle ??
-                        () {
-                          final styleType = _tabController?.index == 1
-                              ? 'haircut'
-                              : 'beard';
-                          _toggleFavourite(item, styleType);
-                        },
+                    onTap: () {
+                      if (onFavouriteToggle != null) {
+                        onFavouriteToggle();
+                      } else if (styleType != null) {
+                        context.read<HomeBloc>().add(
+                              FavouriteToggled(
+                                item: item,
+                                styleType: styleType,
+                              ),
+                            );
+                      }
+                    },
                     child: Icon(
                       isFavourite ? Icons.star : Icons.star_border,
                       color: isFavourite ? Colors.amber : Colors.white,
@@ -3115,14 +3183,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           child: ElevatedButton(
                             onPressed: () {
                               setState(() {
-                                if ((_tabController?.index ?? 0) == 0) {
+                                if (styleType == 'haircut') {
                                   _confirmedHaircutIndex = itemIndex;
                                   if (_confirmedBeardIndex != null) {
                                     _showConfirmationDialog();
                                   } else {
                                     _onTryThisPressed();
                                   }
-                                } else {
+                                } else if (styleType == 'beard') {
                                   _confirmedBeardIndex = itemIndex;
                                   if (_confirmedHaircutIndex != null) {
                                     _showConfirmationDialog();
