@@ -229,47 +229,73 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   /// Extract images for the hero / swipe-up view.
-  /// Only returns the *primary* (front) image so we don't
-  /// eagerly load all angles when the user opens a style.
-  List<String> _extractImages(Map<String, dynamic>? style) {
-    final images = style?['images'];
-    if (images is List && images.isNotEmpty) {
-      // Use only the first image in the list (front/primary).
-      final primary = images.first.toString();
-      final largePrimary = _buildSizedImageUrl(primary, 'large');
-      return <String>[largePrimary];
+  ///
+  /// Behaviour:
+  /// - Always returns **large** variants of the underlying images.
+  /// - For haircuts: front, left side, right side, then back (when available).
+  /// - For beards: front, left side, right side (no back).
+  /// - Falls back to the single `image` field when `images` is missing.
+  List<String> _extractImages(
+    Map<String, dynamic>? style, {
+    bool? isHaircut,
+  }) {
+    if (style == null) return <String>[];
+
+    final dynamic images = style['images'];
+    // If caller doesn't specify, try to infer from a stored styleType.
+    final bool treatAsHaircut =
+        isHaircut ?? (style['styleType']?.toString() == 'haircut');
+
+    final List<String> collected = <String>[];
+
+    void addImage(String? path) {
+      if (path == null || path.isEmpty) return;
+      collected.add(_buildSizedImageUrl(path, 'large'));
     }
+
     if (images is Map) {
-      // Prefer explicit front image if available.
-      final front = images['front']?.toString();
-      if (front != null && front.isNotEmpty) {
-        final largeFront = _buildSizedImageUrl(front, 'large');
-        return <String>[largeFront];
+      final String? front = images['front']?.toString();
+      final String? left = (images['left'] ??
+              images['left_side'] ??
+              images['leftSide'])
+          ?.toString();
+      final String? right = (images['right'] ??
+              images['right_side'] ??
+              images['rightSide'])
+          ?.toString();
+      final String? back = images['back']?.toString();
+
+      // Order: front -> left -> right -> (back for haircuts only)
+      addImage(front);
+      addImage(left);
+      addImage(right);
+      if (treatAsHaircut) {
+        addImage(back);
       }
-      // Fallback to any of the side images if front is missing.
-      final left = images['left'] ?? images['left_side'] ?? images['leftSide'];
-      if (left != null && left.toString().isNotEmpty) {
-        final largeLeft = _buildSizedImageUrl(left.toString(), 'large');
-        return <String>[largeLeft];
-      }
-      final right =
-          images['right'] ?? images['right_side'] ?? images['rightSide'];
-      if (right != null && right.toString().isNotEmpty) {
-        final largeRight = _buildSizedImageUrl(right.toString(), 'large');
-        return <String>[largeRight];
-      }
-      final back = images['back']?.toString();
-      if (back != null && back.isNotEmpty) {
-        final largeBack = _buildSizedImageUrl(back, 'large');
-        return <String>[largeBack];
+    } else if (images is List) {
+      // Legacy format: just include all available images as large variants.
+      for (final dynamic value in images) {
+        final String? path = value?.toString();
+        if (path != null && path.isNotEmpty) {
+          addImage(path);
+        }
       }
     }
-    final image = style?['image'];
-    if (image != null && image.toString().isNotEmpty) {
-      final largeImage = _buildSizedImageUrl(image.toString(), 'large');
-      return <String>[largeImage];
+
+    if (collected.isEmpty) {
+      final String? image = style['image']?.toString();
+      if (image != null && image.isNotEmpty) {
+        addImage(image);
+      }
     }
-    return <String>[];
+
+    // Deduplicate while preserving order.
+    final Set<String> seen = <String>{};
+    return collected.where((url) {
+      if (seen.contains(url)) return false;
+      seen.add(url);
+      return true;
+    }).toList();
   }
 
   /// Build a sized variant of a storage path or download URL.
@@ -1257,7 +1283,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
 
     if (selectedStyle != null) {
-      final List<String> images = _extractImages(selectedStyle);
+      final List<String> images = _extractImages(
+        selectedStyle,
+        isHaircut: tabType == 'hair',
+      );
       final String styleImage = images.isNotEmpty ? images[0] : '';
 
       final bool hasHaircut =
@@ -1787,7 +1816,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             _getSelectedStyleForMainContent(context);
         final bool isStyleTab =
             currentTabType == 'hair' || currentTabType == 'beard';
-        final List<String> carouselImages = _extractImages(selectedStyle);
+        final List<String> carouselImages = _extractImages(
+          selectedStyle,
+          isHaircut: currentTabType == 'hair',
+        );
         final List<String> activeImages = carouselImages.isNotEmpty
             ? carouselImages
             : <String>[''];
@@ -3123,7 +3155,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }) {
     final Color accentColor = AdaptiveThemeColors.neonCyan(context);
 
-    final isFavourite = _favouriteIds.contains(item['id']);
+    // Normalise to string so it matches how favouriteIds are stored in HomeBloc
+    final isFavourite = _favouriteIds.contains(item['id']?.toString());
     final String baseImageUrl = item['image']?.toString() ?? '';
     final String smallImageUrl = _buildSizedImageUrl(baseImageUrl, 'small');
     final String thumbnailUrl = smallImageUrl.isNotEmpty
