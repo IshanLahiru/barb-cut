@@ -21,6 +21,7 @@ import '../services/user_photo_service.dart';
 import '../widgets/generation_error_card.dart';
 import '../widgets/lazy_network_image.dart';
 import '../widgets/firebase_image.dart';
+import '../services/onboarding_service.dart';
 import 'face_photo_upload_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -74,7 +75,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   late List<Map<String, dynamic>> _haircuts = [];
   late List<Map<String, dynamic>> _beardStyles = [];
   bool _hasRequestedLoad = false;
-  bool _hasSeenContentOrFailure = false;
+  bool _showWelcomeOverlay = false;
 
   // Methods
   Widget _buildRecentGrid(ScrollController? scrollController) {
@@ -87,6 +88,51 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         'Recently used haircuts and beard styles will appear here.',
         style: Theme.of(context).textTheme.titleMedium,
         textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  /// Skeleton grid for panel tabs while HomeBloc is loading. Matches real tile layout (crossAxisCount, padding, card height).
+  Widget _buildSkeletonTileGrid(ScrollController? scrollController) {
+    final width = MediaQuery.of(context).size.width;
+    int crossAxisCount = 2;
+    if (width >= 1100) {
+      crossAxisCount = 4;
+    } else if (width >= 820) {
+      crossAxisCount = 3;
+    }
+    const int itemCount = 8;
+    const double cardHeight = 220.0;
+    final baseColor = Colors.white.withValues(alpha: 0.06);
+    final highlightColor = Colors.white.withValues(alpha: 0.14);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AiSpacing.md,
+        AiSpacing.sm,
+        AiSpacing.md,
+        AiSpacing.md,
+      ),
+      child: MasonryGridView.builder(
+        controller: scrollController ?? ScrollController(),
+        physics: const BouncingScrollPhysics(),
+        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+        ),
+        itemCount: itemCount,
+        mainAxisSpacing: AiSpacing.md,
+        crossAxisSpacing: AiSpacing.md,
+        itemBuilder: (context, index) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+            child: ShimmerPlaceholder(
+              width: double.infinity,
+              height: cardHeight,
+              baseColor: baseColor,
+              highlightColor: highlightColor,
+            ),
+          );
+        },
       ),
     );
   }
@@ -387,6 +433,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _showWelcomeOverlay = !OnboardingService().homeWelcomeSwipeSeen;
     _arrowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 380),
       vsync: this,
@@ -407,6 +454,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         _maybeRequestInitialLoad();
       }
     });
+  }
+
+  void _dismissWelcomeOverlay() {
+    if (!_showWelcomeOverlay) return;
+    OnboardingService().markHomeWelcomeSwipeSeen();
+    setState(() => _showWelcomeOverlay = false);
   }
 
   double _lastScrollOffset = 0.0;
@@ -1544,14 +1597,20 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 _selectedAngleIndex = 0;
                 _regenerateHeights();
               });
-            _hasSeenContentOrFailure = true;
-            }
+              }
             if (state is HomeFailure) {
-            _hasSeenContentOrFailure = true;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(state.message),
+                  content: const Text('Styles couldn\'t load'),
                   backgroundColor: AdaptiveThemeColors.error(context),
+                  action: SnackBarAction(
+                    label: 'View',
+                    onPressed: () {
+                      if (_panelController.isAttached) {
+                        _setPanelLevel(_panelLevel4);
+                      }
+                    },
+                  ),
                 ),
               );
             }
@@ -1562,243 +1621,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 curr is HomeLoading ||
                 curr is HomeInitial,
             builder: (context, state) {
-            if ((state is HomeLoading || state is HomeInitial) &&
-                !_hasSeenContentOrFailure) {
-                return _buildScaffoldWithLoadingBody();
-              }
+              // Always show main layout (Welcome, Carousel, Description); panel shows skeleton/error when loading/failed.
               return _buildScaffoldDynamicTabs();
             },
           ),
         ),
-    );
-  }
-
-  /// Scaffold with same app bar but body is the loading animation (no panel).
-  Widget _buildScaffoldWithLoadingBody() {
-    return Scaffold(
-      backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
-      appBar: AppBar(
-        backgroundColor: AdaptiveThemeColors.backgroundDark(context),
-        elevation: 0,
-        toolbarHeight: 48,
-        title: Text(
-          'Barbcut',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AdaptiveThemeColors.textPrimary(context),
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        centerTitle: true,
-        surfaceTintColor: Colors.transparent,
-      ),
-      body: _buildHomeLoadingAnimation(),
-    );
-  }
-
-  /// Skeleton screen while home data (styles, favourites) is loading.
-  /// Matches real layout: viewportFraction, slide width, and visible peek of adjacent slides.
-  Widget _buildHomeLoadingAnimation() {
-    final media = MediaQuery.of(context);
-    final contentWidth = media.size.width - 2 * AiSpacing.lg;
-    final carouselHeight =
-        (media.size.height -
-            media.padding.top -
-            kBottomNavigationBarHeight -
-            22) *
-        0.52;
-    final cardHeight = carouselHeight.clamp(260.0, 520.0);
-
-    // Match real carousel: viewportFraction, slide/peek widths, and card margin (AiSpacing.sm each side)
-    final double viewportFraction = (media.size.width < 360)
-        ? 0.88
-        : (media.size.width < 600 ? 0.8 : 0.7);
-    final double slideWidth = contentWidth * viewportFraction;
-    final double peekWidth = (contentWidth - slideWidth) / 2;
-    final double slideHorizontalPadding = peekWidth;
-    const double slideGap =
-        AiSpacing.sm * 2; // margin left + margin right between adjacent cards
-    final double peekCardWidth =
-        peekWidth - slideGap; // peek minus one gap so total = contentWidth
-    final double peekCardHeight =
-        cardHeight *
-        0.88; // side slides slightly shorter (enlargeCenterPage effect)
-
-    // Dark skeleton colors: subtle grey so shimmer reads clearly
-    final baseColor = Colors.white.withValues(alpha: 0.06);
-    final highlightColor = Colors.white.withValues(alpha: 0.14);
-
-    Widget skeletonCard({
-      required double width,
-      required double height,
-      required BorderRadius borderRadius,
-    }) {
-      return ClipRRect(
-        borderRadius: borderRadius,
-        child: ShimmerPlaceholder(
-          width: width,
-          height: height,
-          baseColor: baseColor,
-          highlightColor: highlightColor,
-        ),
-      );
-    }
-
-    return SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(
-        AiSpacing.lg,
-        AiSpacing.md,
-        AiSpacing.lg,
-        AiSpacing.xl + 80,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Skeleton: style name (aligned with left edge of center slide)
-          Padding(
-            padding: EdgeInsets.fromLTRB(slideHorizontalPadding, 0, 0, 6),
-            child: ShimmerPlaceholder(
-              width: slideWidth * 0.5,
-              height: 22,
-              baseColor: baseColor,
-              highlightColor: highlightColor,
-            ),
-          ),
-          // Skeleton: carousel = left peek + gap + center + gap + right peek (side slides slightly shorter)
-          SizedBox(
-            height: cardHeight,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                skeletonCard(
-                  width: peekCardWidth,
-                  height: peekCardHeight,
-                  borderRadius: const BorderRadius.horizontal(
-                    left: Radius.circular(AiSpacing.radiusLarge),
-                  ),
-                ),
-                SizedBox(width: slideGap),
-                skeletonCard(
-                  width: slideWidth,
-                  height: cardHeight,
-                  borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-                ),
-                SizedBox(width: slideGap),
-                skeletonCard(
-                  width: peekCardWidth,
-                  height: peekCardHeight,
-                  borderRadius: const BorderRadius.horizontal(
-                    right: Radius.circular(AiSpacing.radiusLarge),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 12),
-          // Skeleton: carousel indicators
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(3, (_) {
-              return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
-                child: ShimmerPlaceholder(
-                  width: 8,
-                  height: 8,
-                  baseColor: baseColor,
-                  highlightColor: highlightColor,
-                ),
-              );
-            }),
-          ),
-          SizedBox(height: AiSpacing.xl),
-          // Skeleton: "About this style" block (same horizontal padding as real)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: slideHorizontalPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ShimmerPlaceholder(
-                  width: slideWidth * 0.45,
-                  height: 16,
-                  baseColor: baseColor,
-                  highlightColor: highlightColor,
-                ),
-                SizedBox(height: AiSpacing.sm),
-                ShimmerPlaceholder(
-                  width: slideWidth,
-                  height: 12,
-                  baseColor: baseColor,
-                  highlightColor: highlightColor,
-                ),
-                SizedBox(height: 6),
-                ShimmerPlaceholder(
-                  width: slideWidth * 0.92,
-                  height: 12,
-                  baseColor: baseColor,
-                  highlightColor: highlightColor,
-                ),
-                SizedBox(height: 6),
-                ShimmerPlaceholder(
-                  width: slideWidth * 0.7,
-                  height: 12,
-                  baseColor: baseColor,
-                  highlightColor: highlightColor,
-                ),
-                SizedBox(height: AiSpacing.lg),
-                Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        AiSpacing.radiusMedium,
-                      ),
-                      child: ShimmerPlaceholder(
-                        width: 72,
-                        height: 28,
-                        baseColor: baseColor,
-                        highlightColor: highlightColor,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        AiSpacing.radiusMedium,
-                      ),
-                      child: ShimmerPlaceholder(
-                        width: 64,
-                        height: 28,
-                        baseColor: baseColor,
-                        highlightColor: highlightColor,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        AiSpacing.radiusMedium,
-                      ),
-                      child: ShimmerPlaceholder(
-                        width: 80,
-                        height: 28,
-                        baseColor: baseColor,
-                        highlightColor: highlightColor,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: AiSpacing.xl),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-                  child: ShimmerPlaceholder(
-                    width: slideWidth,
-                    height: 48,
-                    baseColor: baseColor,
-                    highlightColor: highlightColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -1825,36 +1652,46 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
       ),
-      body: SlidingUpPanel(
-        controller: _panelController,
-        minHeight: minPanelHeight,
-        maxHeight: maxPanelHeight,
-        borderRadius: BorderRadius.zero,
-        renderPanelSheet: false,
-        boxShadow: const [],
-        backdropEnabled: false,
-        isDraggable: true,
-        parallaxEnabled: true,
-        parallaxOffset: 0.5,
-        onPanelSlide: (position) {
-          _panelSlidePosition = position;
-          _panelSlidePositionNotifier.value = position;
-          final arrowTarget = position >= 0.5 ? 1.0 : 0.0;
-          if (_arrowAnimationController.value != arrowTarget) {
-            _arrowAnimationController.animateTo(
-              arrowTarget,
-              curve: Curves.fastOutSlowIn,
-            );
-          }
-        },
-        panelBuilder: (scrollController) => ValueListenableBuilder<double>(
-          valueListenable: _panelSlidePositionNotifier,
-          builder: (context, _, __) => _buildDynamicPanel(scrollController),
-        ),
-        body: ValueListenableBuilder<double>(
-          valueListenable: _panelSlidePositionNotifier,
-          builder: (context, _, __) => _buildMainContent(),
-        ),
+      body: Stack(
+        children: [
+          SlidingUpPanel(
+            controller: _panelController,
+            minHeight: minPanelHeight,
+            maxHeight: maxPanelHeight,
+            borderRadius: BorderRadius.zero,
+            renderPanelSheet: false,
+            boxShadow: const [],
+            backdropEnabled: false,
+            isDraggable: true,
+            parallaxEnabled: true,
+            parallaxOffset: 0.5,
+            onPanelSlide: (position) {
+              _panelSlidePosition = position;
+              _panelSlidePositionNotifier.value = position;
+              if (_showWelcomeOverlay && position > 0.3) {
+                _dismissWelcomeOverlay();
+              }
+              final arrowTarget = position >= 0.5 ? 1.0 : 0.0;
+              if (_arrowAnimationController.value != arrowTarget) {
+                _arrowAnimationController.animateTo(
+                  arrowTarget,
+                  curve: Curves.fastOutSlowIn,
+                );
+              }
+            },
+            panelBuilder: (scrollController) =>
+                ValueListenableBuilder<double>(
+              valueListenable: _panelSlidePositionNotifier,
+              builder: (context, _, __) =>
+                  _buildDynamicPanel(scrollController),
+            ),
+            body: ValueListenableBuilder<double>(
+              valueListenable: _panelSlidePositionNotifier,
+              builder: (context, _, __) => _buildMainContent(),
+            ),
+          ),
+          if (_showWelcomeOverlay) _buildWelcomeOverlay(),
+        ],
       ),
     );
   }
@@ -2128,6 +1965,111 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               textAlign: TextAlign.center,
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// First-run overlay: Welcome + "Swipe Up" guide. Dismissed via "Got it" or when user opens the panel.
+  Widget _buildWelcomeOverlay() {
+    final accent = AdaptiveThemeColors.neonCyan(context);
+    final textPrimary = AdaptiveThemeColors.textPrimary(context);
+    final textSecondary = AdaptiveThemeColors.textSecondary(context);
+    final bg = AdaptiveThemeColors.backgroundDark(context);
+    final border = AdaptiveThemeColors.borderLight(context);
+
+    return Positioned.fill(
+      child: GestureDetector(
+        onTap: _dismissWelcomeOverlay,
+        child: Container(
+          color: Colors.black.withValues(alpha: 0.5),
+          child: Center(
+            child: GestureDetector(
+              onTap: () {}, // Prevent tap-through on card
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AiSpacing.xl),
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 360),
+                  decoration: BoxDecoration(
+                    color: bg,
+                    borderRadius:
+                        BorderRadius.circular(AiSpacing.radiusLarge),
+                    border: Border.all(
+                      color: border.withValues(alpha: 0.5),
+                      width: 1,
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(AiSpacing.xl),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Welcome to Barbcut',
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          color: textPrimary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AiSpacing.lg),
+                      Container(
+                        padding: const EdgeInsets.all(AiSpacing.lg),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: accent.withValues(alpha: 0.12),
+                        ),
+                        child: Icon(
+                          Icons.swipe_up_rounded,
+                          size: 48,
+                          color: accent.withValues(alpha: 0.9),
+                        ),
+                      ),
+                      const SizedBox(height: AiSpacing.md),
+                      Text(
+                        'Swipe up to choose a style',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AiSpacing.xs),
+                      Text(
+                        'Pick a haircut or beard style from the panel to preview it here.',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AiSpacing.xl),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          onPressed: _dismissWelcomeOverlay,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: accent,
+                            foregroundColor:
+                                AdaptiveThemeColors.backgroundDeep(context),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AiSpacing.md,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusMedium,
+                              ),
+                            ),
+                          ),
+                          child: const Text('Got it'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -2755,19 +2697,18 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 _buildPanelFailureContent(context, state.message),
           );
         }
-        if (state is! HomeLoaded) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        // Use Firestore tab categories when available; otherwise default tabs so
-        // the swipe-up panel (Recent, Favourites, Hair, Beard) is always visible.
-        final categories = state.tabCategories.isNotEmpty
+        // Use Firestore tab categories when available; otherwise default tabs.
+        // When loading/initial, show same panel shell with skeleton grids.
+        final categories = state is HomeLoaded &&
+                state.tabCategories.isNotEmpty
             ? state.tabCategories
             : TabCategoryEntity.defaultPanelTabs;
+        final isLoading = state is HomeInitial || state is HomeLoading;
 
         final tabs = categories.map((c) => Tab(text: c.title)).toList();
         final tabTypes = categories.map((c) => c.type).toList();
 
-        // (Re)create TabController if needed
+        // (Re)create TabController if needed (so panel shell is consistent when loading → loaded).
         if (_tabController == null || _tabController!.length != tabs.length) {
           _tabController?.dispose();
           _tabController = TabController(length: tabs.length, vsync: this);
@@ -2777,6 +2718,32 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             }
           });
         }
+
+        final tabChildren = isLoading
+            ? List.generate(
+                categories.length,
+                (_) => _buildSkeletonTileGrid(null),
+              )
+            : tabTypes.map((type) {
+                switch (type) {
+                  case 'recent':
+                    return _buildRecentGrid(null);
+                  case 'favourites':
+                    return _buildFavouritesGrid(null);
+                  case 'hair':
+                    return ValueListenableBuilder<String>(
+                      valueListenable: _panelSearchQueryNotifier,
+                      builder: (context, _, __) => _buildHaircutGrid(null),
+                    );
+                  case 'beard':
+                    return ValueListenableBuilder<String>(
+                      valueListenable: _panelSearchQueryNotifier,
+                      builder: (context, _, __) => _buildBeardGrid(null),
+                    );
+                  default:
+                    return const Center(child: Text('Unknown tab'));
+                }
+              }).toList();
 
         return Container(
           color: AdaptiveThemeColors.backgroundDeep(context),
@@ -2979,30 +2946,18 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   ),
                 ),
                 Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    physics: const BouncingScrollPhysics(),
-                    children: tabTypes.map((type) {
-                      switch (type) {
-                        case 'recent':
-                          return _buildRecentGrid(null);
-                        case 'favourites':
-                          return _buildFavouritesGrid(null);
-                        case 'hair':
-                          return ValueListenableBuilder<String>(
-                            valueListenable: _panelSearchQueryNotifier,
-                            builder: (context, _, __) =>
-                                _buildHaircutGrid(null),
-                          );
-                        case 'beard':
-                          return ValueListenableBuilder<String>(
-                            valueListenable: _panelSearchQueryNotifier,
-                            builder: (context, _, __) => _buildBeardGrid(null),
-                          );
-                        default:
-                          return const Center(child: Text('Unknown tab'));
-                      }
-                    }).toList(),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    child: KeyedSubtree(
+                      key: ValueKey(isLoading ? 'skeleton' : 'loaded'),
+                      child: TabBarView(
+                        controller: _tabController,
+                        physics: const BouncingScrollPhysics(),
+                        children: tabChildren,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -3015,7 +2970,25 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   Widget _buildHaircutGrid(ScrollController? scrollController) {
     if (_haircuts.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.style_outlined,
+              size: 64,
+              color: AdaptiveThemeColors.textTertiary(context),
+            ),
+            SizedBox(height: AiSpacing.md),
+            Text(
+              'No haircut styles yet',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AdaptiveThemeColors.textSecondary(context),
+              ),
+            ),
+          ],
+        ),
+      );
     }
     final width = MediaQuery.of(context).size.width;
     int crossAxisCount = 2;
@@ -3109,6 +3082,27 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildBeardGrid(ScrollController? scrollController) {
+    if (_beardStyles.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.face_retouching_natural_outlined,
+              size: 64,
+              color: AdaptiveThemeColors.textTertiary(context),
+            ),
+            SizedBox(height: AiSpacing.md),
+            Text(
+              'No beard styles yet',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AdaptiveThemeColors.textSecondary(context),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     final width = MediaQuery.of(context).size.width;
     int crossAxisCount = 2;
     if (width >= 1100) {
