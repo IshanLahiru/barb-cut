@@ -32,7 +32,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             'name': e.name,
             'description': e.description,
             'image': e.imageUrl,
-            'images': e.images,
+            // Full ordered list from styleImages so carousel gets all angles
+            'images': e.styleImages.toList(),
+            'imagesMap': {
+              'front': e.styleImages.front,
+              'left_side': e.styleImages.leftSide,
+              'right_side': e.styleImages.rightSide,
+              'back': e.styleImages.back,
+            },
             'suitableFaceShapes': e.suitableFaceShapes,
             'maintenanceTips': e.maintenanceTips,
           },

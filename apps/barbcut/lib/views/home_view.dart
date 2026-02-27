@@ -80,7 +80,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget _buildRecentGrid(ScrollController? scrollController) {
     // TODO: Backend-backed recents can be implemented here by
     // loading a user-specific recent list and rendering it similarly
-    // to the favourites grid. For now, show a friendly placeholder.
+    // to the favourites grid. Use _buildStyleCard with showSelectButton: true
+    // and the same select/tap logic as favourites. For now, show a placeholder.
     return Center(
       child: Text(
         'Recently used haircuts and beard styles will appear here.',
@@ -181,16 +182,29 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           crossAxisSpacing: AiSpacing.md,
           itemBuilder: (context, index) {
             final item = allFavourites[index];
-            final isSelected = false;
-            // Determine style type for correct toggle logic
             final isHaircut = _haircuts.any((h) => h['id'] == item['id']);
             final styleType = isHaircut ? 'haircut' : 'beard';
+            final sourceIndex = isHaircut
+                ? _haircuts.indexWhere((h) => h['id'] == item['id'])
+                : _beardStyles.indexWhere((b) => b['id'] == item['id']);
+            final effectiveIndex = sourceIndex >= 0 ? sourceIndex : 0;
+            final isSelected = isHaircut
+                ? effectiveIndex == _selectedHaircutIndex
+                : effectiveIndex == _selectedBeardIndex;
             return _buildStyleCard(
               item: item,
-              itemIndex: index,
+              itemIndex: effectiveIndex,
               isSelected: isSelected,
               height: 220,
-              onTap: () {},
+              onTap: () {
+                setState(() {
+                  if (isHaircut) {
+                    _selectedHaircutIndex = effectiveIndex;
+                  } else {
+                    _selectedBeardIndex = effectiveIndex;
+                  }
+                });
+              },
               showFavouriteIcon: true,
               onFavouriteToggle: () {
                 context.read<HomeBloc>().add(
@@ -198,6 +212,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 );
               },
               styleType: styleType,
+              showSelectButton: true,
             );
           },
         ),
@@ -214,6 +229,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final index = _tabController?.index ?? 0;
     if (index < 0 || index >= categories.length) return 'recent';
     return categories[index].type;
+  }
+
+  /// Panel tab index for a given type (e.g. 'hair', 'beard') for navigating from Complete Your Look dialog.
+  int _getPanelTabIndexForType(BuildContext context, String type) {
+    final state = context.read<HomeBloc>().state;
+    final categories = state is HomeLoaded && state.tabCategories.isNotEmpty
+        ? state.tabCategories
+        : TabCategoryEntity.defaultPanelTabs;
+    final idx = categories.indexWhere((c) => c.type == type);
+    return idx >= 0 ? idx : 0;
   }
 
   /// Selected style for the hero area: only set when current tab is 'hair' or 'beard'.
@@ -241,6 +266,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }) {
     if (style == null) return <String>[];
 
+    final dynamic imagesMap = style['imagesMap'];
     final dynamic images = style['images'];
     // If caller doesn't specify, try to infer from a stored styleType.
     final bool treatAsHaircut =
@@ -251,6 +277,32 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     void addImage(String? path) {
       if (path == null || path.isEmpty) return;
       collected.add(_buildSizedImageUrl(path, 'large'));
+    }
+
+    // Prefer bloc-provided imagesMap (front, left_side, right_side, back) so carousel gets all angles
+    if (imagesMap is Map) {
+      final String? front = imagesMap['front']?.toString();
+      final String? left = (imagesMap['left'] ??
+              imagesMap['left_side'] ??
+              imagesMap['leftSide'])
+          ?.toString();
+      final String? right = (imagesMap['right'] ??
+              imagesMap['right_side'] ??
+              imagesMap['rightSide'])
+          ?.toString();
+      final String? back = imagesMap['back']?.toString();
+      addImage(front);
+      addImage(left);
+      addImage(right);
+      if (treatAsHaircut) addImage(back);
+    }
+    if (collected.isNotEmpty) {
+      final Set<String> seen = <String>{};
+      return collected.where((url) {
+        if (seen.contains(url)) return false;
+        seen.add(url);
+        return true;
+      }).toList();
     }
 
     if (images is Map) {
@@ -563,7 +615,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                               () => _confirmedHaircutIndex =
                                   _selectedHaircutIndex,
                             );
-                            _tabController?.animateTo(1);
+                            final beardTabIndex =
+                                _getPanelTabIndexForType(context, 'beard');
+                            _tabController?.animateTo(beardTabIndex);
                             _setPanelLevel(_panelLevel4);
                           },
                           style: FilledButton.styleFrom(
@@ -764,7 +818,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                             setState(
                               () => _confirmedBeardIndex = _selectedBeardIndex,
                             );
-                            _tabController?.animateTo(0);
+                            final hairTabIndex =
+                                _getPanelTabIndexForType(context, 'hair');
+                            _tabController?.animateTo(hairTabIndex);
                             _setPanelLevel(_panelLevel4);
                           },
                           style: FilledButton.styleFrom(
@@ -1823,6 +1879,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         final List<String> activeImages = carouselImages.isNotEmpty
             ? carouselImages
             : <String>[''];
+        // Keep angle index in bounds after hot reload or when image count changes
+        final int effectiveAngleIndex = activeImages.isEmpty
+            ? 0
+            : _selectedAngleIndex.clamp(0, activeImages.length - 1);
 
         // Match carousel viewportFraction so title aligns with slide
         final double viewportFraction = (constraints.maxWidth < 360)
@@ -1919,7 +1979,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           children: [
                             FlutterCarousel(
                               key: ValueKey(
-                                'style-carousel-$currentTabType-${isStyleTab && currentTabType == 'hair' ? _selectedHaircutIndex : _selectedBeardIndex}',
+                                'style-carousel-$currentTabType-${selectedStyle['id']}-${activeImages.length}-${isStyleTab && currentTabType == 'hair' ? _selectedHaircutIndex : _selectedBeardIndex}',
                               ),
                               options: CarouselOptions(
                                 height: carouselHeight,
@@ -1937,22 +1997,25 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                 },
                               ),
                               items: [
-                                // Image slides (n)
+                                // Image slides (n); key by URL so hot reload keeps correct image state
                                 ...activeImages.asMap().entries.map((entry) {
                                   final int itemIndex = entry.key;
                                   final String imageUrl = entry.value;
                                   final Color accentColor =
                                       AdaptiveThemeColors.neonCyan(context);
 
-                                  return Align(
-                                    alignment: Alignment.center,
-                                    child: _buildCarouselCard(
+                                  return KeyedSubtree(
+                                    key: ValueKey(imageUrl),
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: _buildCarouselCard(
                                       imageUrl: imageUrl,
                                       title: '',
                                       accentColor: accentColor,
                                       itemIndex: itemIndex,
                                       iconSize: iconSize,
                                       allImages: activeImages,
+                                    ),
                                     ),
                                   );
                                 }),
@@ -1969,7 +2032,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(activeImages.length, (index) {
-                          final isActive = _selectedAngleIndex == index;
+                          final isActive = effectiveAngleIndex == index;
                           final accent = AdaptiveThemeColors.neonCyan(context);
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -3152,6 +3215,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     bool showFavouriteIcon = false,
     VoidCallback? onFavouriteToggle,
     String? styleType,
+    bool showSelectButton = false,
   }) {
     final Color accentColor = AdaptiveThemeColors.neonCyan(context);
 
@@ -3250,30 +3314,32 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (isSelected) ...[
+                      if (isSelected || showSelectButton) ...[
                         SizedBox(height: 8),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                if (styleType == 'haircut') {
-                                  _confirmedHaircutIndex = itemIndex;
-                                  if (_confirmedBeardIndex != null) {
-                                    _showConfirmationDialog();
-                                  } else {
-                                    _onTryThisPressed();
-                                  }
-                                } else if (styleType == 'beard') {
-                                  _confirmedBeardIndex = itemIndex;
-                                  if (_confirmedHaircutIndex != null) {
-                                    _showConfirmationDialog();
-                                  } else {
-                                    _showBeardSelectionPrompt();
-                                  }
-                                }
-                              });
-                            },
+                            onPressed: styleType == null
+                                ? null
+                                : () {
+                                    setState(() {
+                                      if (styleType == 'haircut') {
+                                        _confirmedHaircutIndex = itemIndex;
+                                        if (_confirmedBeardIndex != null) {
+                                          _showConfirmationDialog();
+                                        } else {
+                                          _onTryThisPressed();
+                                        }
+                                      } else if (styleType == 'beard') {
+                                        _confirmedBeardIndex = itemIndex;
+                                        if (_confirmedHaircutIndex != null) {
+                                          _showConfirmationDialog();
+                                        } else {
+                                          _showBeardSelectionPrompt();
+                                        }
+                                      }
+                                    });
+                                  },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AdaptiveThemeColors.neonCyan(
                                 context,
