@@ -1,0 +1,13 @@
+node_modules/
+build/
+config.json
+.DS_Store
+
+# Ignore processed images but keep the directories
+input/*.png
+input/**/*.png
+output/
+!output/.gitkeep
+
+# Ignore generated optimized images
+generated/**/*.png

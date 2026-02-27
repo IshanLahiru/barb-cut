@@ -1,0 +1,14 @@
+{
+  "sourceDir": "./input",
+  "outputDir": "./output",
+  "sizes": [
+    { "name": "small", "width": 300 },
+    { "name": "medium", "width": 600 },
+    { "name": "large", "width": 1200 }
+  ],
+  "png": {
+    "compressionLevel": 9
+  },
+  "include": ["**/*.png"],
+  "exclude": []
+}

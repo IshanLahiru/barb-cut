@@ -40,3 +40,9 @@ From `firebase/`:
 ```bash
 firebase emulators:start --only auth,firestore,functions,storage
 ```
+
+## Image Optimizer
+
+Local CLI tool (not deployed) that resizes PNG images into multiple size variants using `sharp`. Useful for optimizing images before uploading them to Firebase Storage.
+
+Lives in `image-optimizer/`. See [`image-optimizer/README.md`](image-optimizer/README.md) for full usage.
