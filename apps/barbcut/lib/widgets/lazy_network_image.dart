@@ -76,9 +76,36 @@ class _LazyNetworkImageState extends State<LazyNetworkImage> {
       return;
     }
 
-    if (!_isVisible) {
+    if (_isVisible) return;
+
+    final mediaQuery = MediaQuery.maybeOf(context);
+    if (mediaQuery == null) {
       setState(() {
         _isVisible = true;
+      });
+      return;
+    }
+
+    final offset = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+    const double preloadMargin = 100;
+    final double viewportTop = -preloadMargin;
+    final double viewportBottom = mediaQuery.size.height + preloadMargin;
+    final double widgetTop = offset.dy;
+    final double widgetBottom = widgetTop + size.height;
+
+    final bool isInViewport =
+        widgetBottom > viewportTop && widgetTop < viewportBottom;
+
+    if (isInViewport) {
+      setState(() {
+        _isVisible = true;
+      });
+    } else {
+      Future.delayed(const Duration(milliseconds: 200), () {
+        if (mounted && !_isVisible) {
+          _checkVisibility();
+        }
       });
     }
   }

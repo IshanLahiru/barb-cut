@@ -41,23 +41,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
-  // Helper to map StyleEntity list to List<Map<String, dynamic>>
-  List<Map<String, dynamic>> _mapStyles(List<StyleEntity> styles) {
-    return styles
-        .map(
-          (e) => {
-            'id': e.id,
-            'name': e.name,
-            'description': e.description,
-            'image': e.imageUrl,
-            'images': e.images,
-            'suitableFaceShapes': e.suitableFaceShapes,
-            'maintenanceTips': e.maintenanceTips,
-          },
-        )
-        .toList();
-  }
-
   void _toggleFavourite(Map<String, dynamic> item, String styleType) {
     context.read<HomeBloc>().add(
           FavouriteToggled(item: item, styleType: styleType),
@@ -76,8 +59,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   int _selectedHaircutIndex = 0;
   int _selectedBeardIndex = 0;
   int _selectedAngleIndex = 0;
-  String _panelSearchQuery = '';
+  final ValueNotifier<String> _panelSearchQueryNotifier =
+      ValueNotifier<String>('');
   double _panelSlidePosition = 0.0;
+  final ValueNotifier<double> _panelSlidePositionNotifier =
+      ValueNotifier<double>(0.0);
   TabController? _tabController;
   late AnimationController _arrowAnimationController;
   late AnimationController _generationPulseController;
@@ -184,31 +170,33 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         AiSpacing.md,
         AiSpacing.md,
       ),
-      child: MasonryGridView.builder(
-        controller: scrollController ?? ScrollController(),
-        physics: const BouncingScrollPhysics(),
-        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
+      child: RepaintBoundary(
+        child: MasonryGridView.builder(
+          controller: scrollController ?? ScrollController(),
+          physics: const BouncingScrollPhysics(),
+          gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+          ),
+          itemCount: allFavourites.length,
+          mainAxisSpacing: AiSpacing.md,
+          crossAxisSpacing: AiSpacing.md,
+          itemBuilder: (context, index) {
+            final item = allFavourites[index];
+            final isSelected = false;
+            // Determine style type for correct toggle logic
+            final isHaircut = _haircuts.any((h) => h['id'] == item['id']);
+            final styleType = isHaircut ? 'haircut' : 'beard';
+            return _buildStyleCard(
+              item: item,
+              itemIndex: index,
+              isSelected: isSelected,
+              height: 220,
+              onTap: () {},
+              showFavouriteIcon: true,
+              onFavouriteToggle: () => _toggleFavourite(item, styleType),
+            );
+          },
         ),
-        itemCount: allFavourites.length,
-        mainAxisSpacing: AiSpacing.md,
-        crossAxisSpacing: AiSpacing.md,
-        itemBuilder: (context, index) {
-          final item = allFavourites[index];
-          final isSelected = false;
-          // Determine style type for correct toggle logic
-          final isHaircut = _haircuts.any((h) => h['id'] == item['id']);
-          final styleType = isHaircut ? 'haircut' : 'beard';
-          return _buildStyleCard(
-            item: item,
-            itemIndex: index,
-            isSelected: isSelected,
-            height: 220,
-            onTap: () {},
-            showFavouriteIcon: true,
-            onFavouriteToggle: () => _toggleFavourite(item, styleType),
-          );
-        },
       ),
     );
   }
@@ -1287,18 +1275,21 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     _arrowAnimationController.dispose();
     _generationPulseController.dispose();
     _carouselTimer?.cancel();
+    _panelSearchQueryNotifier.dispose();
     _panelSearchController.dispose();
     _panelSearchFocus.dispose();
     _mainScrollController.dispose();
     _panelScrollController.dispose();
+    _panelSlidePositionNotifier.dispose();
     super.dispose();
   }
 
   bool _matchesPanelSearch(Map<String, dynamic> item) {
-    if (_panelSearchQuery.trim().isEmpty) {
+    final raw = _panelSearchQueryNotifier.value;
+    if (raw.trim().isEmpty) {
       return true;
     }
-    final query = _panelSearchQuery.toLowerCase();
+    final query = raw.toLowerCase();
     final name = item['name']?.toString().toLowerCase() ?? '';
     final description = item['description']?.toString().toLowerCase() ?? '';
     return name.contains(query) || description.contains(query);
@@ -1353,11 +1344,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       child: BlocListener<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state is HomeLoaded) {
+            final haircuts = state.haircutMaps;
+            final beardStyles = state.beardStyleMaps;
             setState(() {
               _haircutEntities = state.haircuts;
               _beardEntities = state.beardStyles;
-              _haircuts = _mapStyles(state.haircuts);
-              _beardStyles = _mapStyles(state.beardStyles);
+              _haircuts = haircuts;
+              _beardStyles = beardStyles;
               _favouriteIds = state.favouriteIds;
               _favouritesLoading = state.favouritesLoading;
               _favouritesError = state.favouritesError;
@@ -1662,9 +1655,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         parallaxEnabled: true,
         parallaxOffset: 0.5,
         onPanelSlide: (position) {
-          setState(() {
-            _panelSlidePosition = position;
-          });
+          _panelSlidePosition = position;
+          _panelSlidePositionNotifier.value = position;
           final arrowTarget = position >= 0.5 ? 1.0 : 0.0;
           if (_arrowAnimationController.value != arrowTarget) {
             _arrowAnimationController.animateTo(
@@ -1673,9 +1665,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             );
           }
         },
-        panelBuilder: (scrollController) =>
-            _buildDynamicPanel(scrollController),
-        body: _buildMainContent(),
+        panelBuilder: (scrollController) => ValueListenableBuilder<double>(
+          valueListenable: _panelSlidePositionNotifier,
+          builder: (context, _, __) => _buildDynamicPanel(scrollController),
+        ),
+        body: ValueListenableBuilder<double>(
+          valueListenable: _panelSlidePositionNotifier,
+          builder: (context, _, __) => _buildMainContent(),
+        ),
       ),
     );
   }
@@ -1787,50 +1784,52 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   ),
                   SizedBox(
                     height: carouselHeight,
-                    child: Stack(
-                      children: [
-                        FlutterCarousel(
-                          key: ValueKey(
-                            'style-carousel-$currentTabType-${isStyleTab && currentTabType == 'hair' ? _selectedHaircutIndex : _selectedBeardIndex}',
-                          ),
-                          options: CarouselOptions(
-                            height: carouselHeight,
-                            viewportFraction: (constraints.maxWidth < 360)
-                                ? 0.88
-                                : (constraints.maxWidth < 600 ? 0.8 : 0.7),
-                            enlargeCenterPage: true,
-                            enableInfiniteScroll: false,
-                            autoPlay: false,
-                            showIndicator: false,
-                            onPageChanged: (index, reason) {
-                              setState(() {
-                                _selectedAngleIndex = index;
-                              });
-                            },
-                          ),
-                          items: [
-                            // Image slides (n)
-                            ...activeImages.asMap().entries.map((entry) {
-                              final int itemIndex = entry.key;
-                              final String imageUrl = entry.value;
-                              final Color accentColor =
-                                  AdaptiveThemeColors.neonCyan(context);
+                    child: RepaintBoundary(
+                      child: Stack(
+                        children: [
+                          FlutterCarousel(
+                            key: ValueKey(
+                              'style-carousel-$currentTabType-${isStyleTab && currentTabType == 'hair' ? _selectedHaircutIndex : _selectedBeardIndex}',
+                            ),
+                            options: CarouselOptions(
+                              height: carouselHeight,
+                              viewportFraction: (constraints.maxWidth < 360)
+                                  ? 0.88
+                                  : (constraints.maxWidth < 600 ? 0.8 : 0.7),
+                              enlargeCenterPage: true,
+                              enableInfiniteScroll: false,
+                              autoPlay: false,
+                              showIndicator: false,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _selectedAngleIndex = index;
+                                });
+                              },
+                            ),
+                            items: [
+                              // Image slides (n)
+                              ...activeImages.asMap().entries.map((entry) {
+                                final int itemIndex = entry.key;
+                                final String imageUrl = entry.value;
+                                final Color accentColor =
+                                    AdaptiveThemeColors.neonCyan(context);
 
-                              return Align(
-                                alignment: Alignment.center,
-                                child: _buildCarouselCard(
-                                  imageUrl: imageUrl,
-                                  title: '',
-                                  accentColor: accentColor,
-                                  itemIndex: itemIndex,
-                                  iconSize: iconSize,
-                                  allImages: activeImages,
-                                ),
-                              );
-                            }),
-                          ],
-                        ),
-                      ],
+                                return Align(
+                                  alignment: Alignment.center,
+                                  child: _buildCarouselCard(
+                                    imageUrl: imageUrl,
+                                    title: '',
+                                    accentColor: accentColor,
+                                    itemIndex: itemIndex,
+                                    iconSize: iconSize,
+                                    allImages: activeImages,
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(height: 2),
@@ -2280,13 +2279,21 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
+            child: SizedBox(
               width: 72,
               height: 72,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
+              child: FirebaseImage(
+                imageUrl,
+                fit: BoxFit.cover,
+                width: 72,
+                height: 72,
+                loadingWidget: ShimmerPlaceholder(
+                  width: 72,
+                  height: 72,
+                  baseColor: accent.withValues(alpha: 0.12),
+                  highlightColor: accent.withValues(alpha: 0.28),
+                ),
+                errorWidget: Container(
                   width: 72,
                   height: 72,
                   color: accent.withValues(alpha: 0.15),
@@ -2295,8 +2302,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     color: accent.withValues(alpha: 0.6),
                     size: 28,
                   ),
-                );
-              },
+                ),
+              ),
             ),
           ),
           SizedBox(width: AiSpacing.md),
@@ -2418,7 +2425,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             const SizedBox(height: AiSpacing.xl),
             FilledButton.icon(
               onPressed: () {
-                context.read<HomeBloc>().add(const HomeLoadRequested());
+                BlocProvider.of<HomeBloc>(context).add(
+                  const HomeLoadRequested(),
+                );
               },
               icon: const Icon(Icons.refresh_rounded, size: 20),
               label: const Text('Retry'),
@@ -2706,69 +2715,76 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                   ),
                               ],
                             ),
-                            child: TextField(
-                              focusNode: _panelSearchFocus,
-                              controller: _panelSearchController,
-                              onChanged: (value) {
-                                setState(() {
-                                  _panelSearchQuery = value;
-                                });
-                              },
-                              textInputAction: TextInputAction.search,
-                              keyboardAppearance: Brightness.dark,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: AdaptiveThemeColors.textPrimary(
-                                      context,
-                                    ),
-                                  ),
-                              decoration: InputDecoration(
-                                hintText: 'Search styles...',
-                                hintStyle: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                      color: AdaptiveThemeColors.textTertiary(
+                            child: ValueListenableBuilder<String>(
+                              valueListenable: _panelSearchQueryNotifier,
+                              builder: (context, query, _) {
+                                return TextField(
+                                  focusNode: _panelSearchFocus,
+                                  controller: _panelSearchController,
+                                  onChanged: (value) {
+                                    _panelSearchQueryNotifier.value = value;
+                                  },
+                                  textInputAction: TextInputAction.search,
+                                  keyboardAppearance: Brightness.dark,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color:
+                                            AdaptiveThemeColors.textPrimary(
+                                          context,
+                                        ),
+                                      ),
+                                  decoration: InputDecoration(
+                                    hintText: 'Search styles...',
+                                    hintStyle: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color:
+                                              AdaptiveThemeColors.textTertiary(
+                                            context,
+                                          ),
+                                        ),
+                                    prefixIcon: Icon(
+                                      Icons.search,
+                                      color:
+                                          AdaptiveThemeColors.textTertiary(
                                         context,
                                       ),
+                                      size: 20,
                                     ),
-                                prefixIcon: Icon(
-                                  Icons.search,
-                                  color: AdaptiveThemeColors.textTertiary(
-                                    context,
-                                  ),
-                                  size: 20,
-                                ),
-                                suffixIcon: _panelSearchQuery.isNotEmpty
-                                    ? IconButton(
-                                        icon: Icon(
-                                          Icons.close_rounded,
-                                          color:
-                                              AdaptiveThemeColors.textSecondary(
+                                    suffixIcon: query.isNotEmpty
+                                        ? IconButton(
+                                            icon: Icon(
+                                              Icons.close_rounded,
+                                              color: AdaptiveThemeColors
+                                                  .textSecondary(
                                                 context,
                                               ),
-                                          size: 18,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            _panelSearchController.clear();
-                                            _panelSearchQuery = '';
-                                          });
-                                        },
-                                      )
-                                    : null,
-                                filled: false,
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: AiSpacing.md,
-                                  vertical: AiSpacing.md,
-                                ),
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                              ),
-                              cursorColor: AdaptiveThemeColors.neonCyan(
-                                context,
-                              ),
+                                              size: 18,
+                                            ),
+                                            onPressed: () {
+                                              _panelSearchController.clear();
+                                              _panelSearchQueryNotifier.value =
+                                                  '';
+                                            },
+                                          )
+                                        : null,
+                                    filled: false,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: AiSpacing.md,
+                                      vertical: AiSpacing.md,
+                                    ),
+                                    border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                  ),
+                                  cursorColor: AdaptiveThemeColors.neonCyan(
+                                    context,
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ),
@@ -2787,11 +2803,19 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         case 'favourites':
                           return _buildFavouritesGrid(null);
                         case 'hair':
-                          return _buildHaircutGrid(null);
+                          return ValueListenableBuilder<String>(
+                            valueListenable: _panelSearchQueryNotifier,
+                            builder: (context, _, __) =>
+                                _buildHaircutGrid(null),
+                          );
                         case 'beard':
-                          return _buildBeardGrid(null);
+                          return ValueListenableBuilder<String>(
+                            valueListenable: _panelSearchQueryNotifier,
+                            builder: (context, _, __) =>
+                                _buildBeardGrid(null),
+                          );
                         default:
-                          return Center(child: Text('Unknown tab'));
+                          return const Center(child: Text('Unknown tab'));
                       }
                     }).toList(),
                   ),
@@ -2859,35 +2883,37 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         AiSpacing.md,
         AiSpacing.md,
       ),
-      child: MasonryGridView.builder(
-        controller: scrollController ?? ScrollController(),
-        key: PageStorageKey('haircut_grid'),
-        physics: const BouncingScrollPhysics(),
-        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
+      child: RepaintBoundary(
+        child: MasonryGridView.builder(
+          controller: scrollController ?? ScrollController(),
+          key: const PageStorageKey('haircut_grid'),
+          physics: const BouncingScrollPhysics(),
+          gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+          ),
+          itemCount: filteredIndices.length,
+          mainAxisSpacing: AiSpacing.md,
+          crossAxisSpacing: AiSpacing.md,
+          itemBuilder: (context, index) {
+            final haircutIndex = filteredIndices[index];
+            final item = _haircuts[haircutIndex];
+            final isSelected = haircutIndex == _selectedHaircutIndex;
+            return _buildStyleCard(
+              key: ValueKey(item['id']),
+              item: item,
+              itemIndex: haircutIndex,
+              isSelected: isSelected,
+              height: 220,
+              onTap: () {
+                setState(() {
+                  _selectedHaircutIndex = haircutIndex;
+                });
+              },
+              showFavouriteIcon: true,
+              onFavouriteToggle: () => _toggleFavourite(item, 'haircut'),
+            );
+          },
         ),
-        itemCount: filteredIndices.length,
-        mainAxisSpacing: AiSpacing.md,
-        crossAxisSpacing: AiSpacing.md,
-        itemBuilder: (context, index) {
-          final haircutIndex = filteredIndices[index];
-          final item = _haircuts[haircutIndex];
-          final isSelected = haircutIndex == _selectedHaircutIndex;
-          return _buildStyleCard(
-            key: ValueKey(item['id']),
-            item: item,
-            itemIndex: haircutIndex,
-            isSelected: isSelected,
-            height: 220,
-            onTap: () {
-              setState(() {
-                _selectedHaircutIndex = haircutIndex;
-              });
-            },
-            showFavouriteIcon: true,
-            onFavouriteToggle: () => _toggleFavourite(item, 'haircut'),
-          );
-        },
       ),
     );
   }
@@ -2944,38 +2970,40 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         AiSpacing.md,
         AiSpacing.md,
       ),
-      child: MasonryGridView.builder(
-        controller: scrollController ?? ScrollController(),
-        physics: const BouncingScrollPhysics(),
-        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
+      child: RepaintBoundary(
+        child: MasonryGridView.builder(
+          controller: scrollController ?? ScrollController(),
+          physics: const BouncingScrollPhysics(),
+          gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+          ),
+          itemCount: filteredIndices.length,
+          mainAxisSpacing: AiSpacing.md,
+          crossAxisSpacing: AiSpacing.md,
+          itemBuilder: (context, index) {
+            final itemIndex = filteredIndices[index];
+            final beard = _beardStyles[itemIndex];
+            final beardEntity = _beardEntities[itemIndex];
+            final isSelected = _selectedBeardIndex == itemIndex;
+            return _buildStyleCard(
+              item: beard,
+              itemIndex: itemIndex,
+              isSelected: isSelected,
+              height: _beardHeights[itemIndex],
+              onTap: () {
+                // Select beard style and close panel
+                context.read<StyleSelectionController>().selectBeardStyle(
+                  beardEntity,
+                );
+                setState(() {
+                  _selectedBeardIndex = itemIndex;
+                  _selectedAngleIndex = 0;
+                });
+                _setPanelLevel(_panelLevel2);
+              },
+            );
+          },
         ),
-        itemCount: filteredIndices.length,
-        mainAxisSpacing: AiSpacing.md,
-        crossAxisSpacing: AiSpacing.md,
-        itemBuilder: (context, index) {
-          final itemIndex = filteredIndices[index];
-          final beard = _beardStyles[itemIndex];
-          final beardEntity = _beardEntities[itemIndex];
-          final isSelected = _selectedBeardIndex == itemIndex;
-          return _buildStyleCard(
-            item: beard,
-            itemIndex: itemIndex,
-            isSelected: isSelected,
-            height: _beardHeights[itemIndex],
-            onTap: () {
-              // Select beard style and close panel
-              context.read<StyleSelectionController>().selectBeardStyle(
-                beardEntity,
-              );
-              setState(() {
-                _selectedBeardIndex = itemIndex;
-                _selectedAngleIndex = 0;
-              });
-              _setPanelLevel(_panelLevel2);
-            },
-          );
-        },
       ),
     );
   }
@@ -3015,6 +3043,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               FirebaseImage(
                 item['image']?.toString() ?? '',
                 fit: BoxFit.cover,
+                loadingWidget: ShimmerPlaceholder(
+                  baseColor: accentColor.withValues(alpha: 0.12),
+                  highlightColor: accentColor.withValues(alpha: 0.28),
+                ),
                 errorWidget: Container(
                   color: accentColor.withValues(alpha: 0.2),
                   child: Icon(
@@ -3162,24 +3194,34 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     child: InteractiveViewer(
                       minScale: 1,
                       maxScale: 3,
-                      child: LazyNetworkImage(
-                        imageUrl: images[index],
-                        fit: BoxFit.contain,
+                      child: SizedBox(
                         width: 240,
                         height: 320,
-                        customErrorWidget: Container(
-                          height: 320,
+                        child: FirebaseImage(
+                          images[index],
+                          fit: BoxFit.contain,
                           width: 240,
-                          decoration: BoxDecoration(
-                            color: accentColor.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(
-                              AiSpacing.radiusLarge,
-                            ),
+                          height: 320,
+                          loadingWidget: ShimmerPlaceholder(
+                            width: 240,
+                            height: 320,
+                            baseColor: accentColor.withValues(alpha: 0.12),
+                            highlightColor: accentColor.withValues(alpha: 0.28),
                           ),
-                          child: Icon(
-                            Icons.image_not_supported,
-                            size: 80,
-                            color: accentColor,
+                          errorWidget: Container(
+                            height: 320,
+                            width: 240,
+                            decoration: BoxDecoration(
+                              color: accentColor.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusLarge,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.image_not_supported,
+                              size: 80,
+                              color: accentColor,
+                            ),
                           ),
                         ),
                       ),

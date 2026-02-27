@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../widgets/firebase_image.dart';
 import '../widgets/lazy_network_image.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../theme/theme.dart';
@@ -521,10 +522,14 @@ class _ProductsViewState extends State<ProductsView> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    GridLazyImage(
-                      imageUrl: product['image'] as String,
+                    FirebaseGridLazyImage(
+                      product['image'] as String,
                       fit: BoxFit.cover,
-                      customErrorWidget: Container(
+                      loadingWidget: ShimmerPlaceholder(
+                        baseColor: accentColor.withValues(alpha: 0.12),
+                        highlightColor: accentColor.withValues(alpha: 0.28),
+                      ),
+                      errorWidget: Container(
                         color: accentColor.withValues(alpha: 0.2),
                         child: Icon(
                           Icons.image_not_supported,
@@ -634,10 +639,14 @@ class _ProductsViewState extends State<ProductsView> {
                     ),
                     child: AspectRatio(
                       aspectRatio: 2 / 3,
-                      child: GridLazyImage(
-                        imageUrl: product['image'] as String,
+                      child: FirebaseGridLazyImage(
+                        product['image'] as String,
                         fit: BoxFit.cover,
-                        customErrorWidget: Container(
+                        loadingWidget: ShimmerPlaceholder(
+                          baseColor: accentColor.withValues(alpha: 0.12),
+                          highlightColor: accentColor.withValues(alpha: 0.28),
+                        ),
+                        errorWidget: Container(
                           color: accentColor.withValues(alpha: 0.2),
                           child: Icon(
                             Icons.image_not_supported,

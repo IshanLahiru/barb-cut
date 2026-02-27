@@ -10,6 +10,7 @@ import '../../data/datasources/tab_categories_remote_data_source.dart';
 import '../../domain/entities/tab_category_entity.dart';
 import '../../domain/usecases/get_beard_styles_usecase.dart';
 import '../../domain/usecases/get_haircuts_usecase.dart';
+import '../../domain/entities/style_entity.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
@@ -22,6 +23,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final AuthRepository authRepository;
   final TabCategoriesRemoteDataSource tabCategoriesDataSource;
   StreamSubscription<List<TabCategoryEntity>>? _tabCategoriesSubscription;
+
+  List<Map<String, dynamic>> _mapStyles(List<StyleEntity> styles) {
+    return styles
+        .map(
+          (e) => {
+            'id': e.id,
+            'name': e.name,
+            'description': e.description,
+            'image': e.imageUrl,
+            'images': e.images,
+            'suitableFaceShapes': e.suitableFaceShapes,
+            'maintenanceTips': e.maintenanceTips,
+          },
+        )
+        .toList();
+  }
 
   HomeBloc({
     required this.getHaircutsUseCase,
@@ -95,9 +112,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
     }
 
+    final mappedHaircuts = _mapStyles(haircuts);
+    final mappedBeards = _mapStyles(beards);
+
     final loaded = HomeLoaded(
       haircuts: haircuts,
       beardStyles: beards,
+      haircutMaps: mappedHaircuts,
+      beardStyleMaps: mappedBeards,
       favouriteIds: favouriteIds,
       favouritesError: favouritesError,
     );
@@ -138,13 +160,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         styleType: event.styleType,
       );
     }
-    emit(HomeLoaded(
-      haircuts: current.haircuts,
-      beardStyles: current.beardStyles,
-      favouriteIds: newIds,
-      favouritesError: current.favouritesError,
-      tabCategories: current.tabCategories,
-    ));
+    emit(
+      HomeLoaded(
+        haircuts: current.haircuts,
+        beardStyles: current.beardStyles,
+        haircutMaps: current.haircutMaps,
+        beardStyleMaps: current.beardStyleMaps,
+        favouriteIds: newIds,
+        favouritesError: current.favouritesError,
+        tabCategories: current.tabCategories,
+      ),
+    );
   }
 
   void _onTabCategoriesUpdated(
@@ -153,13 +179,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) {
     final current = state;
     if (current is HomeLoaded) {
-      emit(HomeLoaded(
-        haircuts: current.haircuts,
-        beardStyles: current.beardStyles,
-        favouriteIds: current.favouriteIds,
-        favouritesError: current.favouritesError,
-        tabCategories: event.categories,
-      ));
+      emit(
+        HomeLoaded(
+          haircuts: current.haircuts,
+          beardStyles: current.beardStyles,
+          haircutMaps: current.haircutMaps,
+          beardStyleMaps: current.beardStyleMaps,
+          favouriteIds: current.favouriteIds,
+          favouritesError: current.favouritesError,
+          tabCategories: event.categories,
+        ),
+      );
     }
   }
 
