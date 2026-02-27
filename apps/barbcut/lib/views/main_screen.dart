@@ -3,9 +3,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:barbcut/core/di/service_locator.dart';
 import 'package:barbcut/features/ai_generation/domain/repositories/ai_job_repository.dart';
 import 'package:barbcut/features/ai_generation/presentation/cubit/generation_status_cubit.dart';
+import 'package:barbcut/features/auth/domain/repositories/auth_repository.dart';
+import 'package:barbcut/features/favourites/domain/usecases/add_favourite_usecase.dart';
+import 'package:barbcut/features/favourites/domain/usecases/get_favourites_usecase.dart';
+import 'package:barbcut/features/favourites/domain/usecases/remove_favourite_usecase.dart';
+import 'package:barbcut/features/home/data/datasources/tab_categories_remote_data_source.dart';
+import 'package:barbcut/features/home/domain/usecases/get_beard_styles_usecase.dart';
+import 'package:barbcut/features/home/domain/usecases/get_haircuts_usecase.dart';
+import 'package:barbcut/features/home/presentation/bloc/home_bloc.dart';
 import 'package:barbcut/features/home/presentation/pages/home_page.dart';
+import 'package:barbcut/features/history/domain/repositories/history_repository.dart';
+import 'package:barbcut/features/history/domain/usecases/get_history_usecase.dart';
+import 'package:barbcut/features/history/presentation/bloc/history_bloc.dart';
 import 'package:barbcut/features/history/presentation/pages/history_page.dart';
+import 'package:barbcut/features/products/domain/usecases/get_products_usecase.dart';
+import 'package:barbcut/features/products/presentation/bloc/products_bloc.dart';
 import 'package:barbcut/features/products/presentation/pages/products_page.dart';
+import 'package:barbcut/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:barbcut/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:barbcut/features/profile/presentation/pages/profile_page.dart';
 import '../theme/theme.dart';
 
@@ -19,13 +34,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  List<Widget> get _widgetOptions => <Widget>[
-    HomePage(onNavigateToHistory: () => _onItemTapped(1)),
-    const HistoryPage(),
-    const ProductsPage(),
-    const ProfilePage(),
-  ];
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -38,28 +46,77 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<GenerationStatusCubit>(
-      create: (_) =>
-          GenerationStatusCubit(aiJobRepository: getIt<AiJobRepository>()),
-      child: Scaffold(
-        body: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 260),
-          switchInCurve: Curves.easeOutCubic,
-          switchOutCurve: Curves.easeInCubic,
-          transitionBuilder: (child, animation) {
-            final offsetAnimation = Tween<Offset>(
-              begin: const Offset(0.08, 0),
-              end: Offset.zero,
-            ).animate(animation);
-            return FadeTransition(
-              opacity: animation,
-              child: SlideTransition(position: offsetAnimation, child: child),
-            );
-          },
-          child: KeyedSubtree(
-            key: ValueKey<int>(_selectedIndex),
-            child: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+    final pages = <Widget>[
+      Center(
+        key: const PageStorageKey('home_tab'),
+        child: HomePage(
+          currentIndex: _selectedIndex,
+          tabIndex: 0,
+          onNavigateToHistory: () => _onItemTapped(1),
+        ),
+      ),
+      Center(
+        key: const PageStorageKey('history_tab'),
+        child: HistoryPage(
+          currentIndex: _selectedIndex,
+          tabIndex: 1,
+        ),
+      ),
+      Center(
+        key: const PageStorageKey('products_tab'),
+        child: ProductsPage(
+          currentIndex: _selectedIndex,
+          tabIndex: 2,
+        ),
+      ),
+      Center(
+        key: const PageStorageKey('profile_tab'),
+        child: ProfilePage(
+          currentIndex: _selectedIndex,
+          tabIndex: 3,
+        ),
+      ),
+    ];
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<GenerationStatusCubit>(
+          create: (_) =>
+              GenerationStatusCubit(aiJobRepository: getIt<AiJobRepository>()),
+        ),
+        BlocProvider<HomeBloc>(
+          create: (_) => HomeBloc(
+            getHaircutsUseCase: getIt<GetHaircutsUseCase>(),
+            getBeardStylesUseCase: getIt<GetBeardStylesUseCase>(),
+            getFavouritesUseCase: getIt<GetFavouritesUseCase>(),
+            addFavouriteUseCase: getIt<AddFavouriteUseCase>(),
+            removeFavouriteUseCase: getIt<RemoveFavouriteUseCase>(),
+            authRepository: getIt<AuthRepository>(),
+            tabCategoriesDataSource: getIt<TabCategoriesRemoteDataSource>(),
           ),
+        ),
+        BlocProvider<HistoryBloc>(
+          create: (_) => HistoryBloc(
+            getHistoryUseCase: getIt<GetHistoryUseCase>(),
+            historyRepository: getIt<HistoryRepository>(),
+            authRepository: getIt<AuthRepository>(),
+          ),
+        ),
+        BlocProvider<ProductsBloc>(
+          create: (_) => ProductsBloc(
+            getProductsUseCase: getIt<GetProductsUseCase>(),
+          ),
+        ),
+        BlocProvider<ProfileBloc>(
+          create: (_) => ProfileBloc(
+            getProfileUseCase: getIt<GetProfileUseCase>(),
+          ),
+        ),
+      ],
+      child: Scaffold(
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: pages,
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(

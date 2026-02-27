@@ -23,6 +23,7 @@ class LazyNetworkImage extends StatefulWidget {
   final bool enableShimmer;
   final VoidCallback? onTap;
   final String? semanticLabel;
+  final String? cacheKey;
 
   const LazyNetworkImage({
     super.key,
@@ -38,6 +39,7 @@ class LazyNetworkImage extends StatefulWidget {
     this.enableShimmer = true,
     this.onTap,
     this.semanticLabel,
+    this.cacheKey,
   });
 
   @override
@@ -129,6 +131,7 @@ class _LazyNetworkImageState extends State<LazyNetworkImage> {
     // Use CachedNetworkImage for disk + memory caching
     Widget imageWidget = CachedNetworkImage(
       imageUrl: widget.imageUrl!,
+      cacheKey: widget.cacheKey ?? widget.imageUrl,
       fit: widget.fit,
       width: widget.width,
       height: widget.height,

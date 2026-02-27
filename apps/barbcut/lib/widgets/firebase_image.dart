@@ -194,6 +194,7 @@ class _FirebaseImageState extends State<FirebaseImage> {
     // Use LazyNetworkImage for optimized loading (caching, fade-in, shimmer)
     return LazyNetworkImage(
       imageUrl: _downloadUrl,
+      cacheKey: widget.imageUrl,
       fit: widget.fit,
       width: widget.width,
       height: widget.height,

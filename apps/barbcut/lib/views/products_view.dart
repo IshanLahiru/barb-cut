@@ -10,7 +10,14 @@ import '../features/products/presentation/bloc/products_event.dart';
 import '../features/products/presentation/bloc/products_state.dart';
 
 class ProductsView extends StatefulWidget {
-  const ProductsView({super.key});
+  final int currentIndex;
+  final int tabIndex;
+
+  const ProductsView({
+    super.key,
+    required this.currentIndex,
+    required this.tabIndex,
+  });
 
   @override
   State<ProductsView> createState() => _ProductsViewState();
@@ -24,11 +31,35 @@ class _ProductsViewState extends State<ProductsView> {
   late List<Map<String, dynamic>> _products;
 
   final List<String> _categories = ['All', 'Hair Care', 'Beard Care', 'Tools'];
+  bool _hasRequestedLoad = false;
 
   @override
   void initState() {
     super.initState();
     _products = [];
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _maybeRequestInitialLoad();
+      }
+    });
+  }
+
+  void _maybeRequestInitialLoad() {
+    if (_hasRequestedLoad) return;
+    if (widget.currentIndex != widget.tabIndex) return;
+    final state = context.read<ProductsBloc>().state;
+    if (state is ProductsInitial) {
+      context.read<ProductsBloc>().add(const ProductsLoadRequested());
+      _hasRequestedLoad = true;
+    }
+  }
+
+  @override
+  void didUpdateWidget(ProductsView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentIndex != oldWidget.currentIndex) {
+      _maybeRequestInitialLoad();
+    }
   }
 
   List<Map<String, dynamic>> _mapProducts(List<ProductEntity> products) {

@@ -5,11 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-import '../core/di/service_locator.dart';
-import '../features/auth/domain/repositories/auth_repository.dart';
 import '../features/history/domain/entities/history_entity.dart';
-import '../features/history/domain/repositories/history_repository.dart';
-import '../features/history/domain/usecases/get_history_usecase.dart';
 import '../features/history/presentation/bloc/history_bloc.dart';
 import '../features/history/presentation/bloc/history_event.dart';
 import '../features/ai_generation/presentation/cubit/generation_status_cubit.dart';
@@ -19,7 +15,14 @@ import '../theme/theme.dart';
 import '../widgets/lazy_network_image.dart';
 
 class HistoryView extends StatefulWidget {
-  const HistoryView({super.key});
+  final int currentIndex;
+  final int tabIndex;
+
+  const HistoryView({
+    super.key,
+    required this.currentIndex,
+    required this.tabIndex,
+  });
 
   @override
   State<HistoryView> createState() => _HistoryViewState();
@@ -31,6 +34,7 @@ class _HistoryViewState extends State<HistoryView>
   final Random _random = Random();
   late List<double> _cardHeights;
   late AnimationController _generationPulseController;
+  bool _hasRequestedLoad = false;
 
   @override
   void initState() {
@@ -41,6 +45,19 @@ class _HistoryViewState extends State<HistoryView>
       duration: const Duration(milliseconds: 1400),
       vsync: this,
     )..repeat();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _maybeRequestInitialLoad();
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(HistoryView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentIndex != oldWidget.currentIndex) {
+      _maybeRequestInitialLoad();
+    }
   }
 
   @override
@@ -58,6 +75,16 @@ class _HistoryViewState extends State<HistoryView>
 
   Future<void> _refreshHistory(BuildContext context) async {
     context.read<HistoryBloc>().add(const HistoryLoadRequested());
+  }
+
+  void _maybeRequestInitialLoad() {
+    if (_hasRequestedLoad) return;
+    if (widget.currentIndex != widget.tabIndex) return;
+    final state = context.read<HistoryBloc>().state;
+    if (state is HistoryInitial) {
+      context.read<HistoryBloc>().add(const HistoryLoadRequested());
+      _hasRequestedLoad = true;
+    }
   }
 
   List<Map<String, dynamic>> _mapHistory(List<HistoryEntity> history) {
@@ -117,13 +144,7 @@ class _HistoryViewState extends State<HistoryView>
       crossAxisCount = 3;
     }
 
-    return BlocProvider(
-      create: (_) => HistoryBloc(
-        getHistoryUseCase: getIt<GetHistoryUseCase>(),
-        historyRepository: getIt<HistoryRepository>(),
-        authRepository: getIt<AuthRepository>(),
-      )..add(const HistoryLoadRequested()),
-      child: BlocListener<HistoryBloc, HistoryState>(
+    return BlocListener<HistoryBloc, HistoryState>(
         listener: (context, state) {
           if (state is HistoryLoaded) {
             setState(() {
@@ -201,8 +222,7 @@ class _HistoryViewState extends State<HistoryView>
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildHistoryCard(

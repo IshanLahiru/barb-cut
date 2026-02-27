@@ -17,7 +17,14 @@ import '../services/user_photo_service.dart';
 import 'questionnaire_view.dart';
 
 class ProfileView extends StatefulWidget {
-  const ProfileView({super.key});
+  final int currentIndex;
+  final int tabIndex;
+
+  const ProfileView({
+    super.key,
+    required this.currentIndex,
+    required this.tabIndex,
+  });
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -32,11 +39,35 @@ class _ProfileViewState extends State<ProfileView> {
   bool _isSendingVerification = false;
   bool _isUploadingPhoto = false;
   static final ImagePicker _imagePicker = ImagePicker();
+  bool _hasRequestedLoad = false;
 
   @override
   void initState() {
     super.initState();
     _loadFirebaseUserData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _maybeRequestInitialLoad();
+      }
+    });
+  }
+
+  void _maybeRequestInitialLoad() {
+    if (_hasRequestedLoad) return;
+    if (widget.currentIndex != widget.tabIndex) return;
+    final state = context.read<ProfileBloc>().state;
+    if (state is ProfileInitial) {
+      context.read<ProfileBloc>().add(const ProfileLoadRequested());
+      _hasRequestedLoad = true;
+    }
+  }
+
+  @override
+  void didUpdateWidget(ProfileView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentIndex != oldWidget.currentIndex) {
+      _maybeRequestInitialLoad();
+    }
   }
 
   Future<void> _loadFirebaseUserData() async {

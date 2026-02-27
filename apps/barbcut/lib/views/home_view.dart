@@ -6,16 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
 import 'dart:async';
 import '../theme/theme.dart';
-import '../core/di/service_locator.dart';
 import '../features/home/domain/entities/style_entity.dart';
-import '../features/auth/domain/repositories/auth_repository.dart';
-import '../features/favourites/domain/usecases/add_favourite_usecase.dart';
-import '../features/favourites/domain/usecases/get_favourites_usecase.dart';
-import '../features/favourites/domain/usecases/remove_favourite_usecase.dart';
-import '../features/home/domain/usecases/get_beard_styles_usecase.dart';
-import '../features/home/data/datasources/tab_categories_remote_data_source.dart';
 import '../features/home/domain/entities/tab_category_entity.dart';
-import '../features/home/domain/usecases/get_haircuts_usecase.dart';
 import '../features/ai_generation/presentation/cubit/generation_status_cubit.dart';
 import '../features/home/presentation/bloc/home_bloc.dart';
 import '../features/home/presentation/bloc/home_event.dart';
@@ -33,8 +25,15 @@ import 'face_photo_upload_view.dart';
 
 class HomeView extends StatefulWidget {
   final VoidCallback? onNavigateToHistory;
+  final int currentIndex;
+  final int tabIndex;
 
-  const HomeView({super.key, this.onNavigateToHistory});
+  const HomeView({
+    super.key,
+    this.onNavigateToHistory,
+    required this.currentIndex,
+    required this.tabIndex,
+  });
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -74,6 +73,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   late List<StyleEntity> _beardEntities = [];
   late List<Map<String, dynamic>> _haircuts = [];
   late List<Map<String, dynamic>> _beardStyles = [];
+  bool _hasRequestedLoad = false;
+  bool _hasSeenContentOrFailure = false;
 
   // Methods
   Widget _buildRecentGrid(ScrollController? scrollController) {
@@ -323,6 +324,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       }
     });
     _regenerateHeights();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _maybeRequestInitialLoad();
+      }
+    });
   }
 
   double _lastScrollOffset = 0.0;
@@ -1352,6 +1358,24 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  void _maybeRequestInitialLoad() {
+    if (_hasRequestedLoad) return;
+    if (widget.currentIndex != widget.tabIndex) return;
+    final state = context.read<HomeBloc>().state;
+    if (state is HomeInitial) {
+      context.read<HomeBloc>().add(const HomeLoadRequested());
+      _hasRequestedLoad = true;
+    }
+  }
+
+  @override
+  void didUpdateWidget(HomeView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentIndex != oldWidget.currentIndex) {
+      _maybeRequestInitialLoad();
+    }
+  }
+
   bool _matchesPanelSearch(Map<String, dynamic> item) {
     final raw = _panelSearchQueryNotifier.value;
     if (raw.trim().isEmpty) {
@@ -1405,17 +1429,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           }
         }
       },
-      child: BlocProvider<HomeBloc>(
-        create: (_) => HomeBloc(
-          getHaircutsUseCase: getIt<GetHaircutsUseCase>(),
-          getBeardStylesUseCase: getIt<GetBeardStylesUseCase>(),
-          getFavouritesUseCase: getIt<GetFavouritesUseCase>(),
-          addFavouriteUseCase: getIt<AddFavouriteUseCase>(),
-          removeFavouriteUseCase: getIt<RemoveFavouriteUseCase>(),
-          authRepository: getIt<AuthRepository>(),
-          tabCategoriesDataSource: getIt<TabCategoriesRemoteDataSource>(),
-        )..add(const HomeLoadRequested()),
-        child: BlocListener<HomeBloc, HomeState>(
+      child: BlocListener<HomeBloc, HomeState>(
           listener: (context, state) {
             if (state is HomeLoaded) {
               final haircuts = state.haircutMaps;
@@ -1445,8 +1459,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 _selectedAngleIndex = 0;
                 _regenerateHeights();
               });
+            _hasSeenContentOrFailure = true;
             }
             if (state is HomeFailure) {
+            _hasSeenContentOrFailure = true;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
@@ -1461,14 +1477,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 curr is HomeLoading ||
                 curr is HomeInitial,
             builder: (context, state) {
-              if (state is HomeLoading || state is HomeInitial) {
+            if ((state is HomeLoading || state is HomeInitial) &&
+                !_hasSeenContentOrFailure) {
                 return _buildScaffoldWithLoadingBody();
               }
               return _buildScaffoldDynamicTabs();
             },
           ),
         ),
-      ),
     );
   }
 
