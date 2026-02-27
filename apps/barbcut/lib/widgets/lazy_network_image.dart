@@ -1,10 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 /// A highly optimized image widget with non-blocking lazy loading.
 ///
 /// Features:
 /// - Lazy loading: Only loads images when they enter the viewport
-/// - Memory efficient: Uses cached network image with proper caching
+/// - Memory efficient: Uses cached_network_image for disk + memory caching
 /// - Smooth transitions: Fade-in effect when image loads
 /// - Placeholder: Shows shimmer while loading
 /// - Error handling: Graceful error states with retry capability
@@ -45,9 +46,6 @@ class LazyNetworkImage extends StatefulWidget {
 
 class _LazyNetworkImageState extends State<LazyNetworkImage> {
   bool _isVisible = false;
-  bool _hasLoaded = false;
-  bool _hasError = false;
-  ImageProvider? _imageProvider;
 
   @override
   void initState() {
@@ -63,13 +61,9 @@ class _LazyNetworkImageState extends State<LazyNetworkImage> {
   @override
   void didUpdateWidget(LazyNetworkImage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.imageUrl != widget.imageUrl) {
-      _hasLoaded = false;
-      _hasError = false;
-      _imageProvider = null;
-      if (_isVisible) {
-        _loadImage();
-      }
+    if (oldWidget.imageUrl != widget.imageUrl && _isVisible) {
+      // CachedNetworkImage will handle the new URL
+      setState(() {});
     }
   }
 
@@ -78,60 +72,14 @@ class _LazyNetworkImageState extends State<LazyNetworkImage> {
 
     final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null || !renderBox.hasSize) {
-      // If render box not ready, schedule another check
       Future.delayed(const Duration(milliseconds: 100), _checkVisibility);
       return;
     }
 
-    // Check if widget is in viewport (with some buffer)
-    // Fallback: Just load immediately if visible
-    if (!_hasLoaded && !_hasError) {
+    if (!_isVisible) {
       setState(() {
         _isVisible = true;
       });
-      _loadImage();
-    }
-    // Note: Advanced viewport detection requires custom scroll logic or packages like visibility_detector.
-  }
-
-  void _loadImage() {
-    if (widget.imageUrl == null || widget.imageUrl!.trim().isEmpty) {
-      if (mounted) {
-        setState(() {
-          _hasError = true;
-        });
-      }
-      return;
-    }
-
-    try {
-      _imageProvider = NetworkImage(widget.imageUrl!);
-      _imageProvider
-          ?.resolve(const ImageConfiguration())
-          .addListener(
-            ImageStreamListener(
-              (info, call) {
-                if (mounted) {
-                  setState(() {
-                    _hasLoaded = true;
-                  });
-                }
-              },
-              onError: (error, stackTrace) {
-                if (mounted) {
-                  setState(() {
-                    _hasError = true;
-                  });
-                }
-              },
-            ),
-          );
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _hasError = true;
-        });
-      }
     }
   }
 
@@ -140,39 +88,31 @@ class _LazyNetworkImageState extends State<LazyNetworkImage> {
     final baseColor = widget.placeholderColor ?? Colors.grey[800]!;
     final highlightColor = widget.placeholderColor ?? Colors.grey[700]!;
 
-    // Show placeholder
-    if (!_isVisible || (!_hasLoaded && !_hasError)) {
+    // Empty or invalid URL
+    if (widget.imageUrl == null || widget.imageUrl!.trim().isEmpty) {
+      return widget.customErrorWidget ?? _buildErrorWidget();
+    }
+
+    // Not yet visible - show placeholder (lazy load)
+    if (!_isVisible) {
       return widget.customPlaceholder ??
           _buildShimmer(baseColor, highlightColor);
     }
 
-    // Show error widget
-    if (_hasError ||
-        widget.imageUrl == null ||
-        widget.imageUrl!.trim().isEmpty) {
-      return widget.customErrorWidget ?? _buildErrorWidget();
-    }
-
-    // Show image with optional fade-in
-    Widget imageWidget = Image(
-      image: _imageProvider!,
+    // Use CachedNetworkImage for disk + memory caching
+    Widget imageWidget = CachedNetworkImage(
+      imageUrl: widget.imageUrl!,
       fit: widget.fit,
       width: widget.width,
       height: widget.height,
-      errorBuilder: (context, error, stackTrace) {
-        return widget.customErrorWidget ?? _buildErrorWidget();
-      },
-      frameBuilder: widget.enableFadeIn
-          ? (context, child, frame, wasSynchronouslyLoaded) {
-              if (wasSynchronouslyLoaded) return child;
-              return AnimatedOpacity(
-                opacity: frame == null ? 0 : 1,
-                duration: widget.fadeInDuration,
-                curve: Curves.easeOut,
-                child: child,
-              );
-            }
-          : null,
+      placeholder: (_, __) =>
+          widget.customPlaceholder ?? _buildShimmer(baseColor, highlightColor),
+      errorWidget: (_, __, ___) =>
+          widget.customErrorWidget ?? _buildErrorWidget(),
+      fadeInDuration: widget.enableFadeIn ? widget.fadeInDuration : Duration.zero,
+      fadeOutDuration: Duration.zero,
+      memCacheWidth: widget.width != null ? (widget.width! * 2).toInt() : null,
+      memCacheHeight: widget.height != null ? (widget.height! * 2).toInt() : null,
     );
 
     if (widget.onTap != null) {

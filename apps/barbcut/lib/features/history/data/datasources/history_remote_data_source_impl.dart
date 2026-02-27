@@ -12,12 +12,15 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
 
   final FirebaseFirestore _firestore;
 
+  static const int _pageSize = 20;
+
   @override
   Stream<List<HistoryEntity>> watchHistory(String userId) {
     return _firestore
         .collection('history')
         .where('userId', isEqualTo: userId)
         .orderBy('timestamp', descending: true)
+        .limit(_pageSize)
         .snapshots()
         .asyncMap((snapshot) async {
           final items = await Future.wait(

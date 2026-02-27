@@ -341,12 +341,17 @@ class FirebaseDataService {
     });
   }
 
-  /// Fetch history from Firestore
+  /// Default page size for history pagination
+  static const int historyPageSize = 20;
+
+  /// Fetch history from Firestore (paginated - first page only)
   static Future<List<Map<String, dynamic>>> fetchHistory({
     bool forceRefresh = false,
     String? userId,
+    int limit = historyPageSize,
+    DocumentSnapshot? startAfter,
   }) async {
-    if (_cachedHistory != null && !forceRefresh) {
+    if (_cachedHistory != null && !forceRefresh && startAfter == null) {
       return _cachedHistory!;
     }
 
@@ -358,17 +363,24 @@ class FirebaseDataService {
       if (resolvedUserId != null) {
         query = query.where('userId', isEqualTo: resolvedUserId);
       }
+      query = query.orderBy('timestamp', descending: true).limit(limit);
+      if (startAfter != null) {
+        query = query.startAfterDocument(startAfter);
+      }
 
-      final snapshot = await query.orderBy('timestamp', descending: true).get();
+      final snapshot = await query.get();
       final rawHistory = snapshot.docs
           .map((doc) => {'id': doc.id, ...doc.data()})
           .toList();
-      _cachedHistory = await Future.wait(rawHistory.map(_resolveHistoryImage));
+      final resolved = await Future.wait(rawHistory.map(_resolveHistoryImage));
+      if (startAfter == null) {
+        _cachedHistory = resolved;
+      }
       developer.log(
-        '✓ Fetched ${_cachedHistory!.length} history items',
+        '✓ Fetched ${resolved.length} history items',
         name: 'FirebaseData',
       );
-      return _cachedHistory!;
+      return resolved;
     } catch (e) {
       developer.log(
         '✗ Error fetching history: $e',

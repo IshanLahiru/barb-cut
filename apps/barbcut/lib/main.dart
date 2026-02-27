@@ -34,28 +34,21 @@ Future<ThemeController> _initializeThemeController() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Lock to portrait orientation
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
+  // dotenv MUST load first - firebase_options.dart reads FIREBASE_* from .env
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
     debugPrint('Failed to load .env: $e');
   }
 
+  // Firebase must initialize before any Firebase-dependent code
   try {
-    // Initialize only if not already initialized (e.g. by native iOS/Android
-    // auto-init from GoogleService-Info.plist / google-services.json).
     if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
     }
   } on FirebaseException catch (e) {
-    // Native may have already created [DEFAULT]; code can be 'duplicate-app' or 'core/duplicate-app'
     if (e.code == 'duplicate-app' || e.code == 'core/duplicate-app') {
       // Already initialized; ignore.
     } else {
@@ -64,6 +57,11 @@ void main() async {
   } catch (e) {
     debugPrint('Error setting up authentication: $e');
   }
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   try {
     await setupServiceLocator();
