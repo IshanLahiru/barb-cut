@@ -9,6 +9,7 @@ import '../../../favourites/domain/usecases/remove_favourite_usecase.dart';
 import '../../data/datasources/tab_categories_remote_data_source.dart';
 import '../../domain/entities/tab_category_entity.dart';
 import '../../domain/usecases/get_beard_styles_usecase.dart';
+import '../../domain/usecases/get_cached_styles_usecase.dart';
 import '../../domain/usecases/get_haircuts_usecase.dart';
 import '../../domain/entities/style_entity.dart';
 import 'home_event.dart';
@@ -17,6 +18,7 @@ import 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetHaircutsUseCase getHaircutsUseCase;
   final GetBeardStylesUseCase getBeardStylesUseCase;
+  final GetCachedStylesUseCase getCachedStylesUseCase;
   final GetFavouritesUseCase getFavouritesUseCase;
   final AddFavouriteUseCase addFavouriteUseCase;
   final RemoveFavouriteUseCase removeFavouriteUseCase;
@@ -50,6 +52,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({
     required this.getHaircutsUseCase,
     required this.getBeardStylesUseCase,
+    required this.getCachedStylesUseCase,
     required this.getFavouritesUseCase,
     required this.addFavouriteUseCase,
     required this.removeFavouriteUseCase,
@@ -67,6 +70,40 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     HomeLoadRequested event,
     Emitter<HomeState> emit,
   ) async {
+    // Skip refetch when already loaded (e.g. user switched tabs and back)
+    if (state is HomeLoaded) {
+      return;
+    }
+
+    // Rehydrate from in-memory cache first (e.g. after hot reload)
+    final cached = await getCachedStylesUseCase();
+    if (cached != null) {
+      final (haircuts, beards) = cached;
+      Set<String> favouriteIds = {};
+      String? favouritesError;
+      final user = authRepository.currentUser;
+      if (user != null) {
+        try {
+          final favs = await getFavouritesUseCase(user.id);
+          favouriteIds = favs.map((f) => f['id'].toString()).toSet();
+        } catch (e) {
+          favouritesError = e.toString();
+        }
+      }
+      final mappedHaircuts = _mapStyles(haircuts);
+      final mappedBeards = _mapStyles(beards);
+      emit(HomeLoaded(
+        haircuts: haircuts,
+        beardStyles: beards,
+        haircutMaps: mappedHaircuts,
+        beardStyleMaps: mappedBeards,
+        favouriteIds: favouriteIds,
+        favouritesError: favouritesError,
+      ));
+      _startTabCategoriesStream();
+      return;
+    }
+
     emit(const HomeLoading());
 
     final user = authRepository.currentUser;
@@ -132,6 +169,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
     emit(loaded);
 
+    _startTabCategoriesStream();
+  }
+
+  void _startTabCategoriesStream() {
     _tabCategoriesSubscription?.cancel();
     _tabCategoriesSubscription =
         tabCategoriesDataSource.watchTabCategories().listen((categories) {

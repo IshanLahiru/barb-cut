@@ -67,6 +67,12 @@ class FirebaseDataService {
   // Cache for data
   static List<Map<String, dynamic>>? _cachedHaircuts;
   static List<Map<String, dynamic>>? _cachedBeardStyles;
+
+  /// Exposes cached haircuts for rehydration (e.g. after hot reload). Null if not yet fetched.
+  static List<Map<String, dynamic>>? get cachedHaircuts => _cachedHaircuts;
+
+  /// Exposes cached beard styles for rehydration (e.g. after hot reload). Null if not yet fetched.
+  static List<Map<String, dynamic>>? get cachedBeardStyles => _cachedBeardStyles;
   static List<Map<String, dynamic>>? _cachedProducts;
   static Map<String, dynamic>? _cachedProfile;
   static List<Map<String, dynamic>>? _cachedHistory;

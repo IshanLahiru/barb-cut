@@ -9,6 +9,7 @@ import 'package:barbcut/features/favourites/domain/usecases/get_favourites_useca
 import 'package:barbcut/features/favourites/domain/usecases/remove_favourite_usecase.dart';
 import 'package:barbcut/features/home/data/datasources/tab_categories_remote_data_source.dart';
 import 'package:barbcut/features/home/domain/usecases/get_beard_styles_usecase.dart';
+import 'package:barbcut/features/home/domain/usecases/get_cached_styles_usecase.dart';
 import 'package:barbcut/features/home/domain/usecases/get_haircuts_usecase.dart';
 import 'package:barbcut/features/home/presentation/bloc/home_bloc.dart';
 import 'package:barbcut/features/home/presentation/pages/home_page.dart';
@@ -88,6 +89,7 @@ class _MainScreenState extends State<MainScreen> {
           create: (_) => HomeBloc(
             getHaircutsUseCase: getIt<GetHaircutsUseCase>(),
             getBeardStylesUseCase: getIt<GetBeardStylesUseCase>(),
+            getCachedStylesUseCase: getIt<GetCachedStylesUseCase>(),
             getFavouritesUseCase: getIt<GetFavouritesUseCase>(),
             addFavouriteUseCase: getIt<AddFavouriteUseCase>(),
             removeFavouriteUseCase: getIt<RemoveFavouriteUseCase>(),

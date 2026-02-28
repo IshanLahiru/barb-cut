@@ -118,4 +118,25 @@ class StyleModel extends StyleEntity {
       type: type,
     );
   }
+
+  /// Serializes to a map compatible with [fromMap] (e.g. for disk cache).
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'price': price,
+      'duration': duration,
+      'tips': tips,
+      'images': {
+        'front': styleImages.front,
+        'left_side': styleImages.leftSide,
+        'right_side': styleImages.rightSide,
+        'back': styleImages.back,
+      },
+      'image': imageUrl,
+      'suitableFaceShapes': suitableFaceShapes,
+      'maintenanceTips': maintenanceTips,
+      'description': description,
+    };
+  }
 }

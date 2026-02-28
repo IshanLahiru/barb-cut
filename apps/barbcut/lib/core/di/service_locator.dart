@@ -17,11 +17,13 @@ import '../../features/favourites/domain/usecases/get_favourites_usecase.dart';
 import '../../features/favourites/domain/usecases/remove_favourite_usecase.dart';
 import '../../features/home/data/datasources/home_remote_data_source.dart';
 import '../../features/home/data/datasources/home_local_data_source.dart';
+import '../../features/home/data/datasources/styles_disk_cache.dart';
 import '../../features/home/data/datasources/tab_categories_remote_data_source.dart';
 import '../../features/home/data/datasources/tab_categories_remote_data_source_impl.dart';
 import '../../features/home/data/repositories/home_repository_impl.dart';
 import '../../features/home/domain/repositories/home_repository.dart';
 import '../../features/home/domain/usecases/get_beard_styles_usecase.dart';
+import '../../features/home/domain/usecases/get_cached_styles_usecase.dart';
 import '../../features/home/domain/usecases/get_haircuts_usecase.dart';
 import '../../features/history/data/datasources/history_local_data_source.dart';
 import '../../features/history/data/datasources/history_remote_data_source.dart';
@@ -106,6 +108,7 @@ void _setupHomeFeature() {
   getIt.registerLazySingleton<HomeLocalDataSource>(
     () => HomeLocalDataSourceImpl(),
   );
+  getIt.registerLazySingleton<StylesDiskCache>(() => StylesDiskCache());
   getIt.registerLazySingleton<TabCategoriesRemoteDataSource>(
     () => TabCategoriesRemoteDataSourceImpl(),
   );
@@ -114,6 +117,7 @@ void _setupHomeFeature() {
     () => HomeRepositoryImpl(
       remoteDataSource: getIt<HomeRemoteDataSource>(),
       localDataSource: getIt<HomeLocalDataSource>(),
+      diskCache: getIt<StylesDiskCache>(),
     ),
   );
 
@@ -123,6 +127,10 @@ void _setupHomeFeature() {
 
   getIt.registerLazySingleton<GetBeardStylesUseCase>(
     () => GetBeardStylesUseCase(getIt<HomeRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetCachedStylesUseCase>(
+    () => GetCachedStylesUseCase(getIt<HomeRepository>()),
   );
 }
 
