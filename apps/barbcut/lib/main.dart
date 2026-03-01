@@ -83,6 +83,13 @@ void main() async {
 
 class MyAppState extends State<MyApp> {
   bool showLogin = true;
+  late final Stream<AuthUser?> _authStateStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _authStateStream = getIt<AuthRepository>().authStateChanges;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +110,7 @@ class MyAppState extends State<MyApp> {
             themeMode: themeController.themeMode,
             debugShowCheckedModeBanner: false,
             home: StreamBuilder<AuthUser?>(
-              stream: getIt<AuthRepository>().authStateChanges,
+              stream: _authStateStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Scaffold(
