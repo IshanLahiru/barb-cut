@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../core/di/service_locator.dart';
+import '../features/auth/domain/repositories/auth_repository.dart';
 import '../features/home/domain/entities/style_entity.dart';
+import '../features/home/presentation/bloc/home_bloc.dart';
+import '../features/home/presentation/bloc/home_event.dart';
+import '../features/home/presentation/bloc/home_state.dart';
 import '../theme/theme.dart';
 
 class StyleInfoSection extends StatelessWidget {
@@ -9,68 +15,82 @@ class StyleInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get userId and favourite state from HomeView if available.
-    // Use dynamic here so we don't need to reference the private state type.
-    final dynamic homeState = context.findAncestorStateOfType();
-    final String? userId = homeState?._currentUserId as String?;
-    final bool isFavourite =
-        (homeState?._favouriteIds.contains(style.id) as bool?) ?? false;
-    final bool isLoading = (homeState?._favouritesLoading as bool?) ?? false;
+    final String? userId = getIt<AuthRepository>().currentUser?.id;
 
-    return Container(
-      padding: EdgeInsets.all(AiSpacing.lg),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(
-          top: BorderSide(
-            color: AiColors.borderLight.withValues(alpha: 0.2),
-            width: 1,
-          ),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Description Section with favourite star
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Description',
-                  style: TextStyle(
-                    color: AiColors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (prev, curr) =>
+          prev.runtimeType != curr.runtimeType ||
+          (curr is HomeLoaded && prev is HomeLoaded &&
+              (curr.favouriteIds != prev.favouriteIds ||
+                  curr.favouritesLoading != prev.favouritesLoading)),
+      builder: (context, state) {
+        final isFavourite = state is HomeLoaded &&
+            state.favouriteIds.contains(style.id);
+        final isLoading = state is HomeLoaded && state.favouritesLoading;
+
+        return Container(
+          padding: EdgeInsets.all(AiSpacing.lg),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            border: Border(
+              top: BorderSide(
+                color: AiColors.borderLight.withValues(alpha: 0.2),
+                width: 1,
               ),
-              if (userId != null)
-                IconButton(
-                  icon: Icon(
-                    isFavourite ? Icons.star : Icons.star_border,
-                    color: isFavourite ? Colors.amber : AiColors.textTertiary,
-                  ),
-                  tooltip: isFavourite
-                      ? 'Remove from favourites'
-                      : 'Add to favourites',
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          final styleType =
-                              style.type == StyleType.beard ? 'beard' : 'haircut';
-                          homeState?._toggleFavourite(<String, dynamic>{
-                            'id': style.id,
-                            'name': style.name,
-                            'description': style.description,
-                            'image': style.imageUrl,
-                            'images': style.images,
-                            'suitableFaceShapes': style.suitableFaceShapes,
-                            'maintenanceTips': style.maintenanceTips,
-                          }, styleType);
-                        },
-                ),
-            ],
+            ),
           ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Description Section with favourite star
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Description',
+                      style: TextStyle(
+                        color: AiColors.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  if (userId != null)
+                    IconButton(
+                      icon: Icon(
+                        isFavourite ? Icons.star : Icons.star_border,
+                        color: isFavourite
+                            ? Colors.amber
+                            : Colors.grey.shade700,
+                      ),
+                      tooltip: isFavourite
+                          ? 'Remove from favourites'
+                          : 'Add to favourites',
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              final styleType = style.type == StyleType.beard
+                                  ? 'beard'
+                                  : 'haircut';
+                              context.read<HomeBloc>().add(
+                                    FavouriteToggled(
+                                      item: <String, dynamic>{
+                                        'id': style.id,
+                                        'name': style.name,
+                                        'description': style.description,
+                                        'image': style.imageUrl,
+                                        'images': style.images,
+                                        'suitableFaceShapes':
+                                            style.suitableFaceShapes,
+                                        'maintenanceTips': style.maintenanceTips,
+                                      },
+                                      styleType: styleType,
+                                    ),
+                                  );
+                            },
+                    ),
+                ],
+              ),
           SizedBox(height: AiSpacing.sm),
           Text(
             style.description,
@@ -151,6 +171,8 @@ class StyleInfoSection extends StatelessWidget {
           ],
         ],
       ),
+    );
+      },
     );
   }
 

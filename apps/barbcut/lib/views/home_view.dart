@@ -5,6 +5,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import '../theme/theme.dart';
 import '../features/home/domain/entities/style_entity.dart';
 import '../features/home/domain/entities/tab_category_entity.dart';
@@ -3261,7 +3263,23 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   top: 8,
                   right: 8,
                   child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: () {
+                      // #region agent log
+                      try {
+                        final payload = {
+                          'sessionId': 'ca6fa0',
+                          'id': 'log_${DateTime.now().millisecondsSinceEpoch}',
+                          'timestamp': DateTime.now().millisecondsSinceEpoch,
+                          'location': 'home_view.dart:star_onTap',
+                          'message': 'Star onTap fired',
+                          'data': {'itemId': item['id']},
+                          'hypothesisId': 'A',
+                        };
+                        File('/Users/ishanlahiru/Documents/private/barb-cut/.cursor/debug-ca6fa0.log')
+                            .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
+                      } catch (_) {}
+                      // #endregion
                       if (onFavouriteToggle != null) {
                         onFavouriteToggle();
                       } else if (styleType != null) {
@@ -3270,10 +3288,15 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                         );
                       }
                     },
-                    child: Icon(
-                      isFavourite ? Icons.star : Icons.star_border,
-                      color: isFavourite ? Colors.amber : Colors.white,
-                      size: 28,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Icon(
+                        isFavourite ? Icons.star : Icons.star_border,
+                        color: isFavourite
+                            ? Colors.amber
+                            : Colors.grey.shade700,
+                        size: 28,
+                      ),
                     ),
                   ),
                 ),
