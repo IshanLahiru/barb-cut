@@ -1,4 +1,6 @@
-class ProfileEntity {
+import 'package:equatable/equatable.dart';
+
+class ProfileEntity extends Equatable {
   final String userId;
   final String username;
   final String email;
@@ -13,8 +15,10 @@ class ProfileEntity {
   final String beardStyle;
   final String lifestyle;
   final List<String> photoPaths;
+
   /// Profile avatar URL (Firebase Storage gs:// or download URL).
   final String profilePhotoUrl;
+
   /// Credits/points for AI generations (read-only from Firestore users doc).
   final int points;
 
@@ -36,4 +40,24 @@ class ProfileEntity {
     this.profilePhotoUrl = '',
     this.points = 0,
   });
+
+  @override
+  List<Object?> get props => [
+    userId,
+    username,
+    email,
+    bio,
+    appointmentsCount,
+    favoritesCount,
+    averageRating,
+    hairType,
+    faceShape,
+    preferredLength,
+    hasBeard,
+    beardStyle,
+    lifestyle,
+    photoPaths,
+    profilePhotoUrl,
+    points,
+  ];
 }
