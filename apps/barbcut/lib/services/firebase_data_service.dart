@@ -4,6 +4,14 @@ import 'dart:developer' as developer;
 import 'firebase_storage_helper.dart';
 
 /// Service for fetching data from Firebase Firestore
+///
+/// ⚠️ DEPRECATION NOTICE: This service is legacy and being phased out in favor of
+/// repository/use-case architecture. Prefer using:
+/// - HomeRepository + HomeBloc for styles and favourites
+/// - ProfileRepository for user profile data
+/// - Direct repository/use case calls instead of this service
+///
+/// This service will be retained as internal-only for compatibility during migration.
 class FirebaseDataService {
   /// Initialize user document and favourites subcollection
   static Future<void> initializeUser({
@@ -72,7 +80,8 @@ class FirebaseDataService {
   static List<Map<String, dynamic>>? get cachedHaircuts => _cachedHaircuts;
 
   /// Exposes cached beard styles for rehydration (e.g. after hot reload). Null if not yet fetched.
-  static List<Map<String, dynamic>>? get cachedBeardStyles => _cachedBeardStyles;
+  static List<Map<String, dynamic>>? get cachedBeardStyles =>
+      _cachedBeardStyles;
   static List<Map<String, dynamic>>? _cachedProducts;
   static Map<String, dynamic>? _cachedProfile;
   static List<Map<String, dynamic>>? _cachedHistory;
@@ -154,7 +163,9 @@ class FirebaseDataService {
           .map((doc) => {'id': doc.id, ...doc.data()})
           .toList();
       if (resolveImageUrls) {
-        _cachedHaircuts = await Future.wait(rawHaircuts.map(_resolveStyleImages));
+        _cachedHaircuts = await Future.wait(
+          rawHaircuts.map(_resolveStyleImages),
+        );
       } else {
         _cachedHaircuts = rawHaircuts;
       }
@@ -221,9 +232,8 @@ class FirebaseDataService {
   static Future<List<Map<String, dynamic>>> fetchProducts({
     bool forceRefresh = false,
   }) async {
-    final useCache = _cachedProducts != null &&
-        !forceRefresh &&
-        _cachedProducts!.isNotEmpty;
+    final useCache =
+        _cachedProducts != null && !forceRefresh && _cachedProducts!.isNotEmpty;
     if (useCache) {
       return _cachedProducts!;
     }
@@ -259,7 +269,10 @@ class FirebaseDataService {
     }
 
     try {
-      developer.log('Fetching profile from Firebase...', name: 'FirebaseData');
+      developer.log(
+        'Fetching profile from users collection...',
+        name: 'FirebaseData',
+      );
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         developer.log(
@@ -270,24 +283,61 @@ class FirebaseDataService {
         return _cachedProfile!;
       }
 
-      final profileSnap = await _firestore
-          .collection('userProfiles')
+      // CONSOLIDATION: Read all profile data from users/{uid} (canonical source)
+      final usersSnap = await _firestore
+          .collection('users')
           .doc(user.uid)
           .get();
 
-      final usersSnap = await _firestore.collection('users').doc(user.uid).get();
-      final points = (usersSnap.data()?['points'] as num?)?.toInt() ?? 0;
+      if (usersSnap.exists) {
+        final userData = usersSnap.data()!;
 
-      if (profileSnap.exists) {
-        _cachedProfile = {...profileSnap.data()!, 'points': points};
-        developer.log('✓ Fetched profile data', name: 'FirebaseData');
+        // Try to load additional questionnaire data from userProfiles for backward compatibility
+        // This is temporary during transition; new data goes to users only
+        Map<String, dynamic> additionalData = {};
+        try {
+          final profileSnap = await _firestore
+              .collection('userProfiles')
+              .doc(user.uid)
+              .get();
+          if (profileSnap.exists) {
+            // Merge questionnaire fields from old collection, but don't override users fields
+            final oldProfileData = profileSnap.data()!;
+            [
+              'hairType',
+              'faceShape',
+              'preferredLength',
+              'hasBeard',
+              'beardStyle',
+              'lifestyle',
+              'photoPaths',
+            ].forEach((field) {
+              if (oldProfileData.containsKey(field) &&
+                  !userData.containsKey(field)) {
+                additionalData[field] = oldProfileData[field];
+              }
+            });
+          }
+        } catch (e) {
+          // Silently continue if old userProfiles read fails
+          developer.log(
+            'ℹ userProfiles backward-compat read skipped: $e',
+            name: 'FirebaseData',
+          );
+        }
+
+        _cachedProfile = {...userData, ...additionalData};
+        developer.log(
+          '✓ Fetched profile data from users collection',
+          name: 'FirebaseData',
+        );
         return _cachedProfile!;
       } else {
         developer.log(
-          '⚠ Profile not found, using defaults',
+          '⚠ User document not found, using defaults',
           name: 'FirebaseData',
         );
-        _cachedProfile = _buildDefaultProfile(userId: user.uid)..['points'] = points;
+        _cachedProfile = _buildDefaultProfile(userId: user.uid);
         return _cachedProfile!;
       }
     } catch (e) {
@@ -326,8 +376,9 @@ class FirebaseDataService {
   static Future<void> updateUserProfile(Map<String, dynamic> data) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) throw Exception('User not authenticated');
+    // CONSOLIDATION: Write to users collection (canonical source)
     await _firestore
-        .collection('userProfiles')
+        .collection('users')
         .doc(user.uid)
         .set(data, SetOptions(merge: true));
     clearProfileCache();
