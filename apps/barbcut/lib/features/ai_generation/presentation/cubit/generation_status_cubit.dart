@@ -1,12 +1,13 @@
 import 'dart:async';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/ai_job_status.dart';
 import '../../domain/repositories/ai_job_repository.dart';
 
 /// State for the generation status (AI job in progress).
-class GenerationStatusState {
+class GenerationStatusState extends Equatable {
   final bool isGenerating;
   final Map<String, dynamic>? generatedStyleData;
 
@@ -14,67 +15,92 @@ class GenerationStatusState {
     this.isGenerating = false,
     this.generatedStyleData,
   });
+
+  GenerationStatusState copyWith({
+    bool? isGenerating,
+    Map<String, dynamic>? generatedStyleData,
+  }) {
+    return GenerationStatusState(
+      isGenerating: isGenerating ?? this.isGenerating,
+      generatedStyleData: generatedStyleData ?? this.generatedStyleData,
+    );
+  }
+
+  @override
+  List<Object?> get props => [isGenerating, generatedStyleData];
 }
 
 class GenerationStatusCubit extends Cubit<GenerationStatusState> {
   GenerationStatusCubit({required AiJobRepository aiJobRepository})
-      : _aiJobRepository = aiJobRepository,
-        super(const GenerationStatusState());
+    : _aiJobRepository = aiJobRepository,
+      super(const GenerationStatusState());
 
   final AiJobRepository _aiJobRepository;
   StreamSubscription<AiJobStatus>? _jobSubscription;
 
   void startWatchingJob(String jobId, Map<String, dynamic> initialStyleData) {
     _jobSubscription?.cancel();
-    emit(GenerationStatusState(
-      isGenerating: true,
-      generatedStyleData: {...initialStyleData, 'jobId': jobId},
-    ));
-    _jobSubscription = _aiJobRepository.watchJobStatus(jobId).listen(
-      (status) {
-        if (isClosed) return;
-        final data = {
-          ...?state.generatedStyleData,
-          'jobId': status.jobId,
-          'status': status.status,
-          'errorMessage': status.errorMessage,
-        };
-        if (status.isCompleted) {
-          emit(GenerationStatusState(
-            isGenerating: false,
-            generatedStyleData: {...data, 'status': 'completed'},
-          ));
-          _jobSubscription?.cancel();
-        } else if (status.isError) {
-          emit(GenerationStatusState(
-            isGenerating: false,
-            generatedStyleData: {
-              ...data,
-              'status': 'error',
-              'errorMessage': status.errorMessage ?? 'Generation failed.',
-            },
-          ));
-          _jobSubscription?.cancel();
-        } else {
-          emit(GenerationStatusState(
-            isGenerating: true,
-            generatedStyleData: data,
-          ));
-        }
-      },
-      onError: (e, st) {
-        if (!isClosed) {
-          emit(GenerationStatusState(
-            isGenerating: false,
-            generatedStyleData: {
-              ...?state.generatedStyleData,
-              'status': 'error',
-              'errorMessage': e.toString(),
-            },
-          ));
-        }
-      },
+    emit(
+      GenerationStatusState(
+        isGenerating: true,
+        generatedStyleData: {...initialStyleData, 'jobId': jobId},
+      ),
     );
+    _jobSubscription = _aiJobRepository
+        .watchJobStatus(jobId)
+        .listen(
+          (status) {
+            if (isClosed) return;
+            final data = {
+              ...?state.generatedStyleData,
+              'jobId': status.jobId,
+              'status': status.status,
+              'errorMessage': status.errorMessage,
+            };
+            if (status.isCompleted) {
+              emit(
+                GenerationStatusState(
+                  isGenerating: false,
+                  generatedStyleData: {...data, 'status': 'completed'},
+                ),
+              );
+              _jobSubscription?.cancel();
+            } else if (status.isError) {
+              emit(
+                GenerationStatusState(
+                  isGenerating: false,
+                  generatedStyleData: {
+                    ...data,
+                    'status': 'error',
+                    'errorMessage': status.errorMessage ?? 'Generation failed.',
+                  },
+                ),
+              );
+              _jobSubscription?.cancel();
+            } else {
+              emit(
+                GenerationStatusState(
+                  isGenerating: true,
+                  generatedStyleData: data,
+                ),
+              );
+            }
+          },
+          onError: (e, st) {
+            if (!isClosed) {
+              emit(
+                GenerationStatusState(
+                  isGenerating: false,
+                  generatedStyleData: {
+                    ...?state.generatedStyleData,
+                    'status': 'error',
+                    'errorMessage': e.toString(),
+                  },
+                ),
+              );
+            }
+          },
+        );
   }
 
   void clearGeneration() {
