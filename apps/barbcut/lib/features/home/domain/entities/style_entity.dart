@@ -1,8 +1,10 @@
+import 'package:equatable/equatable.dart';
+
 enum StyleType { haircut, beard }
 
 enum ImageAngle { front, leftSide, rightSide, back }
 
-class StyleImages {
+class StyleImages extends Equatable {
   final String front;
   final String leftSide;
   final String rightSide;
@@ -45,9 +47,12 @@ class StyleImages {
         return back;
     }
   }
+
+  @override
+  List<Object?> get props => [front, leftSide, rightSide, back];
 }
 
-class StyleEntity {
+class StyleEntity extends Equatable {
   final String id;
   final String name;
   final String? price;
@@ -75,4 +80,20 @@ class StyleEntity {
     required this.imageUrl,
     required this.type,
   });
+
+  @override
+  List<Object?> get props => [
+    id,
+    name,
+    price,
+    duration,
+    tips,
+    styleImages,
+    images,
+    suitableFaceShapes,
+    maintenanceTips,
+    description,
+    imageUrl,
+    type,
+  ];
 }
