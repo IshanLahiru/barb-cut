@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-class ProductEntity {
+class ProductEntity extends Equatable {
   final String name;
   final String price;
   final double rating;
@@ -16,4 +17,7 @@ class ProductEntity {
     required this.imageUrl,
     required this.icon,
   });
+
+  @override
+  List<Object?> get props => [name, price, rating, description, imageUrl, icon];
 }
