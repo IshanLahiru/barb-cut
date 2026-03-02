@@ -118,7 +118,7 @@ class UserPhotoService {
       final ref = _storage.ref('profile-photos/${user.uid}/avatar.jpg');
       await ref.putFile(imageFile);
       final gsUrl = 'gs://${ref.bucket}/${ref.fullPath}';
-      await _firestore.collection('userProfiles').doc(user.uid).set({
+      await _firestore.collection('users').doc(user.uid).set({
         'photoURL': gsUrl,
       }, SetOptions(merge: true));
       return gsUrl;
