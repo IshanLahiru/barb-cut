@@ -23,7 +23,11 @@ service cloud.firestore {
       }
       allow read: if true;
       allow create: if isAuthenticated() && isOwner(userId) && (request.resource.data.points == null || request.resource.data.points == 0);
-      allow update: if (isOwner(userId) || isAdmin()) && request.resource.data.points == resource.data.points;
+      // Allow users to update their profile (but not system fields like points, role, uid)
+      allow update: if (isOwner(userId) || isAdmin()) && 
+                       (request.resource.data.points == resource.data.points) &&
+                       (request.resource.data.uid == resource.data.uid) &&
+                       (request.resource.data.role == resource.data.role || isAdmin());
       allow delete: if isAdmin();
     }
 
@@ -57,12 +61,6 @@ service cloud.firestore {
     match /tabCategories/{categoryId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
-    }
-
-    // Per-user app profile (questionnaire, preferences)
-    match /userProfiles/{userId} {
-      allow read, create, update: if isOwner(userId);
-      allow delete: if isOwner(userId) || isAdmin();
     }
 
     // AI generation history: user sees own
