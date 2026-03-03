@@ -116,20 +116,21 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
 
   Future<void> _loadDefaultProfile() async {
     final result = await getIt<GetProfileUseCase>()();
-    result.fold(
-      (_) => null,
-      (profile) {
-        if (mounted && profile.photoPaths.isNotEmpty) {
-          setState(() {
-            for (var i = 0;
-                i < profile.photoPaths.length && i < _photoPaths.length;
-                i++) {
-              _photoPaths[i] = profile.photoPaths[i].isEmpty ? null : profile.photoPaths[i];
-            }
-          });
-        }
-      },
-    );
+    result.fold((_) => null, (profile) {
+      if (mounted && profile.photoPaths.isNotEmpty) {
+        setState(() {
+          for (
+            var i = 0;
+            i < profile.photoPaths.length && i < _photoPaths.length;
+            i++
+          ) {
+            _photoPaths[i] = profile.photoPaths[i].isEmpty
+                ? null
+                : profile.photoPaths[i];
+          }
+        });
+      }
+    });
   }
 
   Future<void> _pickImage(int index) async {
@@ -383,10 +384,9 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
       }
 
       await FirebaseFirestore.instance
-          .collection('userProfiles')
+          .collection('users')
           .doc(user.id)
           .set(profileData, SetOptions(merge: true));
-
 
       if (!mounted) return;
 
