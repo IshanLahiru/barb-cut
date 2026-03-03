@@ -30,16 +30,23 @@ class HistoryView extends StatefulWidget {
 
 class _HistoryViewState extends State<HistoryView>
     with TickerProviderStateMixin {
-  late List<Map<String, dynamic>> _generationHistory;
   final Random _random = Random();
   late List<double> _cardHeights;
   late AnimationController _generationPulseController;
   bool _hasRequestedLoad = false;
 
+  // Getter that reads _generationHistory from BLoC state (avoid local copy)
+  List<Map<String, dynamic>> get _generationHistory {
+    final state = context.read<HistoryBloc>().state;
+    if (state is HistoryLoaded) {
+      return _mapHistory(state.history);
+    }
+    return [];
+  }
+
   @override
   void initState() {
     super.initState();
-    _generationHistory = [];
     _cardHeights = [];
     _generationPulseController = AnimationController(
       duration: const Duration(milliseconds: 1400),
@@ -145,84 +152,102 @@ class _HistoryViewState extends State<HistoryView>
     }
 
     return BlocListener<HistoryBloc, HistoryState>(
-        listener: (context, state) {
-          if (state is HistoryLoaded) {
-            setState(() {
-              _generationHistory = _mapHistory(state.history);
-              _regenerateHeights();
-            });
-          }
-        },
-        child: Scaffold(
-          backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
-          appBar: AppBar(
-            backgroundColor: AdaptiveThemeColors.backgroundDark(context),
-            elevation: 0,
-            toolbarHeight: 48,
-            title: Text(
-              'History',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: AdaptiveThemeColors.textPrimary(context),
-                fontWeight: FontWeight.w800,
-              ),
+      listener: (context, state) {
+        // Side effects only - no setState for data updates
+        if (state is HistoryLoaded) {
+          // Data changes are handled through BlocBuilder via _mappedHistory getter
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
+        appBar: AppBar(
+          backgroundColor: AdaptiveThemeColors.backgroundDark(context),
+          elevation: 0,
+          toolbarHeight: 48,
+          title: Text(
+            'History',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              color: AdaptiveThemeColors.textPrimary(context),
+              fontWeight: FontWeight.w800,
             ),
-            centerTitle: true,
-            surfaceTintColor: Colors.transparent,
           ),
-          body: SafeArea(
-            child: BlocBuilder<GenerationStatusCubit, GenerationStatusState>(
-              builder: (context, genState) {
-                final isGenerating = genState.isGenerating;
-                final generatedStyle = genState.generatedStyleData;
-                return RefreshIndicator(
-                  onRefresh: () => _refreshHistory(context),
-                  child: _generationHistory.isEmpty && !isGenerating
-                      ? ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          children: [
-                            SizedBox(height: 80),
-                            const HistoryEmptyState(),
-                          ],
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                            AiSpacing.md,
-                            AiSpacing.sm,
-                            AiSpacing.md,
-                            AiSpacing.md,
-                          ),
-                          child: MasonryGridView.builder(
+          centerTitle: true,
+          surfaceTintColor: Colors.transparent,
+        ),
+        body: SafeArea(
+          child: BlocBuilder<HistoryBloc, HistoryState>(
+            buildWhen: (prev, curr) {
+              // Rebuild on state type changes
+              if (prev.runtimeType != curr.runtimeType) return true;
+              // For HistoryLoaded states, only rebuild if history data changed
+              if (prev is HistoryLoaded && curr is HistoryLoaded) {
+                return prev.history != curr.history;
+              }
+              return true;
+            },
+            builder: (context, historyState) {
+              // Regenerate heights whenever history state changes
+              if (historyState is HistoryLoaded) {
+                _regenerateHeights();
+              }
+              return BlocBuilder<GenerationStatusCubit, GenerationStatusState>(
+                buildWhen: (prev, curr) =>
+                    prev.isGenerating != curr.isGenerating ||
+                    prev.generatedStyleData != curr.generatedStyleData,
+                builder: (context, genState) {
+                  final isGenerating = genState.isGenerating;
+                  final generatedStyle = genState.generatedStyleData;
+                  return RefreshIndicator(
+                    onRefresh: () => _refreshHistory(context),
+                    child: _generationHistory.isEmpty && !isGenerating
+                        ? ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: crossAxisCount,
-                                ),
-                            itemCount:
-                                _generationHistory.length +
-                                (isGenerating ? 1 : 0),
-                            mainAxisSpacing: AiSpacing.md,
-                            crossAxisSpacing: AiSpacing.md,
-                            itemBuilder: (context, index) {
-                              if (isGenerating && index == 0) {
-                                return _buildGeneratingTile(
-                                  generatedStyle ?? {},
-                                );
-                              }
-                              final historyIndex = isGenerating
-                                  ? index - 1
-                                  : index;
-                              final item = _generationHistory[historyIndex];
-                              final height = _cardHeights[historyIndex];
-                              return _buildHistoryCard(context, item, height);
-                            },
+                            children: [
+                              SizedBox(height: 80),
+                              const HistoryEmptyState(),
+                            ],
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              AiSpacing.md,
+                              AiSpacing.sm,
+                              AiSpacing.md,
+                              AiSpacing.md,
+                            ),
+                            child: MasonryGridView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: crossAxisCount,
+                                  ),
+                              itemCount:
+                                  _generationHistory.length +
+                                  (isGenerating ? 1 : 0),
+                              mainAxisSpacing: AiSpacing.md,
+                              crossAxisSpacing: AiSpacing.md,
+                              itemBuilder: (context, index) {
+                                if (isGenerating && index == 0) {
+                                  return _buildGeneratingTile(
+                                    generatedStyle ?? {},
+                                  );
+                                }
+                                final historyIndex = isGenerating
+                                    ? index - 1
+                                    : index;
+                                final item = _generationHistory[historyIndex];
+                                final height = _cardHeights[historyIndex];
+                                return _buildHistoryCard(context, item, height);
+                              },
+                            ),
                           ),
-                        ),
-                );
-              },
-            ),
+                  );
+                },
+              );
+            },
           ),
         ),
-      );
+      ),
+    );
   }
 
   Widget _buildHistoryCard(
