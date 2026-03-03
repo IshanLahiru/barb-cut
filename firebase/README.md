@@ -4,7 +4,7 @@ Firebase backend for the BarbCut tryout app: Firestore, Storage, Cloud Functions
 
 ## Structure
 
-- **firestore.rules** – Security rules (users, userProfiles, userPhotos, history, aiJobs, etc.). No bookings/barbers/payments.
+- **firestore.rules** – Security rules (users as canonical profile store, userPhotos, history, aiJobs, etc.). No bookings/barbers/payments.
 - **firestore.indexes.json** – Composite indexes for `history`, `aiJobs`.
 - **storage.rules** – Storage security rules.
 - **functions/** – Node 20 Cloud Functions (auth triggers, user, AI jobs, migrations, health).
@@ -32,6 +32,28 @@ firebase deploy --only functions
 # All
 firebase deploy
 ```
+
+## Profile Cleanup Migration
+
+Consolidate legacy profile collections into `users/{uid}` and remove migrated docs:
+
+```bash
+cd firebase/functions
+
+# Local emulator
+npm run migrate:status
+npm run migrate:up
+
+# Production (requires GOOGLE_APPLICATION_CREDENTIALS)
+npm run migrate:prod:status
+npm run migrate:prod:up
+```
+
+This runs migration `004_consolidate_profile_collections`, which:
+- Migrates `userProfiles/{uid}` profile fields into `users/{uid}`
+- Migrates legacy user-like docs from `profile/{docId}` into `users/{uid}`
+- Deletes migrated legacy profile docs after successful merge
+- Leaves non-user app-config docs in `profile` intact
 
 ## Emulators
 
