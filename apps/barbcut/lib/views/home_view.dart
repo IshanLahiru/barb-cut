@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' show pi;
 import '../theme/theme.dart';
 import '../features/home/domain/entities/style_entity.dart';
 import '../features/home/domain/entities/style_entity_mapper.dart';
@@ -63,8 +62,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   TabController? _tabController;
   late AnimationController _arrowAnimationController;
   late AnimationController _generationPulseController;
-  final Random _random = Random();
-  late List<double> _beardHeights;
   bool _isGenerating = false;
   int? _confirmedHaircutIndex;
   int? _confirmedBeardIndex;
@@ -148,15 +145,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   /// Skeleton grid for panel tabs while HomeBloc is loading. Matches real tile layout (crossAxisCount, padding, card height).
   Widget _buildSkeletonTileGrid(ScrollController? scrollController) {
-    final width = MediaQuery.of(context).size.width;
-    int crossAxisCount = 2;
-    if (width >= 1100) {
-      crossAxisCount = 4;
-    } else if (width >= 820) {
-      crossAxisCount = 3;
-    }
     const int itemCount = 8;
-    const double cardHeight = 220.0;
     final baseColor = Colors.white.withValues(alpha: 0.06);
     final highlightColor = Colors.white.withValues(alpha: 0.14);
 
@@ -167,21 +156,23 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         AiSpacing.md,
         AiSpacing.md,
       ),
-      child: MasonryGridView.builder(
+      child: GridView.builder(
         controller: scrollController ?? ScrollController(),
         physics: const BouncingScrollPhysics(),
-        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
+        padding: EdgeInsets.zero,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 9 / 16,
+          mainAxisSpacing: AiSpacing.md,
+          crossAxisSpacing: AiSpacing.md,
         ),
         itemCount: itemCount,
-        mainAxisSpacing: AiSpacing.md,
-        crossAxisSpacing: AiSpacing.md,
         itemBuilder: (context, index) {
           return ClipRRect(
             borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
             child: ShimmerPlaceholder(
               width: double.infinity,
-              height: cardHeight,
+              height: double.infinity,
               baseColor: baseColor,
               highlightColor: highlightColor,
             ),
@@ -192,13 +183,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildFavouritesGrid(ScrollController? scrollController) {
-    final width = MediaQuery.of(context).size.width;
-    int crossAxisCount = 2;
-    if (width >= 1100) {
-      crossAxisCount = 4;
-    } else if (width >= 820) {
-      crossAxisCount = 3;
-    }
     // If styles haven't loaded yet, show a message
     if (_haircuts.isEmpty && _beardStyles.isEmpty) {
       return Center(
@@ -236,15 +220,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         AiSpacing.md,
       ),
       child: RepaintBoundary(
-        child: MasonryGridView.builder(
+        child: GridView.builder(
           controller: scrollController ?? ScrollController(),
           physics: const BouncingScrollPhysics(),
-          gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
+          padding: EdgeInsets.zero,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 9 / 16,
+            mainAxisSpacing: AiSpacing.md,
+            crossAxisSpacing: AiSpacing.md,
           ),
           itemCount: allFavourites.length,
-          mainAxisSpacing: AiSpacing.md,
-          crossAxisSpacing: AiSpacing.md,
           itemBuilder: (context, index) {
             final item = allFavourites[index];
             final isHaircut = _haircuts.any((h) => h['id'] == item['id']);
@@ -260,7 +246,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               item: item,
               itemIndex: effectiveIndex,
               isSelected: isSelected,
-              height: 220,
+              height: 0,
               onTap: () {
                 setState(() {
                   if (isHaircut) {
@@ -310,10 +296,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Map<String, dynamic>? _getSelectedStyleForMainContent(BuildContext context) {
     final tabType = _getCurrentTabType(context);
     if (tabType == 'hair') {
-      return _haircuts.isNotEmpty ? _haircuts[_selectedHaircutIndex] : null;
+      if (_haircuts.isEmpty) return null;
+      final selectedIndex = _selectedHaircutIndex.clamp(0, _haircuts.length - 1);
+      return _haircuts[selectedIndex];
     }
     if (tabType == 'beard') {
-      return _beardStyles.isNotEmpty ? _beardStyles[_selectedBeardIndex] : null;
+      if (_beardStyles.isEmpty) return null;
+      final selectedIndex = _selectedBeardIndex.clamp(0, _beardStyles.length - 1);
+      return _beardStyles[selectedIndex];
     }
     return null;
   }
@@ -437,13 +427,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     return '${urlOrPath.substring(0, dotIndex)}_$sizeSuffix${urlOrPath.substring(dotIndex)}';
   }
 
-  void _regenerateHeights() {
-    _beardHeights = List.generate(
-      _beardStyles.length,
-      (_) => 200.0 + _random.nextDouble() * 80,
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -462,7 +445,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         setState(() {});
       }
     });
-    _regenerateHeights();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _maybeRequestInitialLoad();
@@ -730,7 +712,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       );
       return;
     }
-    final beard = _beardStyles[_confirmedBeardIndex ?? _selectedBeardIndex];
+    final selectedIndex = (_confirmedBeardIndex ?? _selectedBeardIndex).clamp(
+      0,
+      _beardStyles.length - 1,
+    );
+    final beard = _beardStyles[selectedIndex];
     if (!mounted) return;
     showDialog(
       context: context,
@@ -1424,14 +1410,24 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           (tabType == 'beard' && _beardStyles.isNotEmpty);
       String jobId = '';
       try {
+        final int selectedHaircutIndex = _haircuts.isEmpty
+            ? 0
+            : (_confirmedHaircutIndex ?? _selectedHaircutIndex).clamp(
+                0,
+                _haircuts.length - 1,
+              );
+        final int selectedBeardIndex = _beardStyles.isEmpty
+            ? 0
+            : (_confirmedBeardIndex ?? _selectedBeardIndex).clamp(
+                0,
+                _beardStyles.length - 1,
+              );
         jobId = await AiGenerationService.createGenerationJob(
           haircutId: hasHaircut
-              ? _haircuts[_confirmedHaircutIndex ?? _selectedHaircutIndex]['id']
-                    ?.toString()
+              ? _haircuts[selectedHaircutIndex]['id']?.toString()
               : null,
           beardId: hasBeard
-              ? _beardStyles[_confirmedBeardIndex ?? _selectedBeardIndex]['id']
-                    ?.toString()
+              ? _beardStyles[selectedBeardIndex]['id']?.toString()
               : null,
         );
       } catch (e) {
@@ -2997,13 +2993,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         ),
       );
     }
-    final width = MediaQuery.of(context).size.width;
-    int crossAxisCount = 2;
-    if (width >= 1100) {
-      crossAxisCount = 4;
-    } else if (width >= 820) {
-      crossAxisCount = 3;
-    }
 
     final filteredIndices = _haircuts
         .asMap()
@@ -3049,16 +3038,18 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         AiSpacing.md,
       ),
       child: RepaintBoundary(
-        child: MasonryGridView.builder(
+        child: GridView.builder(
           controller: scrollController ?? ScrollController(),
           key: const PageStorageKey('haircut_grid'),
           physics: const BouncingScrollPhysics(),
-          gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
+          padding: EdgeInsets.zero,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 9 / 16,
+            mainAxisSpacing: AiSpacing.md,
+            crossAxisSpacing: AiSpacing.md,
           ),
           itemCount: filteredIndices.length,
-          mainAxisSpacing: AiSpacing.md,
-          crossAxisSpacing: AiSpacing.md,
           itemBuilder: (context, index) {
             final haircutIndex = filteredIndices[index];
             final item = _haircuts[haircutIndex];
@@ -3068,7 +3059,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               item: item,
               itemIndex: haircutIndex,
               isSelected: isSelected,
-              height: 220,
+              height: 0,
               onTap: () {
                 setState(() {
                   _selectedHaircutIndex = haircutIndex;
@@ -3110,14 +3101,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         ),
       );
     }
-    final width = MediaQuery.of(context).size.width;
-    int crossAxisCount = 2;
-    if (width >= 1100) {
-      crossAxisCount = 4;
-    } else if (width >= 820) {
-      crossAxisCount = 3;
-    }
-
     final filteredIndices = _beardStyles
         .asMap()
         .entries
@@ -3162,15 +3145,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         AiSpacing.md,
       ),
       child: RepaintBoundary(
-        child: MasonryGridView.builder(
+        child: GridView.builder(
           controller: scrollController ?? ScrollController(),
           physics: const BouncingScrollPhysics(),
-          gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
+          padding: EdgeInsets.zero,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 9 / 16,
+            mainAxisSpacing: AiSpacing.md,
+            crossAxisSpacing: AiSpacing.md,
           ),
           itemCount: filteredIndices.length,
-          mainAxisSpacing: AiSpacing.md,
-          crossAxisSpacing: AiSpacing.md,
           itemBuilder: (context, index) {
             final itemIndex = filteredIndices[index];
             final beard = _beardStyles[itemIndex];
@@ -3180,7 +3165,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               item: beard,
               itemIndex: itemIndex,
               isSelected: isSelected,
-              height: _beardHeights[itemIndex],
+              height: 0,
               onTap: () {
                 // Select beard style and close panel
                 context.read<StyleSelectionController>().selectBeardStyle(
@@ -3233,7 +3218,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 320),
         curve: Curves.easeOutCubic,
-        height: height,
         decoration: BoxDecoration(
           border: isSelected
               ? Border.all(color: Colors.white.withValues(alpha: 0.3), width: 3)
