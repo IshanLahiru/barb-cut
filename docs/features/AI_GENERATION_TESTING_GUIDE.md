@@ -31,25 +31,15 @@ gcloud projects add-iam-policy-binding barb-cut \
   --role=roles/storage.admin
 ```
 
-### 3. Verify Functions Configuration
-Check that Vertex AI config is set:
-```bash
-firebase functions:config:get
-```
+### 3. Verify Runtime Environment
+The processor uses Vertex Gemini image generation with these runtime values:
 
-Should show:
-```json
-{
-  "vertexai": {
-    "project": "barb-cut",
-    "location": "us-central1"
-  }
-}
-```
+- `GCLOUD_PROJECT` (auto-provided in Cloud Functions)
+- `VERTEX_LOCATION` (optional, defaults to `us-central1`)
+- `GEMINI_IMAGE_MODEL` (optional, defaults to `gemini-2.5-flash-image`)
 
-If missing, set it:
+If you set custom values, redeploy functions:
 ```bash
-firebase functions:config:set vertexai.project="barb-cut" vertexai.location="us-central1"
 firebase deploy --only functions
 ```
 
@@ -108,7 +98,7 @@ Open Firebase Console > Storage. Verify bucket exists (e.g., `barb-cut.appspot.c
   - `userId`: current user ID
   - `status`: "queued"
   - `prompt`: Generated from haircut + beard names
-  - `model`: "imagen-3-fast"
+   - `model`: "gemini-2.5-flash-image"
   - `timestamp`: now
 
 ---
@@ -116,6 +106,12 @@ Open Firebase Console > Storage. Verify bucket exists (e.g., `barb-cut.appspot.c
 ### Step 4: Wait for Scheduler to Process (5 minutes)
 
 The `scheduleJobProcessor` runs **every 5 minutes** via Pub/Sub trigger.
+
+Current processor behavior:
+- Generates one image per available angle (`front`, `left`, `right`, `back`)
+- Uses up to 5 attempts per angle with exponential backoff on retryable errors
+- Charges retry points (same as angle cost) for up to 2 paid retries per angle
+- Refunds 90% if all angles fail; otherwise refunds failed angles only
 
 **Option A: Check Logs** (Real-time monitoring)
 ```bash
@@ -125,7 +121,7 @@ firebase functions:log --only scheduleJobProcessor
 
 Look for:
 - ✅ `"Processing job {jobId}..."`
-- ✅ `"Generated image data URL received"`
+- ✅ `"Generated and stored image for {position}"`
 - ✅ `"Uploaded to Storage: gs://barb-cut.appspot.com/generated/{userId}/{jobId}.png"`
 - ✅ `"Wrote history document: {historyId}"`
 - ✅ `"Updated job status to completed"`
@@ -201,7 +197,7 @@ firebase functions:log --only scheduleJobProcessor
 Look for errors like:
 - `"Vertex AI API not enabled"` → Run `gcloud services enable aiplatform.googleapis.com --project=barb-cut`
 - `"Permission denied"` → Add IAM roles to service account (see Pre-Flight Checklist)
-- `"Model not found"` → Check `imagen-3-fast` model exists in us-central1
+- `"Model not found"` → Check `GEMINI_IMAGE_MODEL` value and Vertex model availability in your configured region
 
 **Check 2: Firestore aiJobs Collection**
 Firebase Console > Firestore > aiJobs:

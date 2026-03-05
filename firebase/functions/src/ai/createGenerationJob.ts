@@ -1,8 +1,9 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-/** Cost in points per generation job (one job = multiple images). */
-const COST_PER_GENERATION = 1;
+const COST_PER_ANGLE = 1;
+const RETRY_COST_PER_ANGLE = 1;
+const MAX_PAID_RETRIES_PER_ANGLE = 2;
 
 type CreateGenerationJobInput = {
   haircutId?: string;
@@ -24,6 +25,17 @@ type BeardData = {
   tips?: string;
   suitableFaceShapes?: string[];
   maintenanceTips?: string[];
+};
+
+type UserHairData = {
+  hairType?: string; // e.g., "straight", "wavy", "curly", "coily"
+  hairTexture?: string; // e.g., "fine", "medium", "thick"
+  hairLength?: string; // e.g., "short", "medium", "long"
+  hairColor?: string; // e.g., "black", "brown", "blonde", "red", "gray"
+  faceShape?: string; // e.g., "oval", "round", "square", "heart", "diamond"
+  skinTone?: string; // e.g., "fair", "medium", "olive", "tan", "dark"
+  hairDensity?: string; // e.g., "thin", "medium", "thick"
+  scalpCondition?: string; // e.g., "normal", "dry", "oily"
 };
 
 type UserPhotos = {
@@ -96,7 +108,36 @@ async function fetchUserPhotos(
   };
 }
 
-function buildPrompt(haircut: HaircutData | null, beard: BeardData | null): string {
+async function fetchUserHairData(
+  db: admin.firestore.Firestore,
+  userId: string
+): Promise<UserHairData | null> {
+  try {
+    const doc = await db.collection("userProfiles").doc(userId).get();
+    if (doc.exists) {
+      const data = doc.data();
+      return {
+        hairType: data?.hairType,
+        hairTexture: data?.hairTexture,
+        hairLength: data?.hairLength,
+        hairColor: data?.hairColor,
+        faceShape: data?.faceShape,
+        skinTone: data?.skinTone,
+        hairDensity: data?.hairDensity,
+        scalpCondition: data?.scalpCondition,
+      } as UserHairData;
+    }
+  } catch (error) {
+    console.error(`Failed to fetch user hair data for ${userId}:`, error);
+  }
+  return null;
+}
+
+function buildPrompt(
+  haircut: HaircutData | null,
+  beard: BeardData | null,
+  userHairData: UserHairData | null
+): string {
   const parts: string[] = [];
 
   if (haircut) {
@@ -113,7 +154,44 @@ function buildPrompt(haircut: HaircutData | null, beard: BeardData | null): stri
     }
   }
 
-  const basePrompt = `A professional barber shop portrait showcasing ${parts.join(", ")}. Professional studio lighting, sharp focus, pristine barbershop background, high quality professional photography.`;
+  // Enhance prompt with user's actual hair characteristics
+  const characteristics: string[] = [];
+  if (userHairData) {
+    if (userHairData.hairType) {
+      characteristics.push(`${userHairData.hairType} hair`);
+    }
+    if (userHairData.hairTexture) {
+      characteristics.push(`${userHairData.hairTexture} texture`);
+    }
+    if (userHairData.hairColor) {
+      characteristics.push(`${userHairData.hairColor} hair color`);
+    }
+    if (userHairData.faceShape) {
+      characteristics.push(`${userHairData.faceShape} face shape`);
+    }
+    if (userHairData.skinTone) {
+      characteristics.push(`${userHairData.skinTone} skin tone`);
+    }
+  }
+
+    // Build clear instructions for image editing
+    let basePrompt = "Edit and transform the person in the provided reference photo. ";
+  
+    basePrompt += "Apply the following style changes while preserving their facial features, identity, and natural appearance: ";
+  
+    if (parts.length > 0) {
+      basePrompt += `${parts.join(", ")}. `;
+    }
+  
+    if (characteristics.length > 0) {
+      basePrompt += `The person has ${characteristics.join(", ")}. `;
+    }
+  
+    basePrompt += "Create a professional barber shop portrait with the new hairstyle and/or beard style seamlessly applied. ";
+    basePrompt += "Maintain realistic proportions, natural hairline, proper hair flow and texture. ";
+    basePrompt += "Use professional studio lighting, sharp focus, clean barbershop background. ";
+    basePrompt += "The result should look like a real professional photograph, not a digital composite. ";
+    basePrompt += "Preserve skin tone, face structure, and all identifying features of the person in the photo.";
 
   return basePrompt;
 }
@@ -139,6 +217,7 @@ export const createGenerationJob = functions.https.onCall(
       right: null,
       back: null,
     };
+    let userHairData: UserHairData | null = null;
 
     if (data.haircutId) {
       haircutData = await fetchHaircutData(db, data.haircutId);
@@ -151,6 +230,9 @@ export const createGenerationJob = functions.https.onCall(
     // Fetch user's reference photos
     userPhotos = await fetchUserPhotos(db, userId);
 
+    // Fetch user's hair data from onboarding questionnaire
+    userHairData = await fetchUserHairData(db, userId);
+
     // Check if user has at least one photo
     const photoUrls = Object.values(userPhotos).filter(url => url !== null);
     if (photoUrls.length === 0) {
@@ -160,8 +242,10 @@ export const createGenerationJob = functions.https.onCall(
       );
     }
 
-    // Build prompt from fetched data
-    const prompt = buildPrompt(haircutData, beardData);
+    // Build prompt from fetched data (including user hair characteristics)
+    const prompt = buildPrompt(haircutData, beardData, userHairData);
+    const imageCount = photoUrls.length;
+    const baseChargePoints = imageCount * COST_PER_ANGLE;
     const now = admin.firestore.FieldValue.serverTimestamp();
     const userRef = db.collection("users").doc(userId);
 
@@ -169,13 +253,13 @@ export const createGenerationJob = functions.https.onCall(
     const jobId = await db.runTransaction(async (tx) => {
       const userSnap = await tx.get(userRef);
       const currentPoints = (userSnap.data()?.points ?? 0) as number;
-      if (currentPoints < COST_PER_GENERATION) {
+      if (currentPoints < baseChargePoints) {
         throw new functions.https.HttpsError(
           "failed-precondition",
           "Insufficient points. Please purchase more credits to generate."
         );
       }
-      const newPoints = currentPoints - COST_PER_GENERATION;
+      const newPoints = currentPoints - baseChargePoints;
       tx.update(userRef, {
         points: newPoints,
         updatedAt: now,
@@ -186,7 +270,7 @@ export const createGenerationJob = functions.https.onCall(
         userId,
         status: "queued",
         prompt,
-        model: "imagen3",
+        model: "gemini-2.5-flash-image",
         haircutId: data.haircutId ?? null,
         haircutName: haircutData?.name ?? null,
         beardId: data.beardId ?? null,
@@ -197,8 +281,36 @@ export const createGenerationJob = functions.https.onCall(
           right: userPhotos.right,
           back: userPhotos.back,
         },
-        imageCount: photoUrls.length,
+        userHairData: userHairData ? {
+          hairType: userHairData.hairType ?? null,
+          hairTexture: userHairData.hairTexture ?? null,
+          hairLength: userHairData.hairLength ?? null,
+          hairColor: userHairData.hairColor ?? null,
+          faceShape: userHairData.faceShape ?? null,
+          skinTone: userHairData.skinTone ?? null,
+          hairDensity: userHairData.hairDensity ?? null,
+          scalpCondition: userHairData.scalpCondition ?? null,
+        } : null,
+        imageCount,
         generatedImages: [],
+        generationConfig: {
+          targetOutput: "match_reference",
+        },
+        billing: {
+          costPerAngle: COST_PER_ANGLE,
+          retryCostPerAttempt: RETRY_COST_PER_ANGLE,
+          maxPaidRetriesPerAngle: MAX_PAID_RETRIES_PER_ANGLE,
+          baseChargedPoints: baseChargePoints,
+          retryChargedPoints: 0,
+          totalChargedPoints: baseChargePoints,
+          refundedPoints: 0,
+          refundPolicy: {
+            allFailedPercent: 90,
+            partialRefundFailedAnglesOnly: true,
+            chargeAtJobCreation: true,
+            chargePerRetry: true,
+          },
+        },
         createdAt: now,
         updatedAt: now,
         scheduledAt: now,

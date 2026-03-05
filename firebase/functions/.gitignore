@@ -49,3 +49,4 @@ firebase-key.json
 !serviceAccountKey.json.example
 !.firebaserc.example
 !.env.example
+!.runtimeconfig.json.example

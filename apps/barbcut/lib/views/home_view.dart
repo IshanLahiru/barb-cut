@@ -297,12 +297,18 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final tabType = _getCurrentTabType(context);
     if (tabType == 'hair') {
       if (_haircuts.isEmpty) return null;
-      final selectedIndex = _selectedHaircutIndex.clamp(0, _haircuts.length - 1);
+      final selectedIndex = _selectedHaircutIndex.clamp(
+        0,
+        _haircuts.length - 1,
+      );
       return _haircuts[selectedIndex];
     }
     if (tabType == 'beard') {
       if (_beardStyles.isEmpty) return null;
-      final selectedIndex = _selectedBeardIndex.clamp(0, _beardStyles.length - 1);
+      final selectedIndex = _selectedBeardIndex.clamp(
+        0,
+        _beardStyles.length - 1,
+      );
       return _beardStyles[selectedIndex];
     }
     return null;
@@ -2725,23 +2731,25 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         final tabChildren = isLoading
             ? List.generate(
                 categories.length,
-                (_) => _buildSkeletonTileGrid(null),
+                (_) => _buildSkeletonTileGrid(scrollController),
               )
             : tabTypes.map((type) {
                 switch (type) {
                   case 'recent':
-                    return _buildRecentGrid(null);
+                    return _buildRecentGrid(scrollController);
                   case 'favourites':
-                    return _buildFavouritesGrid(null);
+                    return _buildFavouritesGrid(scrollController);
                   case 'hair':
                     return ValueListenableBuilder<String>(
                       valueListenable: _panelSearchQueryNotifier,
-                      builder: (context, _, __) => _buildHaircutGrid(null),
+                      builder: (context, _, __) =>
+                          _buildHaircutGrid(scrollController),
                     );
                   case 'beard':
                     return ValueListenableBuilder<String>(
                       valueListenable: _panelSearchQueryNotifier,
-                      builder: (context, _, __) => _buildBeardGrid(null),
+                      builder: (context, _, __) =>
+                          _buildBeardGrid(scrollController),
                     );
                   default:
                     return const Center(child: Text('Unknown tab'));
