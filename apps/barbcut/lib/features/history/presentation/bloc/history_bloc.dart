@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -30,7 +31,16 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     Emitter<HistoryState> emit,
   ) async {
     final user = authRepository.currentUser;
+    developer.log(
+      'History load requested. User: ${user?.id ?? "null"}',
+      name: 'HistoryBloc',
+    );
+
     if (user == null) {
+      developer.log(
+        'No authenticated user found. Showing empty history.',
+        name: 'HistoryBloc',
+      );
       emit(const HistoryLoaded(history: []));
       return;
     }
@@ -38,21 +48,41 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     await _historySubscription?.cancel();
     emit(const HistoryLoading());
 
-    _historySubscription = historyRepository.watchHistory(user.id).listen(
-      (history) {
-        if (!isClosed) {
-          add(_HistoryStreamUpdated(history));
-        }
-      },
-      onError: (e, st) {
-        if (!isClosed) {
-          add(_HistoryStreamError(e.toString()));
-        }
-      },
+    developer.log(
+      'Starting history stream for user: ${user.id}',
+      name: 'HistoryBloc',
     );
+
+    _historySubscription = historyRepository
+        .watchHistory(user.id)
+        .listen(
+          (history) {
+            developer.log(
+              'Received ${history.length} history items from stream',
+              name: 'HistoryBloc',
+            );
+            if (!isClosed) {
+              add(_HistoryStreamUpdated(history));
+            }
+          },
+          onError: (e, st) {
+            developer.log(
+              'Error in history stream: $e',
+              name: 'HistoryBloc',
+              error: e,
+              stackTrace: st,
+            );
+            if (!isClosed) {
+              add(_HistoryStreamError(e.toString()));
+            }
+          },
+        );
   }
 
-  void _onStreamUpdated(_HistoryStreamUpdated event, Emitter<HistoryState> emit) {
+  void _onStreamUpdated(
+    _HistoryStreamUpdated event,
+    Emitter<HistoryState> emit,
+  ) {
     emit(HistoryLoaded(history: event.history));
   }
 
