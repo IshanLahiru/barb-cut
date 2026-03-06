@@ -1,2 +1,2 @@
 export { createGenerationJob } from "./createGenerationJob";
-export { scheduleJobProcessor } from "./scheduleJobProcessor";
+export { processChildJob } from "./processChildJob";
