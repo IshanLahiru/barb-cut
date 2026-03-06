@@ -8,6 +8,7 @@ const MAX_PAID_RETRIES_PER_ANGLE = 2;
 type CreateGenerationJobInput = {
   haircutId?: string;
   beardId?: string;
+  angles?: string[];
 };
 
 type HaircutData = {
@@ -28,14 +29,14 @@ type BeardData = {
 };
 
 type UserHairData = {
-  hairType?: string; // e.g., "straight", "wavy", "curly", "coily"
-  hairTexture?: string; // e.g., "fine", "medium", "thick"
-  hairLength?: string; // e.g., "short", "medium", "long"
-  hairColor?: string; // e.g., "black", "brown", "blonde", "red", "gray"
-  faceShape?: string; // e.g., "oval", "round", "square", "heart", "diamond"
-  skinTone?: string; // e.g., "fair", "medium", "olive", "tan", "dark"
-  hairDensity?: string; // e.g., "thin", "medium", "thick"
-  scalpCondition?: string; // e.g., "normal", "dry", "oily"
+  hairType?: string;
+  hairTexture?: string;
+  hairLength?: string;
+  hairColor?: string;
+  faceShape?: string;
+  skinTone?: string;
+  hairDensity?: string;
+  scalpCondition?: string;
 };
 
 type UserPhotos = {
@@ -51,6 +52,8 @@ type ReferenceImages = {
   right: string | null;
   back: string | null;
 };
+
+type AngleType = "FRONT" | "LEFT" | "RIGHT" | "BACK";
 
 async function fetchHaircutData(
   db: admin.firestore.Firestore,
@@ -207,17 +210,13 @@ export const createGenerationJob = functions.https.onCall(
 
     const userId = context.auth.uid;
     const db = admin.firestore();
+    const now = admin.firestore.FieldValue.serverTimestamp();
 
-    // Fetch haircut and beard data from Firestore
+    // Fetch all required data
     let haircutData: HaircutData | null = null;
     let beardData: BeardData | null = null;
-    let userPhotos: ReferenceImages = {
-      front: null,
-      left: null,
-      right: null,
-      back: null,
-    };
-    let userHairData: UserHairData | null = null;
+    const userPhotos = await fetchUserPhotos(db, userId);
+    const userHairData = await fetchUserHairData(db, userId);
 
     if (data.haircutId) {
       haircutData = await fetchHaircutData(db, data.haircutId);
@@ -227,14 +226,8 @@ export const createGenerationJob = functions.https.onCall(
       beardData = await fetchBeardData(db, data.beardId);
     }
 
-    // Fetch user's reference photos
-    userPhotos = await fetchUserPhotos(db, userId);
-
-    // Fetch user's hair data from onboarding questionnaire
-    userHairData = await fetchUserHairData(db, userId);
-
     // Check if user has at least one photo
-    const photoUrls = Object.values(userPhotos).filter(url => url !== null);
+    const photoUrls = Object.values(userPhotos).filter((url) => url !== null);
     if (photoUrls.length === 0) {
       throw new functions.https.HttpsError(
         "failed-precondition",
@@ -242,15 +235,60 @@ export const createGenerationJob = functions.https.onCall(
       );
     }
 
-    // Build prompt from fetched data (including user hair characteristics)
+    const hasHaircutStyle = !!data.haircutId;
+    const hasBeardStyle = !!data.beardId;
+
+    // Use user-provided angles if available, otherwise determine based on styles
+    let angles: AngleType[];
+    if (data.angles && Array.isArray(data.angles) && data.angles.length > 0) {
+      // Validate provided angles
+      const validAngles = ["FRONT", "LEFT", "RIGHT", "BACK"];
+      angles = data.angles.filter((angle) =>
+        validAngles.includes(angle)
+      ) as AngleType[];
+      
+      if (angles.length === 0) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          "At least one valid angle must be selected (FRONT, LEFT, RIGHT, or BACK)."
+        );
+      }
+    } else {
+      // Fallback to auto-determining angles (backward compatibility)
+      // - Haircut only: 4 angles (FRONT, LEFT, RIGHT, BACK)
+      // - Haircut + Beard: 4 angles (FRONT, LEFT, RIGHT, BACK)
+      // - Beard only: 3 angles (FRONT, LEFT, RIGHT)
+      angles = ["FRONT", "LEFT", "RIGHT"];
+      if (hasHaircutStyle) {
+        // Always include BACK angle when haircut is involved
+        angles.push("BACK");
+      }
+    }
+
+    // Validate that user has photos for all selected angles
+    const missingAngles: string[] = [];
+    for (const angle of angles) {
+      const angleKey = angle.toLowerCase() as keyof UserPhotos;
+      if (!userPhotos[angleKey]) {
+        missingAngles.push(angle);
+      }
+    }
+
+    if (missingAngles.length > 0) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        `Missing photos for selected angles: ${missingAngles.join(", ")}. Please upload photos for all angles or deselect missing angles.`
+      );
+    }
+
+    // Build shared prompt
     const prompt = buildPrompt(haircutData, beardData, userHairData);
-    const imageCount = photoUrls.length;
-    const baseChargePoints = imageCount * COST_PER_ANGLE;
-    const now = admin.firestore.FieldValue.serverTimestamp();
+    const baseChargePoints = angles.length * COST_PER_ANGLE;
     const userRef = db.collection("users").doc(userId);
 
-    // Deduct points and create job in one transaction (idempotent: no double-deduct)
-    const jobId = await db.runTransaction(async (tx) => {
+    // Create parent job + child jobs in one transaction
+    const result = await db.runTransaction(async (tx) => {
+      // Check user points
       const userSnap = await tx.get(userRef);
       const currentPoints = (userSnap.data()?.points ?? 0) as number;
       if (currentPoints < baseChargePoints) {
@@ -259,70 +297,94 @@ export const createGenerationJob = functions.https.onCall(
           "Insufficient points. Please purchase more credits to generate."
         );
       }
+
+      // Create parent job
+      const parentJobRef = db.collection("aiJobs").doc();
+      const parentJobId = parentJobRef.id;
+
+      // Generate child job IDs for each angle
+      const childJobIds: string[] = [];
+      const childRefs: { angle: AngleType; ref: admin.firestore.DocumentReference }[] = [];
+
+      for (const angle of angles) {
+        const childRef = parentJobRef.collection("childJobs").doc();
+        childJobIds.push(childRef.id);
+        childRefs.push({ angle, ref: childRef });
+      }
+
+      // Deduct points from user
       const newPoints = currentPoints - baseChargePoints;
       tx.update(userRef, {
         points: newPoints,
         updatedAt: now,
       });
 
-      const jobRef = db.collection("aiJobs").doc();
-      tx.set(jobRef, {
+      // Create parent job document
+      tx.set(parentJobRef, {
+        schemaVersion: 2,
         userId,
-        status: "queued",
-        prompt,
-        model: "gemini-2.5-flash-image",
+        status: "generating",
         haircutId: data.haircutId ?? null,
         haircutName: haircutData?.name ?? null,
         beardId: data.beardId ?? null,
         beardName: beardData?.name ?? null,
+        hasBeardStyle,
+        childJobIds,
+        angleCount: angles.length,
+        totalCost: baseChargePoints,
         referenceImages: {
           front: userPhotos.front,
           left: userPhotos.left,
           right: userPhotos.right,
           back: userPhotos.back,
         },
-        userHairData: userHairData ? {
-          hairType: userHairData.hairType ?? null,
-          hairTexture: userHairData.hairTexture ?? null,
-          hairLength: userHairData.hairLength ?? null,
-          hairColor: userHairData.hairColor ?? null,
-          faceShape: userHairData.faceShape ?? null,
-          skinTone: userHairData.skinTone ?? null,
-          hairDensity: userHairData.hairDensity ?? null,
-          scalpCondition: userHairData.scalpCondition ?? null,
-        } : null,
-        imageCount,
-        generatedImages: [],
-        generationConfig: {
-          targetOutput: "match_reference",
-        },
-        billing: {
-          costPerAngle: COST_PER_ANGLE,
-          retryCostPerAttempt: RETRY_COST_PER_ANGLE,
-          maxPaidRetriesPerAngle: MAX_PAID_RETRIES_PER_ANGLE,
-          baseChargedPoints: baseChargePoints,
-          retryChargedPoints: 0,
-          totalChargedPoints: baseChargePoints,
-          refundedPoints: 0,
-          refundPolicy: {
-            allFailedPercent: 90,
-            partialRefundFailedAnglesOnly: true,
-            chargeAtJobCreation: true,
-            chargePerRetry: true,
-          },
-        },
+        userHairData: userHairData
+          ? {
+              hairType: userHairData.hairType ?? null,
+              hairTexture: userHairData.hairTexture ?? null,
+              hairLength: userHairData.hairLength ?? null,
+              hairColor: userHairData.hairColor ?? null,
+              faceShape: userHairData.faceShape ?? null,
+              skinTone: userHairData.skinTone ?? null,
+              hairDensity: userHairData.hairDensity ?? null,
+              scalpCondition: userHairData.scalpCondition ?? null,
+            }
+          : null,
         createdAt: now,
         updatedAt: now,
-        scheduledAt: now,
       });
-      return jobRef.id;
+
+      // Create child job documents
+      for (const [index, { angle, ref }] of childRefs.entries()) {
+        const angleKey = angle.toLowerCase();
+        const referenceImage =
+          userPhotos[angleKey as keyof ReferenceImages];
+
+        tx.set(ref, {
+          schemaVersion: 2,
+          parentJobId,
+          angle,
+          status: index === 0 ? "pending" : "blocked",
+          referenceImage,
+          generatedImage: null,
+          errorMessage: null,
+          prompt,
+          retryCount: 0,
+          costCharged: COST_PER_ANGLE,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
+
+      return { parentJobId, childJobIds, angleCount: angles.length };
     });
 
     return {
       success: true,
-      jobId,
-      status: "queued",
-      imageCount: photoUrls.length,
+      parentJobId: result.parentJobId,
+      childJobIds: result.childJobIds,
+      angleCount: result.angleCount,
+      status: "generating",
     };
   }
 );
