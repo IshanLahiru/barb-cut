@@ -34,6 +34,7 @@ class _HistoryViewState extends State<HistoryView>
   late List<double> _cardHeights;
   late AnimationController _generationPulseController;
   bool _hasRequestedLoad = false;
+  bool _isGridView = true; // Toggle between grid and list view
 
   // Getter that reads _generationHistory from BLoC state (avoid local copy)
   List<Map<String, dynamic>> get _generationHistory {
@@ -141,6 +142,32 @@ class _HistoryViewState extends State<HistoryView>
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 
+  Widget _buildViewToggleButton({
+    required IconData icon,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: AiSpacing.sm,
+            vertical: AiSpacing.xs,
+          ),
+          child: Icon(
+            icon,
+            size: 20,
+            color: isActive
+                ? AdaptiveThemeColors.neonCyan(context)
+                : AdaptiveThemeColors.textTertiary(context),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -163,7 +190,7 @@ class _HistoryViewState extends State<HistoryView>
         appBar: AppBar(
           backgroundColor: AdaptiveThemeColors.backgroundDark(context),
           elevation: 0,
-          toolbarHeight: 48,
+          toolbarHeight: 56,
           title: Text(
             'History',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -173,6 +200,44 @@ class _HistoryViewState extends State<HistoryView>
           ),
           centerTitle: true,
           surfaceTintColor: Colors.transparent,
+          actions: [
+            // View toggle button
+            Container(
+              margin: EdgeInsets.only(right: AiSpacing.md),
+              decoration: BoxDecoration(
+                color: AdaptiveThemeColors.backgroundDeep(context),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AdaptiveThemeColors.borderLight(
+                    context,
+                  ).withValues(alpha: 0.2),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildViewToggleButton(
+                    icon: Icons.grid_view_rounded,
+                    isActive: _isGridView,
+                    onTap: () => setState(() => _isGridView = true),
+                  ),
+                  Container(
+                    width: 1,
+                    height: 24,
+                    color: AdaptiveThemeColors.borderLight(
+                      context,
+                    ).withValues(alpha: 0.2),
+                  ),
+                  _buildViewToggleButton(
+                    icon: Icons.view_list_rounded,
+                    isActive: !_isGridView,
+                    onTap: () => setState(() => _isGridView = false),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         body: SafeArea(
           child: BlocBuilder<HistoryBloc, HistoryState>(
@@ -207,7 +272,8 @@ class _HistoryViewState extends State<HistoryView>
                               const HistoryEmptyState(),
                             ],
                           )
-                        : Padding(
+                        : _isGridView
+                        ? Padding(
                             padding: const EdgeInsets.fromLTRB(
                               AiSpacing.md,
                               AiSpacing.sm,
@@ -239,6 +305,30 @@ class _HistoryViewState extends State<HistoryView>
                                 return _buildHistoryCard(context, item, height);
                               },
                             ),
+                          )
+                        : ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.fromLTRB(
+                              AiSpacing.md,
+                              AiSpacing.sm,
+                              AiSpacing.md,
+                              AiSpacing.md,
+                            ),
+                            itemCount:
+                                _generationHistory.length +
+                                (isGenerating ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (isGenerating && index == 0) {
+                                return _buildGeneratingListTile(
+                                  generatedStyle ?? {},
+                                );
+                              }
+                              final historyIndex = isGenerating
+                                  ? index - 1
+                                  : index;
+                              final item = _generationHistory[historyIndex];
+                              return _buildHistoryListItem(context, item);
+                            },
                           ),
                   );
                 },
@@ -416,9 +506,13 @@ class _HistoryViewState extends State<HistoryView>
     final haircutName = styleData?['haircut'] as String?;
     final beardName = styleData?['beard'] as String?;
     final status = styleData?['status']?.toString() ?? 'queued';
-    final statusLine = status == 'processing'
-        ? 'Generating now. This can take a few minutes.'
-        : 'Queued up. We will start shortly.';
+    final statusLine = switch (status) {
+      'processing' ||
+      'generating' => 'Generating now. This can take a few minutes.',
+      'completed' => 'Finalizing your result in history.',
+      'error' => 'Generation failed. You can retry from Home.',
+      _ => 'Queued up. We will start shortly.',
+    };
 
     return GestureDetector(
       onTap: null,
@@ -1036,6 +1130,325 @@ class _HistoryViewState extends State<HistoryView>
           ),
         );
       },
+    );
+  }
+
+  Widget _buildHistoryListItem(
+    BuildContext context,
+    Map<String, dynamic> item,
+  ) {
+    final accentColor = AdaptiveThemeColors.neonCyan(context);
+
+    return GestureDetector(
+      onTap: () => _showHistoryPreviewDialog(context, item),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Container(
+          margin: EdgeInsets.only(bottom: AiSpacing.md),
+          decoration: BoxDecoration(
+            color: AdaptiveThemeColors.backgroundDark(context),
+            borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+            border: Border.all(
+              color: accentColor.withValues(alpha: 0.15),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              // Image thumbnail
+              ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(AiSpacing.radiusLarge),
+                  bottomLeft: Radius.circular(AiSpacing.radiusLarge),
+                ),
+                child: Container(
+                  width: 100,
+                  height: 140,
+                  child: GridLazyImage(
+                    imageUrl: item['image'] as String,
+                    fit: BoxFit.cover,
+                    customErrorWidget: Container(
+                      color: accentColor.withValues(alpha: 0.2),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 40,
+                        color: accentColor.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Details
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(AiSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (item['haircut'] != null &&
+                          (item['haircut'] as String).isNotEmpty)
+                        _buildListDetailRow(
+                          context,
+                          Icons.content_cut_rounded,
+                          'Haircut',
+                          item['haircut'] as String,
+                          accentColor,
+                        ),
+                      if (item['haircut'] != null &&
+                          (item['haircut'] as String).isNotEmpty)
+                        SizedBox(height: AiSpacing.sm),
+                      if (item['beard'] != null &&
+                          (item['beard'] as String).isNotEmpty)
+                        _buildListDetailRow(
+                          context,
+                          Icons.face_rounded,
+                          'Beard',
+                          item['beard'] as String,
+                          AdaptiveThemeColors.neonPurple(context),
+                        ),
+                      if (item['beard'] != null &&
+                          (item['beard'] as String).isNotEmpty)
+                        SizedBox(height: AiSpacing.sm),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: 14,
+                            color: AdaptiveThemeColors.textTertiary(context),
+                          ),
+                          SizedBox(width: AiSpacing.xs),
+                          Text(
+                            _formatTimestamp(item['timestamp'] as DateTime),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: AdaptiveThemeColors.textSecondary(
+                                    context,
+                                  ),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Arrow indicator
+              Padding(
+                padding: EdgeInsets.only(right: AiSpacing.md),
+                child: Icon(
+                  Icons.chevron_right_rounded,
+                  color: AdaptiveThemeColors.textTertiary(context),
+                  size: 24,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildListDetailRow(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+    Color accentColor,
+  ) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: accentColor.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 16, color: accentColor),
+        ),
+        SizedBox(width: AiSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AdaptiveThemeColors.textTertiary(context),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                value,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AdaptiveThemeColors.textPrimary(context),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGeneratingListTile(Map<String, dynamic>? styleData) {
+    final accent = AdaptiveThemeColors.neonCyan(context);
+    final previewImage = styleData?['image'] as String?;
+    final haircutName = styleData?['haircut'] as String?;
+    final beardName = styleData?['beard'] as String?;
+    final status = styleData?['status']?.toString() ?? 'queued';
+    final statusLine = switch (status) {
+      'processing' ||
+      'generating' => 'Generating now. This can take a few minutes.',
+      'completed' => 'Finalizing your result in history.',
+      'error' => 'Generation failed. You can retry from Home.',
+      _ => 'Queued up. We will start shortly.',
+    };
+
+    return Container(
+      margin: EdgeInsets.only(bottom: AiSpacing.md),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+        border: Border.all(color: accent.withValues(alpha: 0.4), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: accent.withValues(alpha: 0.15),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+        child: Row(
+          children: [
+            // Preview image thumbnail
+            Container(
+              width: 100,
+              height: 140,
+              child: Stack(
+                children: [
+                  if (previewImage != null && previewImage.isNotEmpty)
+                    GridLazyImage(
+                      imageUrl: previewImage,
+                      fit: BoxFit.cover,
+                      customErrorWidget: Container(
+                        color: AdaptiveThemeColors.backgroundDark(context),
+                        child: Icon(
+                          Icons.image_not_supported,
+                          size: 40,
+                          color: accent.withValues(alpha: 0.3),
+                        ),
+                      ),
+                    ),
+                  // Shimmer overlay
+                  AnimatedBuilder(
+                    animation: _generationPulseController,
+                    builder: (context, child) {
+                      final shimmerOpacity =
+                          ((_generationPulseController.value * 2 - 1).abs() - 1)
+                              .abs();
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              accent.withValues(alpha: 0.0),
+                              accent.withValues(
+                                alpha: shimmerOpacity.clamp(0.0, 0.2),
+                              ),
+                              accent.withValues(alpha: 0.0),
+                            ],
+                            stops: const [0.0, 0.5, 1.0],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            // Details
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(AiSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        AnimatedBuilder(
+                          animation: _generationPulseController,
+                          builder: (context, child) {
+                            final pulse =
+                                ((_generationPulseController.value * 2 - 1)
+                                    .abs());
+                            final scale = 0.85 + (pulse * 0.15);
+                            return Transform.scale(
+                              scale: scale,
+                              child: Icon(
+                                Icons.auto_awesome_rounded,
+                                size: 20,
+                                color: accent,
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(width: AiSpacing.sm),
+                        Text(
+                          'Creating your style',
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: AdaptiveThemeColors.textPrimary(context),
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: AiSpacing.sm),
+                    if (haircutName != null || beardName != null)
+                      Text(
+                        '${haircutName ?? ''} ${beardName ?? ''}'.trim(),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: accent,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    SizedBox(height: AiSpacing.xs),
+                    Text(
+                      statusLine,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AdaptiveThemeColors.textSecondary(context),
+                        fontSize: 11,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: AiSpacing.sm),
+                    _buildGeneratingStatusDots(),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

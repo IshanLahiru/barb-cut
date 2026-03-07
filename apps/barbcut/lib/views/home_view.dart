@@ -47,7 +47,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   // Fields
   final PanelController _panelController = PanelController();
   final ScrollController _mainScrollController = ScrollController();
-  final ScrollController _panelScrollController = ScrollController();
   final TextEditingController _panelSearchController = TextEditingController();
   final FocusNode _panelSearchFocus = FocusNode();
   int _selectedHaircutIndex = 0;
@@ -65,8 +64,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   bool _isGenerating = false;
   int? _confirmedHaircutIndex;
   int? _confirmedBeardIndex;
+  Set<String> _selectedAngles = {"FRONT", "LEFT", "RIGHT", "BACK"};
   Timer? _carouselTimer;
-  final String _activeJobStatus = 'queued';
+  String _activeJobStatus = 'queued';
   String? _activeJobError;
   bool _hasRequestedLoad = false;
   bool _showWelcomeOverlay = false;
@@ -940,254 +940,441 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         return Dialog(
           backgroundColor: Colors.transparent,
           insetPadding: EdgeInsets.symmetric(horizontal: AiSpacing.lg),
-          child: Container(
-            constraints: BoxConstraints(maxWidth: 420),
-            decoration: BoxDecoration(
-              color: bg,
-              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-              border: Border.all(
-                color: border.withValues(alpha: 0.5),
-                width: 1,
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    AiSpacing.lg,
-                    AiSpacing.lg,
-                    AiSpacing.sm,
-                    AiSpacing.md,
+          child: StatefulBuilder(
+            builder: (context, setDialogState) {
+              return Container(
+                constraints: BoxConstraints(maxWidth: 420),
+                decoration: BoxDecoration(
+                  color: bg,
+                  borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+                  border: Border.all(
+                    color: border.withValues(alpha: 0.5),
+                    width: 1,
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: accent.withValues(alpha: 0.15),
-                        ),
-                        child: Icon(
-                          Icons.check_circle_outline,
-                          color: accent,
-                          size: 22,
-                        ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        AiSpacing.lg,
+                        AiSpacing.lg,
+                        AiSpacing.sm,
+                        AiSpacing.md,
                       ),
-                      SizedBox(width: AiSpacing.md),
-                      Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: accent.withValues(alpha: 0.15),
+                            ),
+                            child: Icon(
+                              Icons.check_circle_outline,
+                              color: accent,
+                              size: 22,
+                            ),
+                          ),
+                          SizedBox(width: AiSpacing.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Ready to Generate',
+                                  style: TextStyle(
+                                    color: textP,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                SizedBox(height: 2),
+                                Text(
+                                  'Review your selections',
+                                  style: TextStyle(color: textT, fontSize: 13),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.close, color: textS, size: 22),
+                            onPressed: () {
+                              Navigator.of(dialogContext).pop();
+                              if (mounted) {
+                                setState(() {
+                                  _confirmedHaircutIndex = null;
+                                  _confirmedBeardIndex = null;
+                                });
+                              }
+                            },
+                            padding: EdgeInsets.zero,
+                            constraints: BoxConstraints(
+                              minWidth: 44,
+                              minHeight: 44,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(height: 1, color: border.withValues(alpha: 0.3)),
+
+                    // Scrollable content area
+                    Flexible(
+                      child: SingleChildScrollView(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              'Ready to Generate',
-                              style: TextStyle(
-                                color: textP,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 18,
+                            // Selection cards with small image preview
+                            Padding(
+                              padding: EdgeInsets.all(AiSpacing.lg),
+                              child: Column(
+                                children: [
+                                  haircut != null
+                                      ? _buildInlineStyleCard(
+                                          style: haircut,
+                                          label: 'Haircut',
+                                          accentColor:
+                                              AdaptiveThemeColors.neonCyan(
+                                                dialogContext,
+                                              ),
+                                          onChangePressed: () {
+                                            Navigator.of(dialogContext).pop();
+                                            if (mounted) {
+                                              setState(() {
+                                                _selectedHaircutIndex =
+                                                    _confirmedHaircutIndex ??
+                                                    _selectedHaircutIndex;
+                                              });
+                                              _tabController?.animateTo(0);
+                                              _setPanelLevel(_panelLevel4);
+                                            }
+                                          },
+                                          onRemovePressed: () {
+                                            Navigator.of(dialogContext).pop();
+                                            if (mounted) {
+                                              setState(
+                                                () => _confirmedHaircutIndex =
+                                                    null,
+                                              );
+                                              _showConfirmationDialog();
+                                            }
+                                          },
+                                        )
+                                      : _buildInlineAddStyleCard(
+                                          title: 'Add Haircut Style',
+                                          subtitle: 'Complete your look',
+                                          accentColor: accent,
+                                          onPressed: () {
+                                            Navigator.of(dialogContext).pop();
+                                            if (mounted) {
+                                              _tabController?.animateTo(0);
+                                              _setPanelLevel(_panelLevel4);
+                                            }
+                                          },
+                                        ),
+                                  SizedBox(height: AiSpacing.md),
+                                  beard != null
+                                      ? _buildInlineStyleCard(
+                                          style: beard,
+                                          label: 'Beard',
+                                          accentColor:
+                                              AdaptiveThemeColors.neonCyan(
+                                                dialogContext,
+                                              ),
+                                          onChangePressed: () {
+                                            Navigator.of(dialogContext).pop();
+                                            if (mounted) {
+                                              setState(() {
+                                                _selectedBeardIndex =
+                                                    _confirmedBeardIndex ??
+                                                    _selectedBeardIndex;
+                                              });
+                                              _tabController?.animateTo(1);
+                                              _setPanelLevel(_panelLevel4);
+                                            }
+                                          },
+                                          onRemovePressed: () {
+                                            Navigator.of(dialogContext).pop();
+                                            if (mounted) {
+                                              setState(
+                                                () =>
+                                                    _confirmedBeardIndex = null,
+                                              );
+                                              _showConfirmationDialog();
+                                            }
+                                          },
+                                        )
+                                      : _buildInlineAddStyleCard(
+                                          title: 'Add Beard Style',
+                                          subtitle: 'Complete your look',
+                                          accentColor:
+                                              AdaptiveThemeColors.neonPurple(
+                                                dialogContext,
+                                              ),
+                                          onPressed: () {
+                                            Navigator.of(dialogContext).pop();
+                                            if (mounted) {
+                                              _tabController?.animateTo(1);
+                                              _setPanelLevel(_panelLevel4);
+                                            }
+                                          },
+                                        ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 2),
-                            Text(
-                              'Review your selections',
-                              style: TextStyle(color: textT, fontSize: 13),
+
+                            // Angle selector
+                            Padding(
+                              padding: EdgeInsets.all(AiSpacing.lg),
+                              child: FutureBuilder<Map<String, String?>>(
+                                future: UserPhotoService.getUserPhotos(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Select angles to generate',
+                                          style: Theme.of(dialogContext)
+                                              .textTheme
+                                              .titleSmall
+                                              ?.copyWith(fontWeight: FontWeight.w700),
+                                        ),
+                                        SizedBox(height: AiSpacing.md),
+                                        Center(
+                                          child: CircularProgressIndicator(
+                                            color: AdaptiveThemeColors.neonCyan(dialogContext),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }
+
+                                  final photos = snapshot.data ?? {};
+                                  final availableAngles = ['FRONT', 'LEFT', 'RIGHT', 'BACK']
+                                      .where((angle) => photos[angle.toLowerCase()] != null)
+                                      .toList();
+                                  final missingAngles = ['FRONT', 'LEFT', 'RIGHT', 'BACK']
+                                      .where((angle) => photos[angle.toLowerCase()] == null)
+                                      .toList();
+
+                                  // Auto-select all available angles if nothing selected yet
+                                  if (_selectedAngles.isEmpty && availableAngles.isNotEmpty) {
+                                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                                      setDialogState(() {
+                                        _selectedAngles = availableAngles.toSet();
+                                      });
+                                    });
+                                  }
+
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Select angles to generate',
+                                        style: Theme.of(dialogContext)
+                                            .textTheme
+                                            .titleSmall
+                                            ?.copyWith(fontWeight: FontWeight.w700),
+                                      ),
+                                      SizedBox(height: AiSpacing.md),
+                                      
+                                      // Show available angles
+                                      if (availableAngles.isNotEmpty)
+                                        Wrap(
+                                          spacing: AiSpacing.sm,
+                                          runSpacing: AiSpacing.sm,
+                                          children: availableAngles.map((angle) {
+                                            final isSelected = _selectedAngles.contains(angle);
+                                            return FilterChip(
+                                              selected: isSelected,
+                                              onSelected: (selected) {
+                                                setDialogState(() {
+                                                  if (selected) {
+                                                    _selectedAngles.add(angle);
+                                                  } else {
+                                                    _selectedAngles.remove(angle);
+                                                  }
+                                                });
+                                              },
+                                              label: Text(angle),
+                                              side: BorderSide(
+                                                color: isSelected
+                                                    ? AdaptiveThemeColors.neonCyan(dialogContext)
+                                                    : Colors.grey.withValues(alpha: 0.3),
+                                              ),
+                                              backgroundColor: isSelected
+                                                  ? AdaptiveThemeColors.neonCyan(dialogContext)
+                                                      .withValues(alpha: 0.2)
+                                                  : Colors.transparent,
+                                              labelStyle: TextStyle(
+                                                color: isSelected
+                                                    ? AdaptiveThemeColors.neonCyan(dialogContext)
+                                                    : Theme.of(dialogContext).colorScheme.onSurface,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ),
+
+                                      // Show warning for missing angles
+                                      if (missingAngles.isNotEmpty) ...[
+                                        SizedBox(height: AiSpacing.md),
+                                        Container(
+                                          padding: EdgeInsets.all(AiSpacing.md),
+                                          decoration: BoxDecoration(
+                                            color: Colors.orange.withValues(alpha: 0.1),
+                                            borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
+                                            border: Border.all(
+                                              color: Colors.orange.withValues(alpha: 0.3),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.info_outline,
+                                                color: Colors.orange,
+                                                size: 20,
+                                              ),
+                                              SizedBox(width: AiSpacing.sm),
+                                              Expanded(
+                                                child: Text(
+                                                  'Missing photos: ${missingAngles.join(", ")}. Upload them in Photo Setup.',
+                                                  style: Theme.of(dialogContext).textTheme.bodySmall?.copyWith(
+                                                    color: Colors.orange,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+
+                                      // Show error if no photos at all
+                                      if (availableAngles.isEmpty) ...[
+                                        Container(
+                                          padding: EdgeInsets.all(AiSpacing.md),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.withValues(alpha: 0.1),
+                                            borderRadius: BorderRadius.circular(AiSpacing.radiusMedium),
+                                            border: Border.all(
+                                              color: Colors.red.withValues(alpha: 0.3),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.error_outline,
+                                                color: Colors.red,
+                                                size: 20,
+                                              ),
+                                              SizedBox(width: AiSpacing.sm),
+                                              Expanded(
+                                                child: Text(
+                                                  'No photos uploaded. Please upload photos in Photo Setup first.',
+                                                  style: Theme.of(dialogContext).textTheme.bodySmall?.copyWith(
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.close, color: textS, size: 22),
-                        onPressed: () {
-                          Navigator.of(dialogContext).pop();
-                          if (mounted) {
-                            setState(() {
-                              _confirmedHaircutIndex = null;
-                              _confirmedBeardIndex = null;
-                            });
-                          }
-                        },
-                        padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(
-                          minWidth: 44,
-                          minHeight: 44,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Divider(height: 1, color: border.withValues(alpha: 0.3)),
+                    ),
 
-                // Selection cards with small image preview
-                Padding(
-                  padding: EdgeInsets.all(AiSpacing.lg),
-                  child: Column(
-                    children: [
-                      haircut != null
-                          ? _buildInlineStyleCard(
-                              style: haircut,
-                              label: 'Haircut',
-                              accentColor: AdaptiveThemeColors.neonCyan(
-                                dialogContext,
-                              ),
-                              onChangePressed: () {
-                                Navigator.of(dialogContext).pop();
-                                if (mounted) {
-                                  setState(() {
-                                    _selectedHaircutIndex =
-                                        _confirmedHaircutIndex ??
-                                        _selectedHaircutIndex;
-                                  });
-                                  _tabController?.animateTo(0);
-                                  _setPanelLevel(_panelLevel4);
-                                }
-                              },
-                              onRemovePressed: () {
-                                Navigator.of(dialogContext).pop();
-                                if (mounted) {
-                                  setState(() => _confirmedHaircutIndex = null);
-                                  _showConfirmationDialog();
-                                }
-                              },
-                            )
-                          : _buildInlineAddStyleCard(
-                              title: 'Add Haircut Style',
-                              subtitle: 'Complete your look',
-                              accentColor: accent,
+                    Divider(height: 1, color: border.withValues(alpha: 0.3)),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        AiSpacing.lg,
+                        AiSpacing.md,
+                        AiSpacing.lg,
+                        AiSpacing.lg,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
                               onPressed: () {
                                 Navigator.of(dialogContext).pop();
                                 if (mounted) {
-                                  _tabController?.animateTo(0);
-                                  _setPanelLevel(_panelLevel4);
-                                }
-                              },
-                            ),
-                      SizedBox(height: AiSpacing.md),
-                      beard != null
-                          ? _buildInlineStyleCard(
-                              style: beard,
-                              label: 'Beard',
-                              accentColor: AdaptiveThemeColors.neonCyan(
-                                dialogContext,
-                              ),
-                              onChangePressed: () {
-                                Navigator.of(dialogContext).pop();
-                                if (mounted) {
                                   setState(() {
-                                    _selectedBeardIndex =
-                                        _confirmedBeardIndex ??
-                                        _selectedBeardIndex;
+                                    _confirmedHaircutIndex = null;
+                                    _confirmedBeardIndex = null;
                                   });
-                                  _tabController?.animateTo(1);
-                                  _setPanelLevel(_panelLevel4);
+                                  _setPanelLevel(_panelLevel2);
                                 }
                               },
-                              onRemovePressed: () {
-                                Navigator.of(dialogContext).pop();
-                                if (mounted) {
-                                  setState(() => _confirmedBeardIndex = null);
-                                  _showConfirmationDialog();
-                                }
-                              },
-                            )
-                          : _buildInlineAddStyleCard(
-                              title: 'Add Beard Style',
-                              subtitle: 'Complete your look',
-                              accentColor: AdaptiveThemeColors.neonPurple(
-                                dialogContext,
-                              ),
-                              onPressed: () {
-                                Navigator.of(dialogContext).pop();
-                                if (mounted) {
-                                  _tabController?.animateTo(1);
-                                  _setPanelLevel(_panelLevel4);
-                                }
-                              },
-                            ),
-                    ],
-                  ),
-                ),
-
-                Divider(height: 1, color: border.withValues(alpha: 0.3)),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    AiSpacing.lg,
-                    AiSpacing.md,
-                    AiSpacing.lg,
-                    AiSpacing.lg,
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.of(dialogContext).pop();
-                            if (mounted) {
-                              setState(() {
-                                _confirmedHaircutIndex = null;
-                                _confirmedBeardIndex = null;
-                              });
-                              _setPanelLevel(_panelLevel2);
-                            }
-                          },
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: textS,
-                            side: BorderSide(color: border, width: 1.5),
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AiSpacing.radiusMedium,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: AiSpacing.md),
-                      Expanded(
-                        flex: 2,
-                        child: FilledButton(
-                          onPressed: () {
-                            Navigator.of(dialogContext).pop();
-                            if (mounted) _startGeneration();
-                          },
-                          style: FilledButton.styleFrom(
-                            backgroundColor: accent,
-                            foregroundColor: onAccent,
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AiSpacing.radiusMedium,
-                              ),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.auto_awesome, size: 18),
-                              SizedBox(width: 8),
-                              Text(
-                                'Generate Style',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: textS,
+                                side: BorderSide(color: border, width: 1.5),
+                                padding: EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    AiSpacing.radiusMedium,
+                                  ),
                                 ),
                               ),
-                            ],
+                              child: Text(
+                                'Cancel',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                          SizedBox(width: AiSpacing.md),
+                          Expanded(
+                            flex: 2,
+                            child: FilledButton(
+                              onPressed: () {
+                                Navigator.of(dialogContext).pop();
+                                if (mounted) _startGeneration();
+                              },
+                              style: FilledButton.styleFrom(
+                                backgroundColor: accent,
+                                foregroundColor: onAccent,
+                                padding: EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    AiSpacing.radiusMedium,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.auto_awesome, size: 18),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Generate Style',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
         );
       },
@@ -1392,6 +1579,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
     setState(() {
       _isGenerating = true;
+      _activeJobStatus = 'queued';
+      _activeJobError = null;
     });
 
     _setPanelLevel(_panelLevel2);
@@ -1435,6 +1624,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           beardId: hasBeard
               ? _beardStyles[selectedBeardIndex]['id']?.toString()
               : null,
+          angles: _selectedAngles.toList(),
         );
       } catch (e) {
         debugPrint('Failed to create generation job: $e');
@@ -1459,6 +1649,24 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         return;
       }
 
+      final int selectedHaircutIndexForRetry = _haircuts.isEmpty
+          ? 0
+          : (_confirmedHaircutIndex ?? _selectedHaircutIndex).clamp(
+              0,
+              _haircuts.length - 1,
+            );
+      final int selectedBeardIndexForRetry = _beardStyles.isEmpty
+          ? 0
+          : (_confirmedBeardIndex ?? _selectedBeardIndex).clamp(
+              0,
+              _beardStyles.length - 1,
+            );
+      final String? haircutId = hasHaircut
+          ? _haircuts[selectedHaircutIndexForRetry]['id']?.toString()
+          : null;
+      final String? beardId = hasBeard
+          ? _beardStyles[selectedBeardIndexForRetry]['id']?.toString()
+          : null;
       final String haircutName = _confirmedHaircutIndex != null
           ? _haircuts[_confirmedHaircutIndex!]['name']?.toString() ?? 'N/A'
           : (tabType == 'hair'
@@ -1474,6 +1682,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         'image': styleImage,
         'haircut': haircutName,
         'beard': beardName,
+        'haircutId': haircutId,
+        'beardId': beardId,
         'timestamp': DateTime.now(),
         'jobId': jobId,
         'status': jobId.isEmpty ? 'error' : 'queued',
@@ -1491,6 +1701,78 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     }
 
     widget.onNavigateToHistory?.call();
+  }
+
+  /// Retry a failed generation using the same haircut/beard IDs from the original job
+  Future<void> _retryFailedGeneration() async {
+    final generationState = context.read<GenerationStatusCubit>().state;
+    if (generationState.generatedStyleData == null) {
+      debugPrint('Cannot retry: no active generation data');
+      return;
+    }
+
+    final styleData = generationState.generatedStyleData!;
+    final String? haircutId = styleData['haircutId']?.toString();
+    final String? beardId = styleData['beardId']?.toString();
+
+    if (haircutId == null && beardId == null) {
+      debugPrint('Cannot retry: no style IDs found in generation data');
+      return;
+    }
+
+    setState(() {
+      _isGenerating = true;
+      _activeJobStatus = 'queued';
+      _activeJobError = null;
+    });
+
+    String jobId = '';
+    try {
+      jobId = await AiGenerationService.createGenerationJob(
+        haircutId: haircutId,
+        beardId: beardId,
+        angles: _selectedAngles.toList(),
+      );
+    } catch (e) {
+      debugPrint('Failed to retry generation job: $e');
+      if (mounted) {
+        setState(() => _isGenerating = false);
+        if (e is FirebaseFunctionsException &&
+            e.code == 'failed-precondition' &&
+            (e.message?.toLowerCase().contains('insufficient') ?? false)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Insufficient credits. Get more in Settings or purchase more.',
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
+      }
+      return;
+    }
+
+    // Update style data with new job ID
+    final updatedStyleData = {
+      ...styleData,
+      'jobId': jobId,
+      'status': jobId.isEmpty ? 'error' : 'queued',
+      'timestamp': DateTime.now(),
+    };
+
+    if (jobId.isNotEmpty) {
+      context.read<GenerationStatusCubit>().startWatchingJob(
+        jobId,
+        updatedStyleData,
+      );
+    } else {
+      setState(() => _isGenerating = false);
+      _markGenerationFailedSnackbar('Unable to create generation job.');
+    }
   }
 
   void _markGenerationFailedSnackbar(String message) {
@@ -1511,7 +1793,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     _panelSearchController.dispose();
     _panelSearchFocus.dispose();
     _mainScrollController.dispose();
-    _panelScrollController.dispose();
     _panelSlidePositionNotifier.dispose();
     super.dispose();
   }
@@ -1549,12 +1830,27 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return BlocListener<GenerationStatusCubit, GenerationStatusState>(
       listener: (context, state) {
+        final liveStatus = state.generatedStyleData?['status']?.toString();
+        final liveError = state.generatedStyleData?['errorMessage']?.toString();
+
+        if (mounted && liveStatus != null) {
+          setState(() {
+            _activeJobStatus = liveStatus;
+            _activeJobError = liveError;
+            if (state.isGenerating) {
+              _isGenerating = true;
+            }
+          });
+        }
+
         if (!state.isGenerating && state.generatedStyleData != null) {
           final status = state.generatedStyleData!['status']?.toString();
           if (status == 'completed') {
             if (mounted) {
               setState(() {
                 _isGenerating = false;
+                _activeJobStatus = 'completed';
+                _activeJobError = null;
                 _confirmedHaircutIndex = null;
                 _confirmedBeardIndex = null;
               });
@@ -1574,6 +1870,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             if (mounted) {
               setState(() {
                 _isGenerating = false;
+                _activeJobStatus = 'error';
+                _activeJobError = state.generatedStyleData!['errorMessage']
+                    ?.toString();
                 _confirmedHaircutIndex = null;
                 _confirmedBeardIndex = null;
               });
@@ -1913,7 +2212,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       if (_activeJobStatus == 'error')
                         GenerationErrorCard(
                           errorMessage: _activeJobError,
-                          onRetry: _startGeneration,
+                          onRetry: _retryFailedGeneration,
                         )
                       else
                         _buildGenerationScheduledCard(selectedStyle),
@@ -2395,6 +2694,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     final status = _activeJobStatus;
     final isError = status == 'error';
     final statusText = switch (status) {
+      'generating' => 'Generating now',
       'processing' => 'Generating now',
       'completed' => 'Ready',
       'error' => 'Failed',
@@ -2731,25 +3031,23 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         final tabChildren = isLoading
             ? List.generate(
                 categories.length,
-                (_) => _buildSkeletonTileGrid(scrollController),
+                (_) => _buildSkeletonTileGrid(null),
               )
             : tabTypes.map((type) {
                 switch (type) {
                   case 'recent':
-                    return _buildRecentGrid(scrollController);
+                    return _buildRecentGrid(null);
                   case 'favourites':
-                    return _buildFavouritesGrid(scrollController);
+                    return _buildFavouritesGrid(null);
                   case 'hair':
                     return ValueListenableBuilder<String>(
                       valueListenable: _panelSearchQueryNotifier,
-                      builder: (context, _, __) =>
-                          _buildHaircutGrid(scrollController),
+                      builder: (context, _, __) => _buildHaircutGrid(null),
                     );
                   case 'beard':
                     return ValueListenableBuilder<String>(
                       valueListenable: _panelSearchQueryNotifier,
-                      builder: (context, _, __) =>
-                          _buildBeardGrid(scrollController),
+                      builder: (context, _, __) => _buildBeardGrid(null),
                     );
                   default:
                     return const Center(child: Text('Unknown tab'));
