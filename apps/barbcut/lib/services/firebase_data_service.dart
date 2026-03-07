@@ -1,9 +1,73 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer' as developer;
 import 'firebase_storage_helper.dart';
 
 /// Service for fetching data from Firebase Firestore
+///
+/// ⚠️ DEPRECATION NOTICE: This service is legacy and being phased out in favor of
+/// repository/use-case architecture. Prefer using:
+/// - HomeRepository + HomeBloc for styles and favourites
+/// - ProfileRepository for user profile data
+/// - Direct repository/use case calls instead of this service
+///
+/// This service will be retained as internal-only for compatibility during migration.
 class FirebaseDataService {
+  /// Initialize user document and favourites subcollection
+  static Future<void> initializeUser({
+    required String userId,
+    Map<String, dynamic>? profileData,
+  }) async {
+    final userDoc = _firestore.collection('users').doc(userId);
+    await userDoc.set(profileData ?? {}, SetOptions(merge: true));
+    // Optionally, create an empty favourites subcollection (not strictly needed)
+    // await userDoc.collection('favourites').doc('_init').set({'init': true});
+  }
+
+  /// Add a style (haircut or beard) to user's favourites
+  static Future<void> addFavourite({
+    required String userId,
+    required Map<String, dynamic> style,
+    required String styleType, // 'haircut' or 'beard'
+  }) async {
+    final favRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favourites')
+        .doc(style['id']);
+    await favRef.set({
+      ...style,
+      'styleType': styleType,
+      'addedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  /// Remove a style from user's favourites
+  static Future<void> removeFavourite({
+    required String userId,
+    required String styleId,
+  }) async {
+    final favRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favourites')
+        .doc(styleId);
+    await favRef.delete();
+  }
+
+  /// Get all favourites for a user
+  static Future<List<Map<String, dynamic>>> getFavourites({
+    required String userId,
+  }) async {
+    final snapshot = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favourites')
+        .orderBy('addedAt', descending: true)
+        .get();
+    return snapshot.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList();
+  }
+
   FirebaseDataService._();
 
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -11,6 +75,13 @@ class FirebaseDataService {
   // Cache for data
   static List<Map<String, dynamic>>? _cachedHaircuts;
   static List<Map<String, dynamic>>? _cachedBeardStyles;
+
+  /// Exposes cached haircuts for rehydration (e.g. after hot reload). Null if not yet fetched.
+  static List<Map<String, dynamic>>? get cachedHaircuts => _cachedHaircuts;
+
+  /// Exposes cached beard styles for rehydration (e.g. after hot reload). Null if not yet fetched.
+  static List<Map<String, dynamic>>? get cachedBeardStyles =>
+      _cachedBeardStyles;
   static List<Map<String, dynamic>>? _cachedProducts;
   static Map<String, dynamic>? _cachedProfile;
   static List<Map<String, dynamic>>? _cachedHistory;
@@ -46,9 +117,33 @@ class FirebaseDataService {
     return resolved;
   }
 
-  /// Fetch haircuts from Firestore
+  static Future<Map<String, dynamic>> _resolveHistoryImage(
+    Map<String, dynamic> data,
+  ) async {
+    final resolved = Map<String, dynamic>.from(data);
+    final imageUrl = data['imageUrl']?.toString();
+    final imagePath = data['image']?.toString();
+
+    if ((imageUrl == null || imageUrl.isEmpty) && imagePath != null) {
+      resolved['imageUrl'] = imagePath;
+    }
+
+    final storagePath = resolved['imageUrl']?.toString();
+    if (storagePath != null && storagePath.startsWith('gs://')) {
+      resolved['imageUrl'] = await FirebaseStorageHelper.getDownloadUrl(
+        storagePath,
+      );
+    }
+
+    return resolved;
+  }
+
+  /// Fetch haircuts from Firestore.
+  /// When [resolveImageUrls] is false (default), returns raw data so the UI can
+  /// resolve Storage paths lazily (FirebaseImage). This makes initial load fast.
   static Future<List<Map<String, dynamic>>> fetchHaircuts({
     bool forceRefresh = false,
+    bool resolveImageUrls = false,
   }) async {
     if (_cachedHaircuts != null && !forceRefresh) {
       developer.log(
@@ -67,23 +162,17 @@ class FirebaseDataService {
       final rawHaircuts = snapshot.docs
           .map((doc) => {'id': doc.id, ...doc.data()})
           .toList();
-      _cachedHaircuts = await Future.wait(rawHaircuts.map(_resolveStyleImages));
+      if (resolveImageUrls) {
+        _cachedHaircuts = await Future.wait(
+          rawHaircuts.map(_resolveStyleImages),
+        );
+      } else {
+        _cachedHaircuts = rawHaircuts;
+      }
       developer.log(
         '✅ Fetched ${_cachedHaircuts!.length} haircuts from Firestore',
         name: 'FirebaseData',
       );
-
-      // Log image URLs from first item for debugging
-      if (_cachedHaircuts!.isNotEmpty) {
-        final firstItem = _cachedHaircuts!.first;
-        final imageUrl =
-            firstItem['image'] ?? firstItem['images']?['front'] ?? 'N/A';
-        developer.log(
-          '   Sample image URL: ${imageUrl.toString().substring(0, 80)}...',
-          name: 'FirebaseData',
-        );
-      }
-
       return _cachedHaircuts!;
     } catch (e) {
       developer.log(
@@ -96,9 +185,12 @@ class FirebaseDataService {
     }
   }
 
-  /// Fetch beard styles from Firestore
+  /// Fetch beard styles from Firestore.
+  /// When [resolveImageUrls] is false (default), returns raw data so the UI can
+  /// resolve Storage paths lazily (FirebaseImage). This makes initial load fast.
   static Future<List<Map<String, dynamic>>> fetchBeardStyles({
     bool forceRefresh = false,
+    bool resolveImageUrls = false,
   }) async {
     if (_cachedBeardStyles != null && !forceRefresh) {
       return _cachedBeardStyles!;
@@ -113,9 +205,13 @@ class FirebaseDataService {
       final rawBeards = snapshot.docs
           .map((doc) => {'id': doc.id, ...doc.data()})
           .toList();
-      _cachedBeardStyles = await Future.wait(
-        rawBeards.map(_resolveStyleImages),
-      );
+      if (resolveImageUrls) {
+        _cachedBeardStyles = await Future.wait(
+          rawBeards.map(_resolveStyleImages),
+        );
+      } else {
+        _cachedBeardStyles = rawBeards;
+      }
       developer.log(
         '✓ Fetched ${_cachedBeardStyles!.length} beard styles',
         name: 'FirebaseData',
@@ -136,7 +232,9 @@ class FirebaseDataService {
   static Future<List<Map<String, dynamic>>> fetchProducts({
     bool forceRefresh = false,
   }) async {
-    if (_cachedProducts != null && !forceRefresh) {
+    final useCache =
+        _cachedProducts != null && !forceRefresh && _cachedProducts!.isNotEmpty;
+    if (useCache) {
       return _cachedProducts!;
     }
 
@@ -171,35 +269,75 @@ class FirebaseDataService {
     }
 
     try {
-      developer.log('Fetching profile from Firebase...', name: 'FirebaseData');
-      final snapshot = await _firestore.collection('profile').doc('data').get();
-
-      if (snapshot.exists) {
-        _cachedProfile = snapshot.data()!;
-        developer.log('✓ Fetched profile data', name: 'FirebaseData');
-        return _cachedProfile!;
-      } else {
-        // Return default profile if not found
+      developer.log(
+        'Fetching profile from users collection...',
+        name: 'FirebaseData',
+      );
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
         developer.log(
-          '⚠ Profile not found, using defaults',
+          '⚠ No authenticated user, using defaults',
           name: 'FirebaseData',
         );
-        _cachedProfile = {
-          'userId': 'user_123',
-          'username': 'User',
-          'email': 'user@barbcut.com',
-          'bio': '',
-          'appointmentsCount': 0,
-          'favoritesCount': 0,
-          'averageRating': 0.0,
-          'hairType': 'Straight',
-          'faceShape': 'Oval',
-          'preferredLength': 'Medium',
-          'hasBeard': false,
-          'beardStyle': 'None',
-          'lifestyle': 'Active',
-          'photoPaths': <String>[],
-        };
+        _cachedProfile = _buildDefaultProfile();
+        return _cachedProfile!;
+      }
+
+      // CONSOLIDATION: Read all profile data from users/{uid} (canonical source)
+      final usersSnap = await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (usersSnap.exists) {
+        final userData = usersSnap.data()!;
+
+        // Try to load additional questionnaire data from userProfiles for backward compatibility
+        // This is temporary during transition; new data goes to users only
+        Map<String, dynamic> additionalData = {};
+        try {
+          final profileSnap = await _firestore
+              .collection('userProfiles')
+              .doc(user.uid)
+              .get();
+          if (profileSnap.exists) {
+            // Merge questionnaire fields from old collection, but don't override users fields
+            final oldProfileData = profileSnap.data()!;
+            [
+              'hairType',
+              'faceShape',
+              'preferredLength',
+              'hasBeard',
+              'beardStyle',
+              'lifestyle',
+              'photoPaths',
+            ].forEach((field) {
+              if (oldProfileData.containsKey(field) &&
+                  !userData.containsKey(field)) {
+                additionalData[field] = oldProfileData[field];
+              }
+            });
+          }
+        } catch (e) {
+          // Silently continue if old userProfiles read fails
+          developer.log(
+            'ℹ userProfiles backward-compat read skipped: $e',
+            name: 'FirebaseData',
+          );
+        }
+
+        _cachedProfile = {...userData, ...additionalData};
+        developer.log(
+          '✓ Fetched profile data from users collection',
+          name: 'FirebaseData',
+        );
+        return _cachedProfile!;
+      } else {
+        developer.log(
+          '⚠ User document not found, using defaults',
+          name: 'FirebaseData',
+        );
+        _cachedProfile = _buildDefaultProfile(userId: user.uid);
         return _cachedProfile!;
       }
     } catch (e) {
@@ -213,25 +351,93 @@ class FirebaseDataService {
     }
   }
 
-  /// Fetch history from Firestore
+  static Map<String, dynamic> _buildDefaultProfile({String? userId}) {
+    return {
+      'userId': userId ?? 'user_123',
+      'username': 'User',
+      'email': 'user@barbcut.com',
+      'bio': '',
+      'appointmentsCount': 0,
+      'favoritesCount': 0,
+      'averageRating': 0.0,
+      'hairType': 'Straight',
+      'faceShape': 'Oval',
+      'preferredLength': 'Medium',
+      'hasBeard': false,
+      'beardStyle': 'None',
+      'lifestyle': 'Active',
+      'photoPaths': [],
+      'photoURL': '',
+      'points': 0,
+    };
+  }
+
+  /// Update user profile fields in Firestore (userProfiles). Merges with existing.
+  static Future<void> updateUserProfile(Map<String, dynamic> data) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception('User not authenticated');
+    // CONSOLIDATION: Write to users collection (canonical source)
+    await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .set(data, SetOptions(merge: true));
+    clearProfileCache();
+  }
+
+  /// Clears the profile cache so the next fetch returns fresh data (e.g. after photo update).
+  static void clearProfileCache() {
+    _cachedProfile = null;
+  }
+
+  /// Stream of current user's points (from users/{uid}.points). Use for display only.
+  static Stream<int> watchUserPoints() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return Stream.value(0);
+    return _firestore.collection('users').doc(uid).snapshots().map((s) {
+      return (s.data()?['points'] as num?)?.toInt() ?? 0;
+    });
+  }
+
+  /// Default page size for history pagination
+  static const int historyPageSize = 20;
+
+  /// Fetch history from Firestore (paginated - first page only)
   static Future<List<Map<String, dynamic>>> fetchHistory({
     bool forceRefresh = false,
+    String? userId,
+    int limit = historyPageSize,
+    DocumentSnapshot? startAfter,
   }) async {
-    if (_cachedHistory != null && !forceRefresh) {
+    if (_cachedHistory != null && !forceRefresh && startAfter == null) {
       return _cachedHistory!;
     }
 
     try {
       developer.log('Fetching history from Firebase...', name: 'FirebaseData');
-      final snapshot = await _firestore.collection('history').get();
-      _cachedHistory = snapshot.docs
+      final resolvedUserId = userId ?? FirebaseAuth.instance.currentUser?.uid;
+
+      Query<Map<String, dynamic>> query = _firestore.collection('history');
+      if (resolvedUserId != null) {
+        query = query.where('userId', isEqualTo: resolvedUserId);
+      }
+      query = query.orderBy('timestamp', descending: true).limit(limit);
+      if (startAfter != null) {
+        query = query.startAfterDocument(startAfter);
+      }
+
+      final snapshot = await query.get();
+      final rawHistory = snapshot.docs
           .map((doc) => {'id': doc.id, ...doc.data()})
           .toList();
+      final resolved = await Future.wait(rawHistory.map(_resolveHistoryImage));
+      if (startAfter == null) {
+        _cachedHistory = resolved;
+      }
       developer.log(
-        '✓ Fetched ${_cachedHistory!.length} history items',
+        '✓ Fetched ${resolved.length} history items',
         name: 'FirebaseData',
       );
-      return _cachedHistory!;
+      return resolved;
     } catch (e) {
       developer.log(
         '✗ Error fetching history: $e',

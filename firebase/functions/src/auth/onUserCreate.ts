@@ -1,9 +1,11 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { FieldValue } from "firebase-admin/firestore";
+
+import { getCanonicalUserPayload } from "./userShape";
 
 /**
- * Create user document when user is created via Firebase Auth
+ * Create user document when user is created via Firebase Auth.
+ * Uses canonical user shape (includes favouritesCount: 0).
  */
 export const createUserDocument = functions.auth.user().onCreate(async (user) => {
   console.log(`✅ New user created: ${user.uid}`);
@@ -11,17 +13,8 @@ export const createUserDocument = functions.auth.user().onCreate(async (user) =>
   const db = admin.firestore();
 
   try {
-    await db.collection("users").doc(user.uid).set({
-      uid: user.uid,
-      email: user.email || "",
-      displayName: user.displayName || "",
-      phone: user.phoneNumber || "",
-      photoURL: user.photoURL || "",
-      role: "customer", // Default role
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
-      isActive: true,
-    });
+    const payload = getCanonicalUserPayload(user);
+    await db.collection("users").doc(user.uid).set(payload);
 
     console.log(`📝 User profile created for ${user.uid}`);
   } catch (error) {

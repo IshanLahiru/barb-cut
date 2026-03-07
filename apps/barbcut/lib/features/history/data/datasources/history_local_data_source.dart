@@ -1,9 +1,10 @@
 import '../../domain/entities/history_entity.dart';
 import '../models/history_model.dart';
-import '../../../../core/constants/app_data.dart';
+import '../../../../services/firebase_data_service.dart';
 
 class HistoryLocalDataSource {
-  List<HistoryEntity> getHistory() {
-    return AppData.history.map((item) => HistoryModel.fromMap(item)).toList();
+  Future<List<HistoryEntity>> getHistory() async {
+    final history = await FirebaseDataService.fetchHistory(forceRefresh: true);
+    return history.map((item) => HistoryModel.fromMap(item)).toList();
   }
 }

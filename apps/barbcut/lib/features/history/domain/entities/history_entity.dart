@@ -1,4 +1,6 @@
-class HistoryEntity {
+import 'package:equatable/equatable.dart';
+
+class HistoryEntity extends Equatable {
   final String id;
   final String imageUrl;
   final String haircut;
@@ -12,4 +14,7 @@ class HistoryEntity {
     required this.beard,
     required this.timestamp,
   });
+
+  @override
+  List<Object?> get props => [id, imageUrl, haircut, beard, timestamp];
 }

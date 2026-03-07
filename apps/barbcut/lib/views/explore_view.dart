@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/lazy_network_image.dart';
 import '../theme/theme.dart';
 
 class ExploreView extends StatefulWidget {
@@ -296,19 +297,17 @@ class _ExploreViewState extends State<ExploreView> {
           Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
-              child: Image.network(
-                style['image'],
+              child: GridLazyImage(
+                imageUrl: style['image'],
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: accentColor.withValues(alpha: 0.2),
-                    child: Icon(
-                      Icons.image_not_supported,
-                      size: 110,
-                      color: accentColor.withValues(alpha: 0.5),
-                    ),
-                  );
-                },
+                customErrorWidget: Container(
+                  color: accentColor.withValues(alpha: 0.2),
+                  child: Icon(
+                    Icons.image_not_supported,
+                    size: 110,
+                    color: accentColor.withValues(alpha: 0.5),
+                  ),
+                ),
               ),
             ),
           ),

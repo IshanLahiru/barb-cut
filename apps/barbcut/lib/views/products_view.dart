@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../widgets/firebase_image.dart';
+import '../widgets/lazy_network_image.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../theme/theme.dart';
-import '../core/di/service_locator.dart';
 import '../features/products/domain/entities/product_entity.dart';
-import '../features/products/domain/usecases/get_products_usecase.dart';
 import '../features/products/presentation/bloc/products_bloc.dart';
 import '../features/products/presentation/bloc/products_event.dart';
 import '../features/products/presentation/bloc/products_state.dart';
 
 class ProductsView extends StatefulWidget {
-  const ProductsView({super.key});
+  final int currentIndex;
+  final int tabIndex;
+
+  const ProductsView({
+    super.key,
+    required this.currentIndex,
+    required this.tabIndex,
+  });
 
   @override
   State<ProductsView> createState() => _ProductsViewState();
@@ -24,11 +31,35 @@ class _ProductsViewState extends State<ProductsView> {
   late List<Map<String, dynamic>> _products;
 
   final List<String> _categories = ['All', 'Hair Care', 'Beard Care', 'Tools'];
+  bool _hasRequestedLoad = false;
 
   @override
   void initState() {
     super.initState();
     _products = [];
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _maybeRequestInitialLoad();
+      }
+    });
+  }
+
+  void _maybeRequestInitialLoad() {
+    if (_hasRequestedLoad) return;
+    if (widget.currentIndex != widget.tabIndex) return;
+    final state = context.read<ProductsBloc>().state;
+    if (state is ProductsInitial) {
+      context.read<ProductsBloc>().add(const ProductsLoadRequested());
+      _hasRequestedLoad = true;
+    }
+  }
+
+  @override
+  void didUpdateWidget(ProductsView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentIndex != oldWidget.currentIndex) {
+      _maybeRequestInitialLoad();
+    }
   }
 
   List<Map<String, dynamic>> _mapProducts(List<ProductEntity> products) {
@@ -70,11 +101,7 @@ class _ProductsViewState extends State<ProductsView> {
       crossAxisCount = 3;
     }
 
-    return BlocProvider(
-      create: (_) =>
-          ProductsBloc(getProductsUseCase: getIt<GetProductsUseCase>())
-            ..add(const ProductsLoadRequested()),
-      child: BlocListener<ProductsBloc, ProductsState>(
+    return BlocConsumer<ProductsBloc, ProductsState>(
         listener: (context, state) {
           if (state is ProductsLoaded) {
             setState(() {
@@ -82,181 +109,165 @@ class _ProductsViewState extends State<ProductsView> {
             });
           }
         },
-        child: Scaffold(
-          backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
-          appBar: AppBar(
-            backgroundColor: AdaptiveThemeColors.backgroundDark(context),
-            elevation: 0,
-            toolbarHeight: 48,
-            title: Text(
-              'Shop',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: AdaptiveThemeColors.textPrimary(context),
-                fontWeight: FontWeight.w800,
+        buildWhen: (previous, current) => true,
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
+            appBar: AppBar(
+              backgroundColor: AdaptiveThemeColors.backgroundDark(context),
+              elevation: 0,
+              toolbarHeight: 48,
+              title: Text(
+                'Shop',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: AdaptiveThemeColors.textPrimary(context),
+                  fontWeight: FontWeight.w800,
+                ),
               ),
+              centerTitle: true,
+              surfaceTintColor: Colors.transparent,
             ),
-            centerTitle: true,
-            surfaceTintColor: Colors.transparent,
-          ),
-          body: SafeArea(
-            child: Column(
-              children: [
-                // Modern search header
-                Container(
-                  padding: EdgeInsets.all(AiSpacing.lg),
-                  decoration: BoxDecoration(
-                    color: AdaptiveThemeColors.backgroundDark(context),
-                    border: Border(
-                      bottom: BorderSide(
-                        color: AdaptiveThemeColors.borderLight(
-                          context,
-                        ).withValues(alpha: 0.2),
-                        width: 1,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  // Modern search header
+                  Container(
+                    padding: EdgeInsets.all(AiSpacing.lg),
+                    decoration: BoxDecoration(
+                      color: AdaptiveThemeColors.backgroundDark(context),
+                      border: Border(
+                        bottom: BorderSide(
+                          color: AdaptiveThemeColors.borderLight(
+                            context,
+                          ).withValues(alpha: 0.2),
+                          width: 1,
+                        ),
                       ),
                     ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Search field
-                      TextField(
-                        controller: _searchController,
-                        onChanged: (value) {
-                          setState(() {
-                            _searchQuery = value;
-                          });
-                        },
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AdaptiveThemeColors.textPrimary(context),
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Search products...',
-                          hintStyle: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: AdaptiveThemeColors.textTertiary(
-                                  context,
-                                ),
-                              ),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: AdaptiveThemeColors.textTertiary(context),
-                            size: 20,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Search field
+                        TextField(
+                          controller: _searchController,
+                          onChanged: (value) {
+                            setState(() {
+                              _searchQuery = value;
+                            });
+                          },
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AdaptiveThemeColors.textPrimary(context),
                           ),
-                          suffixIcon: _searchQuery.isNotEmpty
-                              ? IconButton(
-                                  icon: Icon(
-                                    Icons.clear,
-                                    color: AdaptiveThemeColors.textTertiary(
-                                      context,
-                                    ),
-                                    size: 20,
+                          decoration: InputDecoration(
+                            hintText: 'Search products...',
+                            hintStyle: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: AdaptiveThemeColors.textTertiary(
+                                    context,
                                   ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _searchController.clear();
-                                      _searchQuery = '';
-                                    });
-                                  },
-                                )
-                              : null,
-                          filled: true,
-                          fillColor: AdaptiveThemeColors.backgroundSecondary(
-                            context,
-                          ),
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: AiSpacing.md,
-                            vertical: AiSpacing.md,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              AiSpacing.radiusLarge,
-                            ),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              AiSpacing.radiusLarge,
-                            ),
-                            borderSide: BorderSide(
-                              color: AdaptiveThemeColors.borderLight(
-                                context,
-                              ).withValues(alpha: 0.2),
-                              width: 1,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              AiSpacing.radiusLarge,
-                            ),
-                            borderSide: BorderSide(
-                              color: AdaptiveThemeColors.neonCyan(context),
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                        cursorColor: AdaptiveThemeColors.neonCyan(context),
-                      ),
-                      SizedBox(height: AiSpacing.md),
-                      // Category chips
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: _categories.map((category) {
-                            final isSelected = _selectedCategory == category;
-                            final Color accentColor = category == 'Hair Care'
-                                ? AdaptiveThemeColors.neonCyan(context)
-                                : category == 'Beard Care'
-                                ? AdaptiveThemeColors.sunsetCoral(context)
-                                : category == 'Tools'
-                                ? AdaptiveThemeColors.neonPurple(context)
-                                : AdaptiveThemeColors.neonCyan(context);
-
-                            return Padding(
-                              padding: EdgeInsets.only(right: AiSpacing.sm),
-                              child: _buildCategoryChip(
-                                category,
-                                isSelected,
-                                accentColor,
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Products list
-                Expanded(
-                  child: filteredProducts.isEmpty
-                      ? _buildEmptyState(context)
-                      : Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                            AiSpacing.md,
-                            AiSpacing.sm,
-                            AiSpacing.md,
-                            AiSpacing.md,
-                          ),
-                          child: MasonryGridView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            gridDelegate:
-                                SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: crossAxisCount,
                                 ),
-                            itemCount: filteredProducts.length,
-                            mainAxisSpacing: AiSpacing.md,
-                            crossAxisSpacing: AiSpacing.md,
-                            itemBuilder: (context, index) {
-                              final product = filteredProducts[index];
-                              return _buildProductTile(context, product, index);
-                            },
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: AdaptiveThemeColors.textTertiary(context),
+                              size: 20,
+                            ),
+                            suffixIcon: _searchQuery.isNotEmpty
+                                ? IconButton(
+                                    icon: Icon(
+                                      Icons.clear,
+                                      color: AdaptiveThemeColors.textTertiary(
+                                        context,
+                                      ),
+                                      size: 20,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _searchController.clear();
+                                        _searchQuery = '';
+                                      });
+                                    },
+                                  )
+                                : null,
+                            filled: true,
+                            fillColor: AdaptiveThemeColors.backgroundSecondary(
+                              context,
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: AiSpacing.md,
+                              vertical: AiSpacing.md,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusLarge,
+                              ),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusLarge,
+                              ),
+                              borderSide: BorderSide(
+                                color: AdaptiveThemeColors.borderLight(
+                                  context,
+                                ).withValues(alpha: 0.2),
+                                width: 1,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AiSpacing.radiusLarge,
+                              ),
+                              borderSide: BorderSide(
+                                color: AdaptiveThemeColors.neonCyan(context),
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          cursorColor: AdaptiveThemeColors.neonCyan(context),
+                        ),
+                        SizedBox(height: AiSpacing.md),
+                        // Category chips
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: _categories.map((category) {
+                              final isSelected = _selectedCategory == category;
+                              final Color accentColor = category == 'Hair Care'
+                                  ? AdaptiveThemeColors.neonCyan(context)
+                                  : category == 'Beard Care'
+                                  ? AdaptiveThemeColors.sunsetCoral(context)
+                                  : category == 'Tools'
+                                  ? AdaptiveThemeColors.neonPurple(context)
+                                  : AdaptiveThemeColors.neonCyan(context);
+
+                              return Padding(
+                                padding: EdgeInsets.only(right: AiSpacing.sm),
+                                child: _buildCategoryChip(
+                                  category,
+                                  isSelected,
+                                  accentColor,
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ),
-                ),
-              ],
+                      ],
+                    ),
+                  ),
+                  // Products list: loading, error, or content
+                  Expanded(
+                    child: _buildProductsBody(
+                      context,
+                      state,
+                      filteredProducts,
+                      crossAxisCount,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
-      ),
+          );
+        },
     );
   }
 
@@ -297,6 +308,166 @@ class _ProductsViewState extends State<ProductsView> {
             fontSize: 13,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildProductsBody(
+    BuildContext context,
+    ProductsState state,
+    List<Map<String, dynamic>> filteredProducts,
+    int crossAxisCount,
+  ) {
+    if (state is ProductsLoading || state is ProductsInitial) {
+      return _buildProductsLoadingSkeleton(context, crossAxisCount);
+    }
+    if (state is ProductsFailure) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.all(AiSpacing.xl),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: AdaptiveThemeColors.sunsetCoral(context),
+              ),
+              SizedBox(height: AiSpacing.md),
+              Text(
+                'Could not load products',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AdaptiveThemeColors.textPrimary(context),
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: AiSpacing.sm),
+              Text(
+                state.message,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AdaptiveThemeColors.textTertiary(context),
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: AiSpacing.lg),
+              FilledButton.icon(
+                onPressed: () {
+                  context.read<ProductsBloc>().add(const ProductsLoadRequested());
+                },
+                icon: const Icon(Icons.refresh_rounded, size: 20),
+                label: const Text('Retry'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AdaptiveThemeColors.neonCyan(context),
+                  foregroundColor: AdaptiveThemeColors.backgroundDeep(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    if (filteredProducts.isEmpty) {
+      return _buildEmptyState(context);
+    }
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AiSpacing.md,
+        AiSpacing.sm,
+        AiSpacing.md,
+        AiSpacing.md,
+      ),
+      child: MasonryGridView.builder(
+        physics: const BouncingScrollPhysics(),
+        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+        ),
+        itemCount: filteredProducts.length,
+        mainAxisSpacing: AiSpacing.md,
+        crossAxisSpacing: AiSpacing.md,
+        itemBuilder: (context, index) {
+          final product = filteredProducts[index];
+          return _buildProductTile(context, product, index);
+        },
+      ),
+    );
+  }
+
+  /// Skeleton grid matching the shop product layout (same as home page style).
+  Widget _buildProductsLoadingSkeleton(
+    BuildContext context,
+    int crossAxisCount,
+  ) {
+    final baseColor = Colors.white.withValues(alpha: 0.06);
+    final highlightColor = Colors.white.withValues(alpha: 0.14);
+    const skeletonItemCount = 6;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AiSpacing.md,
+        AiSpacing.sm,
+        AiSpacing.md,
+        AiSpacing.md,
+      ),
+      child: MasonryGridView.builder(
+        physics: const BouncingScrollPhysics(),
+        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+        ),
+        itemCount: skeletonItemCount,
+        mainAxisSpacing: AiSpacing.md,
+        crossAxisSpacing: AiSpacing.md,
+        itemBuilder: (context, index) {
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+              color: AdaptiveThemeColors.backgroundDark(context),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final w = constraints.maxWidth;
+                  final imageHeight = w * 1.5; // 2/3 aspect ratio
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ShimmerPlaceholder(
+                        width: w,
+                        height: imageHeight,
+                        baseColor: baseColor,
+                        highlightColor: highlightColor,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(AiSpacing.md),
+                        child: Row(
+                          children: [
+                            ShimmerPlaceholder(
+                              width: 56,
+                              height: 14,
+                              baseColor: baseColor,
+                              highlightColor: highlightColor,
+                            ),
+                            const Spacer(),
+                            ShimmerPlaceholder(
+                              width: 28,
+                              height: 14,
+                              baseColor: baseColor,
+                              highlightColor: highlightColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -375,19 +546,21 @@ class _ProductsViewState extends State<ProductsView> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.network(
+                    FirebaseGridLazyImage(
                       product['image'] as String,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: accentColor.withValues(alpha: 0.2),
-                          child: Icon(
-                            Icons.image_not_supported,
-                            size: 48,
-                            color: accentColor.withValues(alpha: 0.6),
-                          ),
-                        );
-                      },
+                      loadingWidget: ShimmerPlaceholder(
+                        baseColor: accentColor.withValues(alpha: 0.12),
+                        highlightColor: accentColor.withValues(alpha: 0.28),
+                      ),
+                      errorWidget: Container(
+                        color: accentColor.withValues(alpha: 0.2),
+                        child: Icon(
+                          Icons.image_not_supported,
+                          size: 48,
+                          color: accentColor.withValues(alpha: 0.6),
+                        ),
+                      ),
                     ),
                     Positioned.fill(
                       child: Container(
@@ -490,19 +663,21 @@ class _ProductsViewState extends State<ProductsView> {
                     ),
                     child: AspectRatio(
                       aspectRatio: 2 / 3,
-                      child: Image.network(
+                      child: FirebaseGridLazyImage(
                         product['image'] as String,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, error, stackTrace) {
-                          return Container(
-                            color: accentColor.withValues(alpha: 0.2),
-                            child: Icon(
-                              Icons.image_not_supported,
-                              size: 64,
-                              color: accentColor.withValues(alpha: 0.6),
-                            ),
-                          );
-                        },
+                        loadingWidget: ShimmerPlaceholder(
+                          baseColor: accentColor.withValues(alpha: 0.12),
+                          highlightColor: accentColor.withValues(alpha: 0.28),
+                        ),
+                        errorWidget: Container(
+                          color: accentColor.withValues(alpha: 0.2),
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 64,
+                            color: accentColor.withValues(alpha: 0.6),
+                          ),
+                        ),
                       ),
                     ),
                   ),

@@ -6,8 +6,19 @@
       {
         "name": "Haircut Images",
         "enabled": true,
-        "sourceDir": "../data-files",
+        "sourceDir": "../data-files/hair",
         "destinationPath": "haircut-images/",
+        "fileTypes": [".png", ".jpg", ".jpeg"],
+        "metadata": {
+          "cacheControl": "private, max-age=3600"
+        },
+        "makePublic": false
+      },
+      {
+        "name": "Beard Style Images",
+        "enabled": true,
+        "sourceDir": "../data-files/beard",
+        "destinationPath": "beard_styles-images/",
         "fileTypes": [".png", ".jpg", ".jpeg"],
         "metadata": {
           "cacheControl": "private, max-age=3600"
@@ -32,6 +43,13 @@
         "enabled": true,
         "sourceFile": "../firestore-data/beard_styles.json",
         "description": "Beard styling options",
+        "idField": "id"
+      },
+      {
+        "name": "products",
+        "enabled": true,
+        "sourceFile": "../firestore-data/products.json",
+        "description": "Shop products",
         "idField": "id"
       },
       {

@@ -1,19 +1,28 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
-import '../theme/theme.dart';
-import '../core/di/service_locator.dart';
-import '../features/history/domain/entities/history_entity.dart';
-import '../features/history/domain/usecases/get_history_usecase.dart';
-import '../features/history/presentation/bloc/history_bloc.dart';
-import '../features/history/presentation/bloc/history_event.dart';
-import '../features/history/presentation/bloc/history_state.dart';
-import '../features/home/presentation/pages/home_page.dart';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
+import '../features/history/domain/entities/history_entity.dart';
+import '../features/history/presentation/bloc/history_bloc.dart';
+import '../features/history/presentation/bloc/history_event.dart';
+import '../features/ai_generation/presentation/cubit/generation_status_cubit.dart';
+import '../features/history/presentation/bloc/history_state.dart';
+import '../features/history/presentation/widgets/history_empty_state.dart';
+import '../theme/theme.dart';
+import '../widgets/lazy_network_image.dart';
+
 class HistoryView extends StatefulWidget {
-  const HistoryView({super.key});
+  final int currentIndex;
+  final int tabIndex;
+
+  const HistoryView({
+    super.key,
+    required this.currentIndex,
+    required this.tabIndex,
+  });
 
   @override
   State<HistoryView> createState() => _HistoryViewState();
@@ -21,40 +30,48 @@ class HistoryView extends StatefulWidget {
 
 class _HistoryViewState extends State<HistoryView>
     with TickerProviderStateMixin {
-  late List<Map<String, dynamic>> _generationHistory;
   final Random _random = Random();
   late List<double> _cardHeights;
   late AnimationController _generationPulseController;
+  bool _hasRequestedLoad = false;
+  bool _isGridView = true; // Toggle between grid and list view
+
+  // Getter that reads _generationHistory from BLoC state (avoid local copy)
+  List<Map<String, dynamic>> get _generationHistory {
+    final state = context.read<HistoryBloc>().state;
+    if (state is HistoryLoaded) {
+      return _mapHistory(state.history);
+    }
+    return [];
+  }
 
   @override
   void initState() {
     super.initState();
-    _generationHistory = [];
     _cardHeights = [];
     _generationPulseController = AnimationController(
       duration: const Duration(milliseconds: 1400),
       vsync: this,
     )..repeat();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _maybeRequestInitialLoad();
+      }
+    });
+  }
 
-    // Register callback to add new history items
-    HomePage.onAddToHistory = _onAddHistoryItem;
+  @override
+  void didUpdateWidget(HistoryView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentIndex != oldWidget.currentIndex) {
+      _maybeRequestInitialLoad();
+    }
   }
 
   @override
   void dispose() {
     _generationPulseController.dispose();
-    HomePage.onAddToHistory = null;
     super.dispose();
-  }
-
-  /// Add a new history item when generation completes
-  void _onAddHistoryItem(Map<String, dynamic> styleData) {
-    if (mounted) {
-      setState(() {
-        _generationHistory.insert(0, styleData);
-        _regenerateHeights();
-      });
-    }
   }
 
   void _regenerateHeights() {
@@ -62,6 +79,20 @@ class _HistoryViewState extends State<HistoryView>
       _generationHistory.length,
       (_) => 220.0 + _random.nextDouble() * 100,
     );
+  }
+
+  Future<void> _refreshHistory(BuildContext context) async {
+    context.read<HistoryBloc>().add(const HistoryLoadRequested());
+  }
+
+  void _maybeRequestInitialLoad() {
+    if (_hasRequestedLoad) return;
+    if (widget.currentIndex != widget.tabIndex) return;
+    final state = context.read<HistoryBloc>().state;
+    if (state is HistoryInitial) {
+      context.read<HistoryBloc>().add(const HistoryLoadRequested());
+      _hasRequestedLoad = true;
+    }
   }
 
   List<Map<String, dynamic>> _mapHistory(List<HistoryEntity> history) {
@@ -111,6 +142,32 @@ class _HistoryViewState extends State<HistoryView>
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 
+  Widget _buildViewToggleButton({
+    required IconData icon,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: AiSpacing.sm,
+            vertical: AiSpacing.xs,
+          ),
+          child: Icon(
+            icon,
+            size: 20,
+            color: isActive
+                ? AdaptiveThemeColors.neonCyan(context)
+                : AdaptiveThemeColors.textTertiary(context),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -121,152 +178,164 @@ class _HistoryViewState extends State<HistoryView>
       crossAxisCount = 3;
     }
 
-    return BlocProvider(
-      create: (_) =>
-          HistoryBloc(getHistoryUseCase: getIt<GetHistoryUseCase>())
-            ..add(const HistoryLoadRequested()),
-      child: BlocListener<HistoryBloc, HistoryState>(
-        listener: (context, state) {
-          if (state is HistoryLoaded) {
-            setState(() {
-              _generationHistory = _mapHistory(state.history);
-              _regenerateHeights();
-            });
-          }
-        },
-        child: Scaffold(
-          backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
-          appBar: AppBar(
-            backgroundColor: AdaptiveThemeColors.backgroundDark(context),
-            elevation: 0,
-            toolbarHeight: 48,
-            title: Text(
-              'History',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: AdaptiveThemeColors.textPrimary(context),
-                fontWeight: FontWeight.w800,
-              ),
+    return BlocListener<HistoryBloc, HistoryState>(
+      listener: (context, state) {
+        // Side effects only - no setState for data updates
+        if (state is HistoryLoaded) {
+          // Data changes are handled through BlocBuilder via _mappedHistory getter
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AdaptiveThemeColors.backgroundDeep(context),
+        appBar: AppBar(
+          backgroundColor: AdaptiveThemeColors.backgroundDark(context),
+          elevation: 0,
+          toolbarHeight: 56,
+          title: Text(
+            'History',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              color: AdaptiveThemeColors.textPrimary(context),
+              fontWeight: FontWeight.w800,
             ),
-            centerTitle: true,
-            surfaceTintColor: Colors.transparent,
           ),
-          body: SafeArea(
-            child: _generationHistory.isEmpty && !HomePage.isGenerating
-                ? _buildEmptyState(context)
-                : Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AiSpacing.md,
-                      AiSpacing.sm,
-                      AiSpacing.md,
-                      AiSpacing.md,
-                    ),
-                    child: MasonryGridView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      gridDelegate:
-                          SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: crossAxisCount,
-                          ),
-                      itemCount:
-                          _generationHistory.length +
-                          (HomePage.isGenerating ? 1 : 0),
-                      mainAxisSpacing: AiSpacing.md,
-                      crossAxisSpacing: AiSpacing.md,
-                      itemBuilder: (context, index) {
-                        if (HomePage.isGenerating && index == 0) {
-                          return _buildGeneratingTile();
-                        }
-                        final historyIndex = HomePage.isGenerating
-                            ? index - 1
-                            : index;
-                        final item = _generationHistory[historyIndex];
-                        final height = _cardHeights[historyIndex];
-                        return _buildHistoryCard(context, item, height);
-                      },
-                    ),
-                  ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.0, end: 1.0),
-            duration: const Duration(milliseconds: 800),
-            builder: (context, value, child) {
-              return Transform.scale(
-                scale: 0.8 + (value * 0.2),
-                child: Opacity(opacity: value, child: child),
-              );
-            },
-            child: Container(
-              padding: EdgeInsets.all(AiSpacing.xl),
+          centerTitle: true,
+          surfaceTintColor: Colors.transparent,
+          actions: [
+            // View toggle button
+            Container(
+              margin: EdgeInsets.only(right: AiSpacing.md),
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AdaptiveThemeColors.neonCyan(
-                      context,
-                    ).withValues(alpha: 0.15),
-                    AdaptiveThemeColors.neonPurple(
-                      context,
-                    ).withValues(alpha: 0.15),
-                  ],
-                ),
+                color: AdaptiveThemeColors.backgroundDeep(context),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AdaptiveThemeColors.neonCyan(
+                  color: AdaptiveThemeColors.borderLight(
                     context,
                   ).withValues(alpha: 0.2),
-                  width: 1.5,
+                  width: 1,
                 ),
               ),
-              child: Icon(
-                Icons.history_rounded,
-                size: 64,
-                color: AdaptiveThemeColors.neonCyan(context),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildViewToggleButton(
+                    icon: Icons.grid_view_rounded,
+                    isActive: _isGridView,
+                    onTap: () => setState(() => _isGridView = true),
+                  ),
+                  Container(
+                    width: 1,
+                    height: 24,
+                    color: AdaptiveThemeColors.borderLight(
+                      context,
+                    ).withValues(alpha: 0.2),
+                  ),
+                  _buildViewToggleButton(
+                    icon: Icons.view_list_rounded,
+                    isActive: !_isGridView,
+                    onTap: () => setState(() => _isGridView = false),
+                  ),
+                ],
               ),
             ),
-          ),
-          SizedBox(height: AiSpacing.xl),
-          TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.0, end: 1.0),
-            duration: const Duration(milliseconds: 900),
-            builder: (context, value, child) {
-              return Transform.translate(
-                offset: Offset(0, 10 * (1 - value)),
-                child: Opacity(opacity: value, child: child),
+          ],
+        ),
+        body: SafeArea(
+          child: BlocBuilder<HistoryBloc, HistoryState>(
+            buildWhen: (prev, curr) {
+              // Rebuild on state type changes
+              if (prev.runtimeType != curr.runtimeType) return true;
+              // For HistoryLoaded states, only rebuild if history data changed
+              if (prev is HistoryLoaded && curr is HistoryLoaded) {
+                return prev.history != curr.history;
+              }
+              return true;
+            },
+            builder: (context, historyState) {
+              // Regenerate heights whenever history state changes
+              if (historyState is HistoryLoaded) {
+                _regenerateHeights();
+              }
+              return BlocBuilder<GenerationStatusCubit, GenerationStatusState>(
+                buildWhen: (prev, curr) =>
+                    prev.isGenerating != curr.isGenerating ||
+                    prev.generatedStyleData != curr.generatedStyleData,
+                builder: (context, genState) {
+                  final isGenerating = genState.isGenerating;
+                  final generatedStyle = genState.generatedStyleData;
+                  return RefreshIndicator(
+                    onRefresh: () => _refreshHistory(context),
+                    child: _generationHistory.isEmpty && !isGenerating
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              SizedBox(height: 80),
+                              const HistoryEmptyState(),
+                            ],
+                          )
+                        : _isGridView
+                        ? Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              AiSpacing.md,
+                              AiSpacing.sm,
+                              AiSpacing.md,
+                              AiSpacing.md,
+                            ),
+                            child: MasonryGridView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: crossAxisCount,
+                                  ),
+                              itemCount:
+                                  _generationHistory.length +
+                                  (isGenerating ? 1 : 0),
+                              mainAxisSpacing: AiSpacing.md,
+                              crossAxisSpacing: AiSpacing.md,
+                              itemBuilder: (context, index) {
+                                if (isGenerating && index == 0) {
+                                  return _buildGeneratingTile(
+                                    generatedStyle ?? {},
+                                  );
+                                }
+                                final historyIndex = isGenerating
+                                    ? index - 1
+                                    : index;
+                                final item = _generationHistory[historyIndex];
+                                final height = _cardHeights[historyIndex];
+                                return _buildHistoryCard(context, item, height);
+                              },
+                            ),
+                          )
+                        : ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.fromLTRB(
+                              AiSpacing.md,
+                              AiSpacing.sm,
+                              AiSpacing.md,
+                              AiSpacing.md,
+                            ),
+                            itemCount:
+                                _generationHistory.length +
+                                (isGenerating ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (isGenerating && index == 0) {
+                                return _buildGeneratingListTile(
+                                  generatedStyle ?? {},
+                                );
+                              }
+                              final historyIndex = isGenerating
+                                  ? index - 1
+                                  : index;
+                              final item = _generationHistory[historyIndex];
+                              return _buildHistoryListItem(context, item);
+                            },
+                          ),
+                  );
+                },
               );
             },
-            child: Column(
-              children: [
-                Text(
-                  'No generation history yet',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AdaptiveThemeColors.textPrimary(context),
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-                SizedBox(height: AiSpacing.md),
-                Text(
-                  'Generate your first style to see it here',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AdaptiveThemeColors.textTertiary(context),
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -296,19 +365,17 @@ class _HistoryViewState extends State<HistoryView>
               fit: StackFit.expand,
               children: [
                 // Image background with fade
-                Image.network(
-                  item['image'] as String,
+                GridLazyImage(
+                  imageUrl: item['image'] as String,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: accentColor.withValues(alpha: 0.2),
-                      child: Icon(
-                        Icons.image_not_supported,
-                        size: 80,
-                        color: accentColor.withValues(alpha: 0.6),
-                      ),
-                    );
-                  },
+                  customErrorWidget: Container(
+                    color: accentColor.withValues(alpha: 0.2),
+                    child: Icon(
+                      Icons.image_not_supported,
+                      size: 80,
+                      color: accentColor.withValues(alpha: 0.6),
+                    ),
+                  ),
                 ),
                 // Enhanced gradient overlay
                 Positioned.fill(
@@ -433,11 +500,19 @@ class _HistoryViewState extends State<HistoryView>
     );
   }
 
-  Widget _buildGeneratingTile() {
+  Widget _buildGeneratingTile(Map<String, dynamic>? styleData) {
     final accent = AdaptiveThemeColors.neonCyan(context);
-    final previewImage = HomePage.generatedStyleData?['image'] as String?;
-    final haircutName = HomePage.generatedStyleData?['haircut'] as String?;
-    final beardName = HomePage.generatedStyleData?['beard'] as String?;
+    final previewImage = styleData?['image'] as String?;
+    final haircutName = styleData?['haircut'] as String?;
+    final beardName = styleData?['beard'] as String?;
+    final status = styleData?['status']?.toString() ?? 'queued';
+    final statusLine = switch (status) {
+      'processing' ||
+      'generating' => 'Generating now. This can take a few minutes.',
+      'completed' => 'Finalizing your result in history.',
+      'error' => 'Generation failed. You can retry from Home.',
+      _ => 'Queued up. We will start shortly.',
+    };
 
     return GestureDetector(
       onTap: null,
@@ -460,19 +535,17 @@ class _HistoryViewState extends State<HistoryView>
             children: [
               // Preview image in background
               if (previewImage != null && previewImage.isNotEmpty)
-                Image.network(
-                  previewImage,
+                GridLazyImage(
+                  imageUrl: previewImage,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: AdaptiveThemeColors.backgroundDark(context),
-                      child: Icon(
-                        Icons.image_not_supported,
-                        size: 60,
-                        color: accent.withValues(alpha: 0.3),
-                      ),
-                    );
-                  },
+                  customErrorWidget: Container(
+                    color: AdaptiveThemeColors.backgroundDark(context),
+                    child: Icon(
+                      Icons.image_not_supported,
+                      size: 60,
+                      color: accent.withValues(alpha: 0.3),
+                    ),
+                  ),
                 ),
               // Animated shimmer overlay
               AnimatedBuilder(
@@ -593,7 +666,7 @@ class _HistoryViewState extends State<HistoryView>
                         ),
                       if (haircutName == null && beardName == null)
                         Text(
-                          'AI is processing your styles...',
+                          statusLine,
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
                                 color: Colors.white.withValues(alpha: 0.7),
@@ -1005,26 +1078,24 @@ class _HistoryViewState extends State<HistoryView>
                     child: InteractiveViewer(
                       minScale: 1,
                       maxScale: 3,
-                      child: Image.network(
-                        item['image'] as String,
+                      child: GridLazyImage(
+                        imageUrl: item['image'] as String,
                         fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 320,
-                            width: 240,
-                            decoration: BoxDecoration(
-                              color: accentColor.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(
-                                AiSpacing.radiusLarge,
-                              ),
+                        customErrorWidget: Container(
+                          height: 320,
+                          width: 240,
+                          decoration: BoxDecoration(
+                            color: accentColor.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(
+                              AiSpacing.radiusLarge,
                             ),
-                            child: Icon(
-                              Icons.image_not_supported,
-                              size: 80,
-                              color: accentColor,
-                            ),
-                          );
-                        },
+                          ),
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 80,
+                            color: accentColor,
+                          ),
+                        ),
                       ),
                     ),
                   );
@@ -1059,6 +1130,325 @@ class _HistoryViewState extends State<HistoryView>
           ),
         );
       },
+    );
+  }
+
+  Widget _buildHistoryListItem(
+    BuildContext context,
+    Map<String, dynamic> item,
+  ) {
+    final accentColor = AdaptiveThemeColors.neonCyan(context);
+
+    return GestureDetector(
+      onTap: () => _showHistoryPreviewDialog(context, item),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Container(
+          margin: EdgeInsets.only(bottom: AiSpacing.md),
+          decoration: BoxDecoration(
+            color: AdaptiveThemeColors.backgroundDark(context),
+            borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+            border: Border.all(
+              color: accentColor.withValues(alpha: 0.15),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              // Image thumbnail
+              ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(AiSpacing.radiusLarge),
+                  bottomLeft: Radius.circular(AiSpacing.radiusLarge),
+                ),
+                child: Container(
+                  width: 100,
+                  height: 140,
+                  child: GridLazyImage(
+                    imageUrl: item['image'] as String,
+                    fit: BoxFit.cover,
+                    customErrorWidget: Container(
+                      color: accentColor.withValues(alpha: 0.2),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 40,
+                        color: accentColor.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Details
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(AiSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (item['haircut'] != null &&
+                          (item['haircut'] as String).isNotEmpty)
+                        _buildListDetailRow(
+                          context,
+                          Icons.content_cut_rounded,
+                          'Haircut',
+                          item['haircut'] as String,
+                          accentColor,
+                        ),
+                      if (item['haircut'] != null &&
+                          (item['haircut'] as String).isNotEmpty)
+                        SizedBox(height: AiSpacing.sm),
+                      if (item['beard'] != null &&
+                          (item['beard'] as String).isNotEmpty)
+                        _buildListDetailRow(
+                          context,
+                          Icons.face_rounded,
+                          'Beard',
+                          item['beard'] as String,
+                          AdaptiveThemeColors.neonPurple(context),
+                        ),
+                      if (item['beard'] != null &&
+                          (item['beard'] as String).isNotEmpty)
+                        SizedBox(height: AiSpacing.sm),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: 14,
+                            color: AdaptiveThemeColors.textTertiary(context),
+                          ),
+                          SizedBox(width: AiSpacing.xs),
+                          Text(
+                            _formatTimestamp(item['timestamp'] as DateTime),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: AdaptiveThemeColors.textSecondary(
+                                    context,
+                                  ),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Arrow indicator
+              Padding(
+                padding: EdgeInsets.only(right: AiSpacing.md),
+                child: Icon(
+                  Icons.chevron_right_rounded,
+                  color: AdaptiveThemeColors.textTertiary(context),
+                  size: 24,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildListDetailRow(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+    Color accentColor,
+  ) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: accentColor.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 16, color: accentColor),
+        ),
+        SizedBox(width: AiSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AdaptiveThemeColors.textTertiary(context),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                value,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AdaptiveThemeColors.textPrimary(context),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGeneratingListTile(Map<String, dynamic>? styleData) {
+    final accent = AdaptiveThemeColors.neonCyan(context);
+    final previewImage = styleData?['image'] as String?;
+    final haircutName = styleData?['haircut'] as String?;
+    final beardName = styleData?['beard'] as String?;
+    final status = styleData?['status']?.toString() ?? 'queued';
+    final statusLine = switch (status) {
+      'processing' ||
+      'generating' => 'Generating now. This can take a few minutes.',
+      'completed' => 'Finalizing your result in history.',
+      'error' => 'Generation failed. You can retry from Home.',
+      _ => 'Queued up. We will start shortly.',
+    };
+
+    return Container(
+      margin: EdgeInsets.only(bottom: AiSpacing.md),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+        border: Border.all(color: accent.withValues(alpha: 0.4), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: accent.withValues(alpha: 0.15),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+        child: Row(
+          children: [
+            // Preview image thumbnail
+            Container(
+              width: 100,
+              height: 140,
+              child: Stack(
+                children: [
+                  if (previewImage != null && previewImage.isNotEmpty)
+                    GridLazyImage(
+                      imageUrl: previewImage,
+                      fit: BoxFit.cover,
+                      customErrorWidget: Container(
+                        color: AdaptiveThemeColors.backgroundDark(context),
+                        child: Icon(
+                          Icons.image_not_supported,
+                          size: 40,
+                          color: accent.withValues(alpha: 0.3),
+                        ),
+                      ),
+                    ),
+                  // Shimmer overlay
+                  AnimatedBuilder(
+                    animation: _generationPulseController,
+                    builder: (context, child) {
+                      final shimmerOpacity =
+                          ((_generationPulseController.value * 2 - 1).abs() - 1)
+                              .abs();
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              accent.withValues(alpha: 0.0),
+                              accent.withValues(
+                                alpha: shimmerOpacity.clamp(0.0, 0.2),
+                              ),
+                              accent.withValues(alpha: 0.0),
+                            ],
+                            stops: const [0.0, 0.5, 1.0],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            // Details
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(AiSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        AnimatedBuilder(
+                          animation: _generationPulseController,
+                          builder: (context, child) {
+                            final pulse =
+                                ((_generationPulseController.value * 2 - 1)
+                                    .abs());
+                            final scale = 0.85 + (pulse * 0.15);
+                            return Transform.scale(
+                              scale: scale,
+                              child: Icon(
+                                Icons.auto_awesome_rounded,
+                                size: 20,
+                                color: accent,
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(width: AiSpacing.sm),
+                        Text(
+                          'Creating your style',
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: AdaptiveThemeColors.textPrimary(context),
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: AiSpacing.sm),
+                    if (haircutName != null || beardName != null)
+                      Text(
+                        '${haircutName ?? ''} ${beardName ?? ''}'.trim(),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: accent,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    SizedBox(height: AiSpacing.xs),
+                    Text(
+                      statusLine,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AdaptiveThemeColors.textSecondary(context),
+                        fontSize: 11,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: AiSpacing.sm),
+                    _buildGeneratingStatusDots(),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

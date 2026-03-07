@@ -16,5 +16,8 @@ export * from "./user";
 // Health Functions (system monitoring)
 export * from "./health";
 
+// AI Generation Functions
+export * from "./ai";
+
 // =====================================================
 

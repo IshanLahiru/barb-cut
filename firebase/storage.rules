@@ -14,12 +14,34 @@ service firebase.storage {
       allow write: if false; // No public write access (only through admin SDK)
     }
     
-    // User uploads - private to the user
+    // Beard style images - public read for app display
+    match /beard_styles-images/{allPaths=**} {
+      allow read: if true; // Allow public read for beard style display images
+      allow write: if false; // No public write access (only through admin SDK)
+    }
+    
+    // User uploads - private to the user (e.g. questionnaire photos)
     match /users/{userId}/{allPaths=**} {
       allow read: if request.auth != null && request.auth.uid == userId;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
-    
+
+    // User face photos for AI generation - private to the user
+    match /user-photos/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Profile avatar - private to the user
+    match /profile-photos/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Generated try-on images - user can read only their own; write by backend (Admin SDK) only
+    match /generated/{userId}/{allPaths=**} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false;
+    }
+
     // Default - deny all
     match /{allPaths=**} {
       allow read, write: if false;

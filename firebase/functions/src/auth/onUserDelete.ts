@@ -1,8 +1,9 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import { deleteAllUserData } from "../lib/firestoreBatchDelete";
 
 /**
- * Delete user document and related data when user is deleted from Firebase Auth
+ * Delete user document and related data when user is deleted from Firebase Auth.
  */
 export const deleteUserDocument = functions.auth.user().onDelete(async (user) => {
   console.log(`🗑️  User deleted: ${user.uid}`);
@@ -10,45 +11,7 @@ export const deleteUserDocument = functions.auth.user().onDelete(async (user) =>
   const db = admin.firestore();
 
   try {
-    const batch = db.batch();
-
-    // Delete user document
-    const userRef = db.collection("users").doc(user.uid);
-    batch.delete(userRef);
-
-    // Delete user's bookings
-    const bookingsSnapshot = await db
-      .collection("bookings")
-      .where("userId", "==", user.uid)
-      .get();
-
-    bookingsSnapshot.docs.forEach((doc) => {
-      batch.delete(doc.ref);
-    });
-
-    // Delete user's AI generations
-    const aiGenSnapshot = await db
-      .collection("users")
-      .doc(user.uid)
-      .collection("aiGenerations")
-      .get();
-
-    aiGenSnapshot.docs.forEach((doc) => {
-      batch.delete(doc.ref);
-    });
-
-    // Delete user's preferences
-    const prefsSnapshot = await db
-      .collection("users")
-      .doc(user.uid)
-      .collection("preferences")
-      .get();
-
-    prefsSnapshot.docs.forEach((doc) => {
-      batch.delete(doc.ref);
-    });
-
-    await batch.commit();
+    await deleteAllUserData(db, user.uid);
     console.log(`✓ User data deleted for ${user.uid}`);
   } catch (error) {
     console.error(`❌ Error deleting user document for ${user.uid}:`, error);

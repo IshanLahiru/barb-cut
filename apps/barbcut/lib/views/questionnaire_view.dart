@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../core/constants/app_data.dart';
-import '../services/auth_service.dart';
+import '../core/di/service_locator.dart';
+import '../features/auth/domain/repositories/auth_repository.dart';
+import '../features/profile/domain/usecases/get_profile_usecase.dart';
 import '../theme/theme.dart';
 import '../widgets/firebase_image.dart';
 
@@ -101,7 +101,7 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
     super.initState();
     _photos = List<File?>.filled(widget.config.photoCount, null);
     _photoPaths = List<String?>.filled(widget.config.photoCount, null);
-    _seedPhotoPaths();
+    _loadDefaultProfile();
     _hairType = widget.config.defaultHairType ?? widget.config.hairTypes.first;
     _faceShape =
         widget.config.defaultFaceShape ?? widget.config.faceShapes.first;
@@ -114,18 +114,23 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
         widget.config.defaultLifestyle ?? widget.config.lifestyles.first;
   }
 
-  void _seedPhotoPaths() {
-    final rawPaths = AppData.defaultProfile['photoPaths'];
-    if (rawPaths is! List) {
-      return;
-    }
-
-    for (var index = 0;
-        index < rawPaths.length && index < _photoPaths.length;
-        index++) {
-      final value = rawPaths[index]?.toString().trim() ?? '';
-      _photoPaths[index] = value.isEmpty ? null : value;
-    }
+  Future<void> _loadDefaultProfile() async {
+    final result = await getIt<GetProfileUseCase>()();
+    result.fold((_) => null, (profile) {
+      if (mounted && profile.photoPaths.isNotEmpty) {
+        setState(() {
+          for (
+            var i = 0;
+            i < profile.photoPaths.length && i < _photoPaths.length;
+            i++
+          ) {
+            _photoPaths[i] = profile.photoPaths[i].isEmpty
+                ? null
+                : profile.photoPaths[i];
+          }
+        });
+      }
+    });
   }
 
   Future<void> _pickImage(int index) async {
@@ -321,10 +326,18 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
       final storagePath = 'users/$userId/questionnaire/photo_${index + 1}.jpg';
       final ref = storage.ref(storagePath);
       await ref.putFile(photo);
-      resolvedPaths[index] = ref.fullPath;
+      final downloadUrl = await ref.getDownloadURL();
+      final cacheBustedUrl = _appendCacheBuster(downloadUrl);
+      resolvedPaths[index] = cacheBustedUrl;
+      _photoPaths[index] = cacheBustedUrl;
     }
 
     return resolvedPaths;
+  }
+
+  String _appendCacheBuster(String url) {
+    final separator = url.contains('?') ? '&' : '?';
+    return '$url${separator}v=${DateTime.now().millisecondsSinceEpoch}';
   }
 
   Future<void> _saveProfile() async {
@@ -332,8 +345,8 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
       return;
     }
 
-    await AuthService().ensureAuthenticated();
-    final user = FirebaseAuth.instance.currentUser;
+    await getIt<AuthRepository>().ensureAuthenticated();
+    final user = getIt<AuthRepository>().currentUser;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -349,9 +362,9 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
     });
 
     try {
-      final photoPaths = await _uploadPhotos(user.uid);
+      final photoPaths = await _uploadPhotos(user.id);
       final Map<String, dynamic> profileData = {
-        'userId': user.uid,
+        'userId': user.id,
         'hairType': _hairType,
         'faceShape': _faceShape,
         'preferredLength': _preferredLength,
@@ -362,8 +375,8 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
         'updatedAt': FieldValue.serverTimestamp(),
       };
 
-      if (user.displayName != null && user.displayName!.isNotEmpty) {
-        profileData['username'] = user.displayName;
+      if (user.email != null && user.email!.isNotEmpty) {
+        profileData['username'] = user.email;
       }
 
       if (user.email != null && user.email!.isNotEmpty) {
@@ -371,11 +384,9 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
       }
 
       await FirebaseFirestore.instance
-          .collection('profile')
-          .doc('data')
+          .collection('users')
+          .doc(user.id)
           .set(profileData, SetOptions(merge: true));
-
-      await AppData.refreshFromFirebase();
 
       if (!mounted) return;
 
@@ -652,18 +663,18 @@ class _QuestionnaireViewState extends State<QuestionnaireView> {
               borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
               child: hasPhoto
                   ? (_photos[index] != null
-                      ? Image.file(
-                          _photos[index]!,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        )
-                      : FirebaseImage(
-                          storedPath ?? '',
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        ))
+                        ? Image.file(
+                            _photos[index]!,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : FirebaseImage(
+                            storedPath ?? '',
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                          ))
                   : Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,

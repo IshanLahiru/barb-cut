@@ -1,8 +1,10 @@
+import 'package:equatable/equatable.dart';
+
 enum StyleType { haircut, beard }
 
 enum ImageAngle { front, leftSide, rightSide, back }
 
-class StyleImages {
+class StyleImages extends Equatable {
   final String front;
   final String leftSide;
   final String rightSide;
@@ -15,7 +17,23 @@ class StyleImages {
     required this.back,
   });
 
-  List<String> toList() => [front, leftSide, rightSide, back];
+  List<String> toList() {
+    final images = <String>[];
+    if (front.isNotEmpty) images.add(front);
+    if (leftSide.isNotEmpty) images.add(leftSide);
+    if (rightSide.isNotEmpty) images.add(rightSide);
+    if (back.isNotEmpty) images.add(back);
+    return images;
+  }
+
+  List<String> getAngleLabels() {
+    final labels = <String>[];
+    if (front.isNotEmpty) labels.add('Front');
+    if (leftSide.isNotEmpty) labels.add('Left Side');
+    if (rightSide.isNotEmpty) labels.add('Right Side');
+    if (back.isNotEmpty) labels.add('Back');
+    return labels;
+  }
 
   String getByAngle(ImageAngle angle) {
     switch (angle) {
@@ -29,9 +47,12 @@ class StyleImages {
         return back;
     }
   }
+
+  @override
+  List<Object?> get props => [front, leftSide, rightSide, back];
 }
 
-class StyleEntity {
+class StyleEntity extends Equatable {
   final String id;
   final String name;
   final String? price;
@@ -59,4 +80,20 @@ class StyleEntity {
     required this.imageUrl,
     required this.type,
   });
+
+  @override
+  List<Object?> get props => [
+    id,
+    name,
+    price,
+    duration,
+    tips,
+    styleImages,
+    images,
+    suitableFaceShapes,
+    maintenanceTips,
+    description,
+    imageUrl,
+    type,
+  ];
 }

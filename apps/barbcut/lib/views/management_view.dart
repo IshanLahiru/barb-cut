@@ -1,20 +1,30 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 import '../controllers/theme_controller.dart';
 import '../theme/theme.dart';
-import '../core/di/service_locator.dart';
 import '../features/profile/domain/entities/profile_entity.dart';
-import '../features/profile/domain/usecases/get_profile_usecase.dart';
 import '../features/profile/presentation/bloc/profile_bloc.dart';
 import '../features/profile/presentation/bloc/profile_event.dart';
 import '../features/profile/presentation/bloc/profile_state.dart';
 import '../services/onboarding_service.dart';
+import '../services/firebase_data_service.dart';
+import '../services/firebase_storage_helper.dart';
+import '../services/user_photo_service.dart';
 
 import 'questionnaire_view.dart';
 
 class ProfileView extends StatefulWidget {
-  const ProfileView({super.key});
+  final int currentIndex;
+  final int tabIndex;
+
+  const ProfileView({
+    super.key,
+    required this.currentIndex,
+    required this.tabIndex,
+  });
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -24,16 +34,40 @@ class _ProfileViewState extends State<ProfileView> {
   String _username = 'Loading...';
   String _email = 'Loading...';
   bool _isEmailVerified = false;
-  String _hairType = '-';
-  String _faceShape = '-';
-  String _preferredLength = '-';
-  String _beardStyle = '-';
-  String _lifestyle = '-';
+  int _points = 0;
+  String _profilePhotoUrl = '';
+  bool _isSendingVerification = false;
+  bool _isUploadingPhoto = false;
+  static final ImagePicker _imagePicker = ImagePicker();
+  bool _hasRequestedLoad = false;
 
   @override
   void initState() {
     super.initState();
     _loadFirebaseUserData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _maybeRequestInitialLoad();
+      }
+    });
+  }
+
+  void _maybeRequestInitialLoad() {
+    if (_hasRequestedLoad) return;
+    if (widget.currentIndex != widget.tabIndex) return;
+    final state = context.read<ProfileBloc>().state;
+    if (state is ProfileInitial) {
+      context.read<ProfileBloc>().add(const ProfileLoadRequested());
+      _hasRequestedLoad = true;
+    }
+  }
+
+  @override
+  void didUpdateWidget(ProfileView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentIndex != oldWidget.currentIndex) {
+      _maybeRequestInitialLoad();
+    }
   }
 
   Future<void> _loadFirebaseUserData() async {
@@ -52,21 +86,155 @@ class _ProfileViewState extends State<ProfileView> {
       if (profile.email.isNotEmpty) {
         _email = profile.email;
       }
-      _hairType = profile.hairType;
-      _faceShape = profile.faceShape;
-      _preferredLength = profile.preferredLength;
-      _beardStyle = profile.hasBeard ? profile.beardStyle : 'None';
-      _lifestyle = profile.lifestyle;
+      _points = profile.points;
+      _profilePhotoUrl = profile.profilePhotoUrl;
     });
+  }
+
+  Future<void> _showEditNameDialog() async {
+    final controller = TextEditingController(text: _username);
+    final isAdd = _username.isEmpty ||
+        _username == 'User' ||
+        _username == 'Loading...';
+    if (!mounted) return;
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(isAdd ? 'Add name' : 'Edit'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Display name',
+            hintText: 'Enter your name',
+          ),
+          onSubmitted: (value) => Navigator.of(context).pop(value),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    if (newName == null || newName.isEmpty) return;
+    try {
+      await FirebaseDataService.updateUserProfile({'username': newName});
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        try {
+          await user.updateDisplayName(newName);
+        } catch (_) {}
+      }
+      if (!mounted) return;
+      setState(() => _username = newName);
+      context.read<ProfileBloc>().add(const ProfileLoadRequested());
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Name updated')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update name: $e')),
+      );
+    }
+  }
+
+  Future<void> _sendVerificationEmail() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || user.email == null || user.email!.isEmpty) return;
+    setState(() => _isSendingVerification = true);
+    try {
+      await user.sendEmailVerification();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Verification email sent. Check your inbox.'),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to send: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isSendingVerification = false);
+    }
+  }
+
+  Future<void> _refreshEmailVerification() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    setState(() => _isSendingVerification = true);
+    try {
+      await user.reload();
+      final updated = FirebaseAuth.instance.currentUser;
+      if (mounted && updated != null) {
+        setState(() {
+          _isEmailVerified = updated.emailVerified;
+          _email = updated.email ?? _email;
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _isSendingVerification = false);
+    }
+  }
+
+  Future<void> _showProfilePhotoPicker() async {
+    if (_isUploadingPhoto) return;
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library_rounded),
+              title: const Text('Gallery'),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt_rounded),
+              title: const Text('Camera'),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null || !mounted) return;
+    try {
+      final xFile = await _imagePicker.pickImage(
+        source: source,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 85,
+      );
+      if (xFile == null || !mounted) return;
+      setState(() => _isUploadingPhoto = true);
+      await UserPhotoService.uploadProfilePhoto(File(xFile.path));
+      FirebaseDataService.clearProfileCache();
+      if (mounted) context.read<ProfileBloc>().add(const ProfileLoadRequested());
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update photo: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUploadingPhoto = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          ProfileBloc(getProfileUseCase: getIt<GetProfileUseCase>())
-            ..add(const ProfileLoadRequested()),
-      child: BlocListener<ProfileBloc, ProfileState>(
+    return BlocListener<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileLoaded) {
             _updateProfileData(state.profile);
@@ -93,6 +261,8 @@ class _ProfileViewState extends State<ProfileView> {
             padding: EdgeInsets.all(AiSpacing.lg),
             children: [
               _buildProfileCard(context),
+              SizedBox(height: AiSpacing.lg),
+              _buildCreditsSection(context),
               SizedBox(height: AiSpacing.lg),
               _buildSectionLabel(context, 'Other settings'),
               SizedBox(height: AiSpacing.sm),
@@ -204,7 +374,6 @@ class _ProfileViewState extends State<ProfileView> {
             ],
           ),
         ),
-      ),
     );
   }
 
@@ -224,27 +393,113 @@ class _ProfileViewState extends State<ProfileView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Profile Picture
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: AdaptiveThemeColors.backgroundSecondary(context),
-            child: Icon(
-              Icons.person_rounded,
-              size: 48,
-              color: AdaptiveThemeColors.textPrimary(context),
+          // Profile Picture (tappable to change)
+          GestureDetector(
+            onTap: _isUploadingPhoto ? null : _showProfilePhotoPicker,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                FutureBuilder<String?>(
+                  future: _profilePhotoUrl.isEmpty
+                      ? Future.value(null)
+                      : FirebaseStorageHelper.getDownloadUrl(_profilePhotoUrl),
+                  builder: (context, snapshot) {
+                    final url = snapshot.data;
+                    return CircleAvatar(
+                      radius: 40,
+                      backgroundColor:
+                          AdaptiveThemeColors.backgroundSecondary(context),
+                      backgroundImage: url != null && url.isNotEmpty
+                          ? NetworkImage(url)
+                          : null,
+                      child: url == null || url.isEmpty
+                          ? Icon(
+                              Icons.person_rounded,
+                              size: 48,
+                              color:
+                                  AdaptiveThemeColors.textPrimary(context),
+                            )
+                          : null,
+                    );
+                  },
+                ),
+                if (_isUploadingPhoto)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black38,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Center(
+                        child: SizedBox(
+                          width: 28,
+                          height: 28,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: CircleAvatar(
+                      radius: 14,
+                      backgroundColor: AdaptiveThemeColors.primary(context),
+                      child: Icon(
+                        Icons.camera_alt_rounded,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
           SizedBox(height: AiSpacing.lg),
-          // Username
-          Text(
-            _username,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: AdaptiveThemeColors.textPrimary(context),
-              fontWeight: FontWeight.w700,
+          // Username (tappable to edit)
+          InkWell(
+            onTap: _showEditNameDialog,
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: AiSpacing.sm,
+                vertical: AiSpacing.xs,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _username.isEmpty ||
+                            _username == 'User' ||
+                            _username == 'Loading...'
+                        ? 'Tap to add name'
+                        : _username,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: _username.isEmpty ||
+                              _username == 'User' ||
+                              _username == 'Loading...'
+                          ? AdaptiveThemeColors.textTertiary(context)
+                          : AdaptiveThemeColors.textPrimary(context),
+                      fontWeight: FontWeight.w700,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(width: AiSpacing.xs),
+                  Icon(
+                    Icons.edit_rounded,
+                    size: 18,
+                    color: AdaptiveThemeColors.textTertiary(context),
+                  ),
+                ],
+              ),
             ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: AiSpacing.sm),
           // Email with verification status
@@ -287,41 +542,107 @@ class _ProfileViewState extends State<ProfileView> {
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: AiSpacing.md),
-          Divider(
-            color: AdaptiveThemeColors.borderLight(
-              context,
-            ).withValues(alpha: 0.2),
-          ),
-          SizedBox(height: AiSpacing.sm),
-          _buildProfileDetailRow('Hair type', _hairType),
-          _buildProfileDetailRow('Face shape', _faceShape),
-          _buildProfileDetailRow('Preferred length', _preferredLength),
-          _buildProfileDetailRow('Beard style', _beardStyle),
-          _buildProfileDetailRow('Lifestyle', _lifestyle),
+          if (!_isEmailVerified && _email != 'No email' && _email != 'Loading...') ...[
+            SizedBox(height: AiSpacing.sm),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: AiSpacing.sm,
+              runSpacing: AiSpacing.sm,
+              children: [
+                FilledButton.tonalIcon(
+                  onPressed: _isSendingVerification ? null : _sendVerificationEmail,
+                  icon: _isSendingVerification
+                      ? SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AdaptiveThemeColors.primary(context),
+                          ),
+                        )
+                      : const Icon(Icons.email_rounded, size: 18),
+                  label: const Text('Send verification email'),
+                ),
+                OutlinedButton(
+                  onPressed: _isSendingVerification ? null : _refreshEmailVerification,
+                  child: const Text('Refresh'),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildProfileDetailRow(String label, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: AiSpacing.xs),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildCreditsSection(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(AiSpacing.lg),
+      decoration: BoxDecoration(
+        color: AdaptiveThemeColors.surface(context),
+        borderRadius: BorderRadius.circular(AiSpacing.radiusLarge),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            children: [
+              Icon(
+                Icons.auto_awesome_rounded,
+                size: 22,
+                color: AdaptiveThemeColors.primary(context),
+              ),
+              SizedBox(width: AiSpacing.sm),
+              Text(
+                'Credits',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AdaptiveThemeColors.textPrimary(context),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: AiSpacing.md),
+          StreamBuilder<int>(
+            stream: FirebaseDataService.watchUserPoints(),
+            builder: (context, snapshot) {
+              final points = snapshot.data ?? _points;
+              return Text(
+                '$points',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: AdaptiveThemeColors.primary(context),
+                  fontWeight: FontWeight.w800,
+                ),
+              );
+            },
+          ),
+          SizedBox(height: AiSpacing.xs),
           Text(
-            label,
+            '1 credit per AI generation',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AdaptiveThemeColors.textTertiary(context),
             ),
           ),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AdaptiveThemeColors.textPrimary(context),
-              fontWeight: FontWeight.w600,
-            ),
+          SizedBox(height: AiSpacing.md),
+          _buildSettingsTile(
+            context,
+            icon: Icons.add_circle_outline_rounded,
+            title: 'Get more credits',
+            onTap: () {
+              // TODO: Navigate to in-app purchase (RevenueCat) when integrated
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('In-app purchases coming soon.'),
+                ),
+              );
+            },
           ),
         ],
       ),

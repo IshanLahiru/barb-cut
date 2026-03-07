@@ -16,6 +16,8 @@ class ProfileModel extends ProfileEntity {
     super.beardStyle,
     super.lifestyle,
     super.photoPaths,
+    super.profilePhotoUrl = '',
+    super.points,
   });
 
   factory ProfileModel.fromMap(Map<String, dynamic> map) {
@@ -28,6 +30,7 @@ class ProfileModel extends ProfileEntity {
     final appointmentsCount = (map['appointmentsCount'] as num?)?.toInt() ?? 0;
     final favoritesCount = (map['favoritesCount'] as num?)?.toInt() ?? 0;
     final averageRating = (map['averageRating'] as num?)?.toDouble() ?? 0.0;
+    final points = (map['points'] as num?)?.toInt() ?? 0;
 
     return ProfileModel(
       userId: map['userId'] as String? ?? 'user_123',
@@ -44,6 +47,8 @@ class ProfileModel extends ProfileEntity {
       beardStyle: map['beardStyle'] as String? ?? 'None',
       lifestyle: map['lifestyle'] as String? ?? 'Active',
       photoPaths: photoPaths,
+      profilePhotoUrl: map['photoURL'] as String? ?? map['profilePhotoUrl'] as String? ?? '',
+      points: points,
     );
   }
 }

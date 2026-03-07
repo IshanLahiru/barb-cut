@@ -2,19 +2,19 @@ import 'package:barbcut/views/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/theme_controller.dart';
 import 'controllers/style_selection_controller.dart';
-import 'services/auth_service.dart';
 import 'services/onboarding_service.dart';
 import 'auth_screen.dart';
 import 'theme/theme.dart';
 import 'core/di/service_locator.dart';
-import 'core/constants/app_data.dart';
+import 'features/auth/domain/entities/auth_user.dart';
+import 'features/auth/domain/repositories/auth_repository.dart';
 import 'views/questionnaire_view.dart';
 
 class MyApp extends StatefulWidget {
@@ -35,40 +35,40 @@ Future<ThemeController> _initializeThemeController() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Lock to portrait orientation
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
+  // dotenv MUST load first - firebase_options.dart reads FIREBASE_* from .env
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
     debugPrint('Failed to load .env: $e');
   }
 
+  // Firebase must initialize before any Firebase-dependent code
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  } catch (e) {
-    debugPrint('Firebase init failed: $e');
-    // Don't rethrow - allow app to continue
-  }
-
-  // Enable anonymous authentication to access Firebase Storage images
-  try {
-    await AuthService().ensureAuthenticated();
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+  } on FirebaseException catch (e) {
+    if (e.code == 'duplicate-app' || e.code == 'core/duplicate-app') {
+      // Already initialized; ignore.
+    } else {
+      debugPrint('Error setting up authentication: $e');
+    }
   } catch (e) {
     debugPrint('Error setting up authentication: $e');
   }
 
-  try {
-    await AppData.loadAppData();
-  } catch (e) {
-    debugPrint('AppData load failed: $e');
-    // Don't rethrow - use empty defaults
-  }
+  // Enable persistent cache and larger cache size for dev and offline use
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+  );
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   try {
     await setupServiceLocator();
@@ -83,12 +83,21 @@ void main() async {
 
 class MyAppState extends State<MyApp> {
   bool showLogin = true;
+  late final Stream<AuthUser?> _authStateStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _authStateStream = getIt<AuthRepository>().authStateChanges;
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthController(AuthService())),
+        ChangeNotifierProvider(
+          create: (_) => AuthController(getIt<AuthRepository>()),
+        ),
         ChangeNotifierProvider.value(value: widget.themeController),
         ChangeNotifierProvider(create: (_) => StyleSelectionController()),
       ],
@@ -100,16 +109,14 @@ class MyAppState extends State<MyApp> {
             darkTheme: BarbCutTheme.darkTheme,
             themeMode: themeController.themeMode,
             debugShowCheckedModeBanner: false,
-            home: StreamBuilder<User?>(
-              stream: FirebaseAuth.instance.authStateChanges(),
+            home: StreamBuilder<AuthUser?>(
+              stream: _authStateStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Scaffold(
                     body: Center(child: CircularProgressIndicator()),
                   );
                 }
-                // Show MainScreen (via OnboardingGate) if user is authenticated (including anonymous)
-                // If there is no user data (not authenticated), fall through to show AuthScreen below.
                 if (snapshot.hasData) {
                   return const OnboardingGate();
                 }
@@ -140,11 +147,19 @@ class _OnboardingGateState extends State<OnboardingGate> {
   }
 
   Future<void> _loadCompletionState() async {
-    final completed = await OnboardingService().isQuestionnaireCompleted();
-    if (mounted) {
-      setState(() {
-        _isCompleted = completed;
-      });
+    try {
+      final completed = await OnboardingService()
+          .isQuestionnaireCompleted()
+          .timeout(const Duration(seconds: 5), onTimeout: () => false);
+      if (mounted) {
+        setState(() {
+          _isCompleted = completed;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isCompleted = false);
+      }
     }
   }
 

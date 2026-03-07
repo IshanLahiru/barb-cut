@@ -11,7 +11,6 @@ plugins {
 android {
     namespace = "io.github.ishanlahiru.barbcut"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

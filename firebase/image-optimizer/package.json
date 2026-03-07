@@ -1,0 +1,23 @@
+{
+  "name": "barbcut-image-optimizer",
+  "version": "1.0.0",
+  "description": "Local CLI tool to resize and optimize PNG images for the BarbCut app",
+  "main": "build/cli.js",
+  "scripts": {
+    "build": "tsc",
+    "optimize": "npm run build && node build/cli.js",
+    "optimize:force": "npm run build && node build/cli.js --force"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "private": true,
+  "dependencies": {
+    "glob": "^13.0.6",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.2",
+    "typescript": "^5.9.3"
+  }
+}
